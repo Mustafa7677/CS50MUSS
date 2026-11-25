@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sliding Window · Компьютерлік желілер - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Sliding Window · Компьютерлік желілер - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Арнаны толтыру: bandwidth-delay product және терезе өлшемі.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/net/net-6-window.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/net/net-6-window.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Sliding Window · Компьютерлік желілер - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/net/net-6-window.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Арнаны толтыру: bandwidth-delay product және терезе өлшемі.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="net-6-window" style="--lc:#1f8a70">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#net">Компьютерлік желілер</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Компьютерлік желілер · 6-сабақ · ≈20 мин · 2 қадам · 4 сұрақ</p>
+        <h1 lang="en">Sliding Window</h1>
+        <p class="l3-lede">Арнаны толтыру: bandwidth-delay product және терезе өлшемі.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#net-6-window">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Терезе</a></li><li><a href="#s2">Ең кіші жеткілікті терезе</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Терезе</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Жылжымалы терезе</strong> (sliding window): жіберуші ACK-ты күтпей <strong>W</strong> пакетке дейін жібере береді. ACK келген сайын терезе алға жылжиды. W = 1: stop-and-wait.</p>
+<h3>Түйсік</h3>
+<p>Конвейер: бір тетікті жасап болғанша келесісін бастамау (stop-and-wait) орнына, лентада бір мезгілде W тетік жүреді.</p>
+<h3>Есептеп көрейік</h3>
+<p>RTT = 10, 50 пакет:</p>
+<ul><li>W = 1: 500 бірлік, 10%</li><li>W = 4: бір RTT ішінде 4 пакет → ≈ 40%</li><li>W = 10: арна үзіліссіз жұмыс істейді → 50 / 59 ≈ <strong>85%</strong> (соңғы пакеттің ACK-ы келгенше 9 бірлік)</li></ul>
+<p>Өткізу қабілеті ≈ min(W / RTT, арна жылдамдығы).</p>
+<h3>Нақты әлемде</h3>
+<p>TCP терезесін <strong>қабылдаушы</strong> да шектейді (rwnd: оның буфері қанша сыяды): жылдам жіберуші баяу қабылдаушыны «суға батырмауы» керек: <strong>flow control</strong>. Ескі TCP-де терезе 64 КБ-пен шектелген; «window scaling» опциясы оны 1 ГБ-қа дейін кеңейтті.</p>
+<blockquote><p>💡 Түйін: 3D-де бір мезгілде ұшып жүрген пакеттер саны: терезе өлшемі.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Терезені өсіріп, жоғалтусыз арнаны ≥ 80% пайдалан.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Жоғалтусыз арнаны ≥ 80% пайдалан</li></ul><a class="btn secondary" href="../app/index.html#net-6-window">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="net-6-window:window:w4"><p class="l3-qt">RTT = 10, W = 5. Шамамен қандай пайдалану?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">≈ 50%</button><button type="button" class="l3-opt" data-i="1">≈ 10%</button><button type="button" class="l3-opt" data-i="2">≈ 100%</button><button type="button" class="l3-opt" data-i="3">≈ 5%</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> ≈ 50%</p><p>Әр RTT ішінде 5 пакет: 5/10 = 50%.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="net-6-window:window:flow"><p class="l3-qt">Flow control не үшін керек?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Жіберуші қабылдаушының буферін толтырып жібермеуі үшін</button><button type="button" class="l3-opt" data-i="1">Желідегі кептелістен қорғану үшін</button><button type="button" class="l3-opt" data-i="2">Пакеттерді шифрлау үшін</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Жіберуші қабылдаушының буферін толтырып жібермеуі үшін</p><p>Flow control: жіберуші мен қабылдаушы арасындағы келісім (rwnd). Желідегі кептелістен қорғау: басқа механизм, congestion control (cwnd).</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Ең кіші жеткілікті терезе</h2><div class="l3-body"><h3>Идея</h3>
+<p>Арнаны толық пайдалану үшін терезе қаншалықты болуы керек? <strong>Bandwidth-delay product</strong> (BDP):</p>
+<pre class="l3-pre"><code>BDP = өткізу қабілеті × RTT</code></pre>
+<p>Бұл: «құбырдың көлемі»: бір мезгілде жолда жүре алатын деректер мөлшері. Терезе BDP-дан кіші болса, арна бос тұрады; үлкен болса: артық деректер буферлерде күтеді.</p>
+<h3>Түйсік</h3>
+<p>Ұзын шланг: су шығысқа жету үшін алдымен бүкіл шлангты толтыру керек. Шланг неғұрлым ұзын (RTT) әрі жуан (bandwidth) болса, ішінде соғұрлым көп су бар.</p>
+<h3>Есептеп көрейік</h3>
+<p>Біздің модельде: 1 пакет/бірлік × 10 = <strong>10 пакет</strong>. W = 10: жеткілікті ең кіші терезе; W = 12 немесе 20 пайдалануды арттырмайды (85%: арнаның шегі осы деректер көлемінде).</p>
+<p>Нақты: 1 Гбит/с, RTT 100 мс (континенттер арасы):</p>
+<pre class="l3-pre"><code>BDP = 10⁹ бит/с × 0.1 с = 10⁸ бит = 12.5 МБ</code></pre>
+<p>Терезе 64 КБ болса: 64 КБ / 0.1 с = 5 Мбит/с: гигабиттік арнаның 0.5%-ы!</p>
+<h3>Нақты әлемде</h3>
+<p>«Long fat networks» (спутник, мұхит асты): BDP өте үлкен. Сондықтан ғарыш спутниктері мен деректер орталықтары арасындағы көшірулерде TCP буферлерін арнайы баптайды.</p>
+<blockquote><p>⚠ Жиі қате: «жылдамырақ арна сатып алдық, бірақ жүктеу жылдамдамады». Себебі көбіне: RTT пен кішкене терезе, арна емес.</p></blockquote>
+<h3>Тереңірек: Матис формуласы: TCP өткізуінің шегі</h3>
+<p>Жоғалту ықтималдығы p, сегмент MSS, RTT болса, AIMD-тің тұрақты күйдегі өткізуі шамамен (Mathis т.б., 1997):</p>
+<pre class="l3-pre"><code>өткізу ≈ (MSS / RTT) · (1.22 / √p)</code></pre>
+<p>Қорытындысы: ара тісінде cwnd W/2-ден W-ге дейін өседі, бұл W/2 RTT алады; бір циклда ≈ (3/8)·W² пакет жіберіледі, ал біреуі жоғалады: (3/8)·W² ≈ 1/p → W ≈ √(8/(3p)). Орташа терезе (3/4)·W → өткізу ≈ (MSS/RTT) · √(3/(2p)) ≈ 1.22 · MSS / (RTT · √p).</p>
+<p>Мысал: MSS = 1460 байт, RTT = 100 мс, p = 0.01% (10⁻⁴):</p>
+<pre class="l3-pre"><code>1460 · 8 / 0.1 · 1.22 / 0.01 ≈ 14 Мбит/с</code></pre>
+<p>Яғни 10 000 пакеттің біреуі жоғалса да, континент арасындағы TCP 14 Мбит/с-тан аспайды: арна 10 Гбит/с болса да. Сондықтан ұзақ қашықтықтағы үлкен көшірулер үшін жоғалтуға сезімталдығы аз алгоритмдер (BBR) не параллель ағындар қолданылады.</p>
+<h3>Енді сен</h3>
+<p>≥ 80% пайдалануға жететін <strong>ең кіші</strong> терезені тап.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>≥ 80%-ға жететін ең кіші терезені тап (RTT = 10)</li></ul><a class="btn secondary" href="../app/index.html#net-6-window">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="net-6-window:bdp:calc"><p class="l3-qt">100 Мбит/с, RTT 40 мс. BDP қанша?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">500 КБ</button><button type="button" class="l3-opt" data-i="1">4 МБ</button><button type="button" class="l3-opt" data-i="2">40 КБ</button><button type="button" class="l3-opt" data-i="3">100 КБ</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 500 КБ</p><p>10⁸ бит/с × 0.04 с = 4·10⁶ бит = 500 000 байт = 500 КБ.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="net-6-window:bdp:big"><p class="l3-qt">Терезе BDP-дан әлдеқайда үлкен болса не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Өткізу өспейді, ал артық деректер роутер буферлерінде жиналып, кешігуді арттырады (bufferbloat)</button><button type="button" class="l3-opt" data-i="1">Өткізу шексіз өседі</button><button type="button" class="l3-opt" data-i="2">Пакеттер тезірек жетеді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Өткізу өспейді, ал артық деректер роутер буферлерінде жиналып, кешігуді арттырады (bufferbloat)</p><p>Арнадан тез жібере алмайсың. Артық деректер кезекте тұрып, RTT-ды ұзартады: ойындар мен видеоқоңыраулар «лагтайды».</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="net-5-reliable.html">← <span lang="en">Reliable Delivery</span></a><a href="../index.html#net">Компьютерлік желілер</a><a href="net-7-congestion.html"><span lang="en">Congestion Control</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

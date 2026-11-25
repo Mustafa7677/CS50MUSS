@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MTU, Fragmentation &amp; PMTU Black Holes · Компьютерлік желілер - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="MTU, Fragmentation &amp;amp; PMTU Black Holes · Компьютерлік желілер - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Пакет туннельге сыймаса не болады: бөлшектеу, DF белгісі, ICMP «тым үлкен» хабары және ICMP бұғатталғанда пайда болатын қара тесік.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/net/net-14-mtu.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/net/net-14-mtu.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"MTU, Fragmentation &amp; PMTU Black Holes · Компьютерлік желілер - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/net/net-14-mtu.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Пакет туннельге сыймаса не болады: бөлшектеу, DF белгісі, ICMP «тым үлкен» хабары және ICMP бұғатталғанда пайда болатын қара тесік.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="net-14-mtu" style="--lc:#1f8a70">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#net">Компьютерлік желілер</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Компьютерлік желілер · 14-сабақ · ≈25 мин · 2 қадам · 4 сұрақ</p>
+        <h1 lang="en">MTU, Fragmentation &amp; PMTU Black Holes</h1>
+        <p class="l3-lede">Пакет туннельге сыймаса не болады: бөлшектеу, DF белгісі, ICMP «тым үлкен» хабары және ICMP бұғатталғанда пайда болатын қара тесік.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#net-14-mtu">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Туннельге сыймады</a></li><li><a href="#s2">Қара тесік</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Туннельге сыймады</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>MTU</strong> (Maximum Transmission Unit): бір арнамен бір рет жіберуге болатын ең үлкен пакет. Ethernet-те ол 1500 байт. Бірақ жолда VPN, PPPoE не басқа туннель болса, олар пакетке өз тақырыбын қосады, сондықтан ішкі пакет үшін орын азаяды: біздің туннельде 1400.</p>
+<p>Үлкен пакет кішкене арнаға жеткенде екі жол бар:</p>
+<ol><li><strong>DF өшік</strong>: роутер пакетті <strong>бөлшектейді</strong> (fragmentation). Әр бөлік өз IP тақырыбымен кетеді, ал қабылдаушы оларды қайта құрастырады.</li><li><strong>DF қосулы</strong>: роутер пакетті тастайды да, жіберушіге <strong>ICMP «Fragmentation needed, MTU=1400»</strong> хабарын қайтарады. Жіберуші өлшемді кішірейтеді. Бұл <strong>Path MTU Discovery</strong>.</li></ol>
+<h3>Түйсік</h3>
+<p>Жүк көлігі көпірдің астынан өтпейді. Не жүкті екі кішкене көлікке бөлесің (бөлшектеу), не жүргізушіге «биіктігі 3,5 м шек» деп хабар жібересің, ол келесі жолы жүкті алдын ала аласа етіп тиейді (PMTUD).</p>
+<h3>Есептеп көрейік</h3>
+<p>1500 байттық пакетте 20 байт IP тақырыбы және 1480 байт дерек бар. 1400 MTU-лы арнада бір бөлікке 1380 байт дерек сыяды, бірақ бөліктің ығысуы 8 байтқа еселі болуы керек, сондықтан 1376 байт.</p>
+<ul><li>1-бөлік: 1376 байт дерек;</li><li>2-бөлік: 1480 - 1376 = 104 байт дерек.</li></ul>
+<p>Екі бөлік, екі тақырып. Бір бөлік жоғалса, бүкіл пакет жоғалады.</p>
+<h3>Нақты әлемде</h3>
+<p>Бөлшектеу қымбат: роутерге жұмыс, қабылдаушыға жад, ал бір бөліктің жоғалуы бүкіл пакетті жояды. Сондықтан қазіргі TCP әрқашан DF қосып жібереді және PMTUD-ке сенеді. IPv6-та роутерлер мүлде бөлшектемейді: тек жіберуші.</p>
+<h3>Енді сен</h3>
+<p>Алдымен DF өшік күйінде жібер де, неше бөлік шыққанын көр. Сосын DF қос та, қайта жібер: ICMP хабары қалай келетінін бақыла.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>DF өшік: 1500 байттық пакет VPN туннелінде екі бөлікке бөлінді</li><li>DF қосулы: роутер ICMP жіберді, жіберуші пакетті кішірейтіп, жеткізді</li></ul><a class="btn secondary" href="../app/index.html#net-14-mtu">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="0" data-qid="net-14-mtu:fragment:predict"><p class="l3-qt">Жол бойындағы VPN туннелінің MTU-ы 1400 байт. Компьютер 1500 байттық пакет жіберді, DF белгісі өшік. Не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Туннельдің алдындағы роутер пакетті екі бөлікке бөліп жібереді</button><button type="button" class="l3-opt" data-i="1">Пакет жоғалады</button><button type="button" class="l3-opt" data-i="2">Туннель MTU-ын өзі 1500-ге көтереді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Туннельдің алдындағы роутер пакетті екі бөлікке бөліп жібереді</p><p>DF (Don&#x27;t Fragment) өшік болса, роутерге бөлшектеуге рұқсат бар. 1480 байт деректі екі бөлікке бөледі: 1376 және 104 байт, әрқайсысына өз IP тақырыбы қосылады.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="net-14-mtu:fragment:mtu"><p class="l3-qt">MTU деген не?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Бір арнамен бір рет жіберуге болатын ең үлкен пакеттің өлшемі</button><button type="button" class="l3-opt" data-i="1">Арнаның жылдамдығы</button><button type="button" class="l3-opt" data-i="2">Пакеттің тірі қалу уақыты</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Бір арнамен бір рет жіберуге болатын ең үлкен пакеттің өлшемі</p><p>MTU пакеттің өлшеміне шек қояды. Жылдамдыққа емес. Туннельдер өз тақырыбын қосқандықтан, олардың ішіндегі MTU кішірек.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="net-14-mtu:fragment:df"><p class="l3-qt">DF белгісі қосулы пакет MTU-ы кіші арнаға жетсе, роутер не істейді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Пакетті тастап, жіберушіге ICMP «тым үлкен» хабарын жібереді</button><button type="button" class="l3-opt" data-i="1">Бәрібір бөлшектейді</button><button type="button" class="l3-opt" data-i="2">Пакетті кезекке қойып, MTU үлкейгенше күтеді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Пакетті тастап, жіберушіге ICMP «тым үлкен» хабарын жібереді</p><p>DF «бөлме» дейді. Роутер бұған бағынады, бірақ жіберушіге не болғанын және арнаның MTU-ын айтады.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Қара тесік</h2><div class="l3-body"><h3>Идея</h3>
+<p>PMTUD бір шартқа сүйенеді: ICMP «Fragmentation needed» хабары жіберушіге жетуі керек. Кейбір әкімшілер «ICMP қауіпті» деп оны толық бұғаттайды. Сонда:</p>
+<ul><li>кішкене пакеттер (қол алысу, қысқа сұраныстар) еркін өтеді;</li><li>үлкен пакеттер туннельде үнсіз тасталады;</li><li>жіберуші таймаутпен қайта жібереді, сол өлшеммен, мәңгі.</li></ul>
+<p>Бұл <strong>PMTU қара тесігі</strong>: байланыс орнады, сайт ашыла бастады, бірақ үлкен бет не файл ешқашан жүктелмейді.</p>
+<h3>Түйсік</h3>
+<p>Хат жолда жоғалып жатыр, ал пошта «конверт тым үлкен» деген хабарламаны жоюды ережеге айналдырған. Сен жаңа хатты сол конвертпен қайта-қайта жібересің.</p>
+<h3>Есептеп көрейік</h3>
+<p>Біздің модельде үнсіз жоғалу бір таймаутқа тұрады: 1000 мс. Үш әрекет: 3000 мс және ештеңе жетпеді. Ал PMTUD жұмыс істегенде: 40 мс ICMP үшін, 40 мс кішірейтілген пакет үшін, барлығы 80 мс.</p>
+<p>Шешімдер:</p>
+<ol><li>ICMP-дің «Fragmentation needed» түрін бұғаттама (ең дұрысы).</li><li><strong>MSS clamping</strong>: туннельдің шетіндегі роутер TCP қол алысуындағы MSS мәнін өзі кішірейтеді. Екі жақ басынан бастап 1400-ге сыятын сегменттер жібереді, ICMP керек болмайды.</li></ol>
+<h3>Нақты әлемде</h3>
+<p>«VPN қосылғанда кейбір сайттар ашылмайды, ал ping жұмыс істейді» деген шағым көбіне осы. Белгісі: шағын сұраныстар өтеді, ал үлкен жауаптар қатып қалады. Сондықтан көп VPN мен үй роутерлерінде MSS clamping әдепкі бойынша қосулы.</p>
+<blockquote><p>⚠ ICMP-ді толық бұғаттау қауіпсіздікті арттырмайды, тек желіні бұзады. ICMP-дің кей түрлері желінің дұрыс жұмысына қажет.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Жібер де, үш әрекеттің үшеуі де үнсіз жоғалғанын көр. Сосын MSS clamping қос та, қайта жібер.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>ICMP бұғатталды: пакеттер үнсіз жоғалады, байланыс қатып қалады</li><li>MSS clamping қос: пакет бірден туннельге сыйып, жетеді</li></ul><a class="btn secondary" href="../app/index.html#net-14-mtu">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="0" data-qid="net-14-mtu:blackhole:predict"><p class="l3-qt">Сервердің брандмауэрі «қауіпсіздік үшін» барлық ICMP-ді бұғаттайды. DF қосулы 1500 байттық пакетке не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Пакет туннельде тасталады, ал жіберуші бұл туралы білмей, сол өлшеммен қайта-қайта жібереді</button><button type="button" class="l3-opt" data-i="1">Роутер пакетті бәрібір бөлшектейді</button><button type="button" class="l3-opt" data-i="2">Жіберуші бірден кішірек пакет жібереді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Пакет туннельде тасталады, ал жіберуші бұл туралы білмей, сол өлшеммен қайта-қайта жібереді</p><p>ICMP хабары жол ортада жоғалды. Жіберуші тек жауаптың жоқтығын көреді, ал себебін білмейді. Бұл PMTU қара тесігі.</p></details></div></div><div class="l3-box l3-self"><h3>Өз сөзіңмен түсіндір</h3><p>ICMP бұғатталғанда неге үлкен пакеттер мәңгі жоғалады, ал MSS clamping мұны қалай шешеді?</p><details class="l3-ans"><summary>Жақсы түсіндірмеде болатын ойлар</summary><ul><li>DF бар пакет туннельге сыймай тасталады</li><li>жіберуші ICMP хабарын алмайды, себебін білмейді</li><li>clamping пакетті басынан кішірейтеді</li></ul></details></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="net-14-mtu:blackhole:symptom"><p class="l3-qt">PMTU қара тесігінің типтік белгісі қандай?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Шағын сұраныстар өтеді, ал үлкен жауаптар қатып қалады</button><button type="button" class="l3-opt" data-i="1">Ешқандай сайт ашылмайды</button><button type="button" class="l3-opt" data-i="2">DNS жұмыс істемейді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Шағын сұраныстар өтеді, ал үлкен жауаптар қатып қалады</p><p>Тек MTU-дан үлкен пакеттер жоғалады. Ping мен қол алысу кішкене, сондықтан желі «жұмыс істеп тұрған сияқты» көрінеді.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="net-14-mtu:blackhole:clamp"><p class="l3-qt">MSS clamping мәселені қалай шешеді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Роутер қол алысуда MSS-ті кішірейтеді, сондықтан пакеттер басынан туннельге сыяды</button><button type="button" class="l3-opt" data-i="1">ICMP-ді қайта қосады</button><button type="button" class="l3-opt" data-i="2">Пакеттерді шифрлайды</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Роутер қол алысуда MSS-ті кішірейтеді, сондықтан пакеттер басынан туннельге сыяды</p><p>Пакет ешқашан тым үлкен болмаса, ICMP хабарының керегі де жоқ. Мәселе түбірінен айналып өтіледі.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="net-13-quic.html">← <span lang="en">TCP, QUIC &amp; UDP: Head-of-Line Blocking</span></a><a href="../index.html#net">Компьютерлік желілер</a><a href="net-15-bufferbloat.html"><span lang="en">Bufferbloat: When the Router Remembers Too Much</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

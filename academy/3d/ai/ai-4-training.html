@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Model Training · Жасанды интеллект - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Model Training · Жасанды интеллект - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Нақты gradient descent: learning rate, batch size және epoch-тың әсерін loss графигінен көр.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/ai/ai-4-training.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/ai/ai-4-training.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Model Training · Жасанды интеллект - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/ai/ai-4-training.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Нақты gradient descent: learning rate, batch size және epoch-тың әсерін loss графигінен көр.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="ai-4-training" style="--lc:#7a5cd6">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#ai">Жасанды интеллект</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Жасанды интеллект · 4-сабақ · ≈15 мин · 4 қадам · 8 сұрақ</p>
+        <h1 lang="en">Model Training</h1>
+        <p class="l3-lede">Нақты gradient descent: learning rate, batch size және epoch-тың әсерін loss графигінен көр.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#ai-4-training">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Бірінші training</a></li><li><a href="#s2">Learning rate</a></li><li><a href="#s3">Batch size</a></li><li><a href="#s4">Мақсат: 95% test дәлдігі</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Бірінші training</h2><div class="l3-body"><h3>Идея</h3>
+<p>Training: салмақтарды автоматты түрде табу. Үш бөлік:</p>
+<ol><li><strong>Loss (қате функциясы)</strong>: модель қаншалықты қателесетінін бір санмен өлшейді. Мұнда: binary cross-entropy:</li></ol>
+<pre class="l3-pre"><code>L = −[ y·log(p) + (1−y)·log(1−p) ]</code></pre>
+<ol><li><strong>Градиент</strong>: әр салмақты сәл өзгерткенде loss қалай өзгеретіні. <strong>Backpropagation</strong> оны тізбек ережесімен (chain rule) шығыстан кіріске қарай барлық салмақ үшін бір өтуде есептейді.</li><li><strong>Gradient descent</strong>: әр салмақты градиентке қарсы бағытта кішкене қадамға жылжыту:</li></ol>
+<pre class="l3-pre"><code>w ← w − η · ∂L/∂w</code></pre>
+<h3>Түйсік</h3>
+<p>Тұманда таудан түсіп келе жатырсың: алысты көрмейсің, бірақ аяғыңның астындағы еңісті сезесің. Ең тік төмен бағытқа бір қадам: тағы еңісті сезу: тағы қадам. Loss: биіктік, градиент: еңіс.</p>
+<h3>Есептеп көрейік</h3>
+<p>y = 1, модель p = 0.9 берді: L = −log(0.9) ≈ 0.105 (аз қате). p = 0.1 берді: L = −log(0.1) ≈ 2.30 (үлкен қате). Сенімді қате жауап: қатты жазаланады.</p>
+<p><strong>Epoch</strong>: барлық train деректерін бір рет көру.</p>
+<h3>Тереңірек: ∂L/∂z = p − y қорытуы (backprop жүрегі)</h3>
+<p>Бір нейрон: z = w·x + b, p = σ(z), L = −[y·ln p + (1−y)·ln(1−p)].</p>
+<p><strong>1-қадам: σ туындысы.</strong> σ(z) = 1/(1 + e⁻ᶻ). Туынды алсақ:</p>
+<pre class="l3-pre"><code>σ&#x27;(z) = e⁻ᶻ/(1 + e⁻ᶻ)² = σ(z)·(1 − σ(z)) = p(1 − p)</code></pre>
+<p><strong>2-қадам: L-дің p бойынша туындысы:</strong></p>
+<pre class="l3-pre"><code>∂L/∂p = −y/p + (1−y)/(1−p) = (p − y) / (p(1−p))</code></pre>
+<p><strong>3-қадам: тізбек ережесі:</strong></p>
+<pre class="l3-pre"><code>∂L/∂z = ∂L/∂p · ∂p/∂z = (p − y)/(p(1−p)) · p(1−p) = p − y</code></pre>
+<p>Керемет қысқарды: қате сигналы: жай ғана «болжам минус шындық». (Cross-entropy-ді sigmoid-пен жұптайтынымыздың себебі осы.)</p>
+<p><strong>4-қадам: салмақтар:</strong> z = Σ wᵢxᵢ + b болғандықтан ∂z/∂wᵢ = xᵢ, ∂z/∂b = 1:</p>
+<pre class="l3-pre"><code>∂L/∂wᵢ = (p − y)·xᵢ        ∂L/∂b = p − y</code></pre>
+<p><strong>Сандармен.</strong> x = (1, 2), y = 1, w = (0.5, −0.25), b = 0.1, η = 0.5.</p>
+<ol><li>z = 0.5 − 0.5 + 0.1 = 0.1 → p = σ(0.1) ≈ 0.525, L = −ln 0.525 ≈ 0.644</li><li>p − y = −0.475 → ∂L/∂w = (−0.475, −0.95), ∂L/∂b = −0.475</li><li>w ← w − η·∇: w = (0.7375, 0.225), b = 0.3375</li><li>Жаңа z = 0.7375 + 0.45 + 0.3375 = 1.525 → p ≈ 0.821, L ≈ 0.197</li></ol>
+<p>Бір қадамда loss 3 есеге жуық азайды. Үлкен xᵢ бар салмақ көбірек өзгерді: ол болжамға көбірек «кінәлі».</p>
+<p><strong>Жасырын қабаттар.</strong> Шығыс қабаттың қатесі δ = p − y. Алдыңғы қабатқа:</p>
+<pre class="l3-pre"><code>δ_жасырын = (Wᵀ · δ_келесі) ⊙ f&#x27;(z_жасырын)
+∂L/∂W = δ · (кіріс)ᵀ</code></pre>
+<p>Қате салмақтар арқылы <strong>кері</strong> таралады: атауы осыдан. Құны: бір backward ≈ 2 forward. Ал әр салмақты жеке «сәл өзгертіп тексеру» (finite differences) P параметр үшін P + 1 forward талап етер еді: миллиард параметрде мүмкін емес.</p>
+<h3>Енді сен</h3>
+<p>«Training бастау» бас. Loss графигі төмендеп, 3D бет деректерді «орап» жатқанын бақыла. Кемінде 50 epoch үйрет.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Кемінде 50 epoch үйрет</li></ul><a class="btn secondary" href="../app/index.html#ai-4-training">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="3" data-qid="ai-4-training:first:loss"><p class="l3-qt">y = 1. Қай болжам үшін loss ең үлкен?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">p = 0.99</button><button type="button" class="l3-opt" data-i="1">p = 0.6</button><button type="button" class="l3-opt" data-i="2">p = 0.5</button><button type="button" class="l3-opt" data-i="3">p = 0.05</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> p = 0.05</p><p>−log(0.05) ≈ 3.0. Сенімді қате жауап (1 болуы керек, бірақ 5% деді) ең қатты жазаланады.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-4-training:first:step"><p class="l3-qt">Gradient descent салмақты қай бағытта жылжытады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Градиент бағытында (loss өсетін жаққа)</button><button type="button" class="l3-opt" data-i="1">Градиентке қарсы (loss азаятын жаққа)</button><button type="button" class="l3-opt" data-i="2">Кездейсоқ бағытта</button><button type="button" class="l3-opt" data-i="3">Әрдайым нөлге қарай</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Градиентке қарсы (loss азаятын жаққа)</p><p>Градиент loss-тың ең тез өсетін бағытын көрсетеді. Біз loss-ты азайтқымыз келеді, сондықтан минус таңбамен жүреміз: w ← w − η·∇L.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Learning rate</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Learning rate (η)</strong>: бір қадамның өлшемі.</p>
+<ul><li>Тым <strong>үлкен</strong>: минимумнан секіріп өтеміз, loss тербеледі немесе жарылады (divergence).</li><li>Тым <strong>кіші</strong>: дұрыс бағытта, бірақ өте баяу: мыңдаған epoch керек.</li></ul>
+<h3>Есептеп көрейік</h3>
+<p>Ең қарапайым мысал: L(w) = w², градиент 2w, бастауы w = 1.</p>
+<pre class="l3-pre"><code>η = 0.1:  w → 1 − 0.1·2·1 = 0.8 → 0.64 → 0.51 …  (баяу, бірақ сенімді)
+η = 0.5:  w → 1 − 0.5·2·1 = 0                    (бір қадамда!)
+η = 1.1:  w → 1 − 1.1·2·1 = −1.2 → 1.44 → −1.73  (жарылды)</code></pre>
+<p>Яғни η &gt; 1 болғанда әр қадам минимумнан <strong>әрі қарай</strong> лақтырады.</p>
+<h3>Нақты әлемде</h3>
+<p>Learning rate: ең маңызды гиперпараметр. Үлкен модельдерде оны уақыт өте азайтады (learning rate schedule) немесе Adam сияқты әр салмаққа өз қадамын беретін әдістерді қолданады.</p>
+<blockquote><p>⚠ Жиі қате: «Үлкен learning rate = жылдам training». Белгілі бір шектен кейін үлкен η training-ті мүлдем бұзады.</p></blockquote>
+<h3>Тереңірек: learning rate шекарасы η &lt; 2/a</h3>
+<p>Ең қарапайым loss: парабола: L(w) = (a/2)·w², градиенті a·w. Gradient descent:</p>
+<pre class="l3-pre"><code>w ← w − η·a·w = (1 − ηa)·w</code></pre>
+<p>Әр қадамда w бір санға көбейтіледі: q = 1 − ηa.</p>
+<ul><li>0 &lt; q &lt; 1 (η &lt; 1/a): бір жақтан бірқалыпты жақындайды</li><li>−1 &lt; q &lt; 0 (1/a &lt; η &lt; 2/a): минимумнан ары-бері секіріп жақындайды: <strong>тербеліс</strong></li><li>|q| &gt; 1 (η &gt; 2/a): әр қадам алыстатады: <strong>divergence</strong></li></ul>
+<p>Мысал a = 4: η = 0.1 → q = 0.6 (тегіс); η = 0.4 → q = −0.6 (тербеліс); η = 0.6 → q = −1.4 (жарылыс: 1, −1.4, 1.96, −2.74 …).</p>
+<p>Нақты loss беті: көп өлшемді, ал a-ның рөлін <strong>ең тік бағыттың қисықтығы</strong> (Hessian-ның ең үлкен меншікті мәні) атқарады. Сондықтан бір тік бағыт бүкіл η-ны шектейді: Adam сияқты әдістер әр параметрге жеке қадам беретіні осыдан.</p>
+<h3>Енді сен</h3>
+<p>Learning rate ≥ 1 етіп үйрет (графиктегі тербелісті көр), сосын «Training-ті қайта бастау» басып, ≤ 0.1-пен үйрет.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Learning rate ≥ 1 болғанда кемінде 20 epoch үйрет</li><li>Learning rate ≤ 0.1 болғанда кемінде 20 epoch үйрет</li></ul><a class="btn secondary" href="../app/index.html#ai-4-training">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="ai-4-training:lr:w2" data-hint="w ← w − η · 2w формуласына қой."><p class="l3-qt">L(w) = w², w = 2, η = 0.25. Бір қадамнан кейін w неге тең?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">1</button><button type="button" class="l3-opt" data-i="1">1.5</button><button type="button" class="l3-opt" data-i="2">0</button><button type="button" class="l3-opt" data-i="3">−1</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 1</p><p>Градиент 2w = 4. w ← 2 − 0.25·4 = 1.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-4-training:lr:diverge"><p class="l3-qt">Loss графигі секіріп, өсіп кетсе, ең алдымен нені өзгерту керек?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Деректерді көбейту</button><button type="button" class="l3-opt" data-i="1">Learning rate-ті азайту</button><button type="button" class="l3-opt" data-i="2">Қабат қосу</button><button type="button" class="l3-opt" data-i="3">Test үлесін өзгерту</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Learning rate-ті азайту</p><p>Тербеліс пен жарылу: қадам тым үлкен екенінің классикалық белгісі.</p></details></div></div></section><section class="l3-step" id="s3" aria-labelledby="s3-h"><h2 id="s3-h"><span class="l3-n">3</span>Batch size</h2><div class="l3-body"><h3>Идея</h3>
+<p>Градиентті барлық деректер бойынша есептеу: дәл, бірақ қымбат. Сондықтан деректерді шағын <strong>batch</strong>-тарға бөліп, әр batch-тан кейін салмақтарды жаңартамыз: <strong>mini-batch SGD</strong>.</p>
+<ul><li><strong>batch = 1</strong>: әр мысалдан кейін жаңарту. Жаңарту жиі, бірақ әр градиент шулы.</li><li><strong>үлкен batch</strong>: градиент дәл әрі тегіс, бірақ бір epoch-та жаңарту аз.</li></ul>
+<h3>Есептеп көрейік</h3>
+<p>192 train нүктесі:</p>
+<pre class="l3-pre"><code>batch = 1   → 192 жаңарту / epoch
+batch = 16  → 12 жаңарту / epoch
+batch = 64  → 3 жаңарту / epoch</code></pre>
+<p>Сондықтан бірдей epoch санында batch = 1 көп «қадам» жасайды, бірақ қадамдары зигзаг.</p>
+<h3>Неге шу пайдалы болуы мүмкін</h3>
+<p>Сәл шулы градиент таяз жергілікті минимумдардан «секіріп шығуға» көмектеседі. Ал GPU-да үлкен batch параллель есептеледі: уақыт бойынша тиімдірек. Тәжірибеде 16-512 аралығы жиі қолданылады.</p>
+<blockquote><p>💡 Түйін: batch size: дәлдік пен жылдамдық арасындағы компромисс.</p></blockquote>
+<h3>Тереңірек: batch өлшемі мен шудың математикасы</h3>
+<p>Толық градиент: барлық N мысалдың орташасы. Mini-batch оны B кездейсоқ мысалмен <strong>бағалайды</strong>. Статистикадан: B тәуелсіз үлгінің орташасының дисперсиясы σ²/B, ауытқуы σ/√B.</p>
+<ul><li>B = 1 → шу σ</li><li>B = 32 → шу σ/√32 ≈ σ/5.7</li><li>B = 256 → шу σ/16</li></ul>
+<p>Бірақ бір epoch-та N/B қадам ғана. N = 1000: B = 1 → 1000 қадам/epoch (шулы, бірақ көп), B = 1000 → 1 қадам (дәл, бірақ баяу).</p>
+<p>Шудың пайдасы да бар: ол «тар» минимумдардан шығарып, тегіс, жақсы генерализацияланатын аймақтарға итереді. GPU-да B = 64 есептеу уақыты B = 1-ден аз ғана көп (параллель), сондықтан практикада 32-512 жиі таңдалады.</p>
+<h3>Енді сен</h3>
+<p>Batch = 1 және batch ≥ 32-мен үйретіп, loss қисығының пішінін салыстыр: қайсысы тегіс, қайсысы шулы?</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Batch = 1 болғанда кемінде 10 epoch үйрет</li><li>Batch ≥ 32 болғанда кемінде 10 epoch үйрет</li></ul><a class="btn secondary" href="../app/index.html#ai-4-training">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-4-training:batch:updates"><p class="l3-qt">240 train нүктесі, batch = 8. Бір epoch-та неше жаңарту болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">8</button><button type="button" class="l3-opt" data-i="1">30</button><button type="button" class="l3-opt" data-i="2">240</button><button type="button" class="l3-opt" data-i="3">1920</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 30</p><p>240 / 8 = 30 batch → 30 жаңарту.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-4-training:batch:noisy"><p class="l3-qt">Batch = 1 болғанда loss қисығы неге шулы?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Learning rate өзгереді</button><button type="button" class="l3-opt" data-i="1">Әр жаңарту бір ғана мысалдың градиентіне сүйенеді, ол бүкіл деректің градиентінен ауытқиды</button><button type="button" class="l3-opt" data-i="2">Деректер жоғалады</button><button type="button" class="l3-opt" data-i="3">Модель кішірейеді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Әр жаңарту бір ғана мысалдың градиентіне сүйенеді, ол бүкіл деректің градиентінен ауытқиды</p><p>Бір мысал: бүкіл датасеттің нашар өкілі. Градиенттің бағыты әр қадам сайын «секіреді».</p></details></div></div></section><section class="l3-step" id="s4" aria-labelledby="s4-h"><h2 id="s4-h"><span class="l3-n">4</span>Мақсат: 95% test дәлдігі</h2><div class="l3-body"><h3>Идея</h3>
+<p>Енді бәрін біріктір. ML инженерінің шынайы жұмыс циклі:</p>
+<ol><li>Гипотеза: «тереңірек желі көмектеседі».</li><li>Тәжірибе: бір ғана параметрді өзгерт.</li><li>Өлшеу: <strong>test</strong> дәлдігі (train емес!).</li><li>Қорытынды → келесі гипотеза.</li></ol>
+<h3>Пайдалы бастау нүктелері</h3>
+<ul><li>Шеңберлер үшін: [8, 8], tanh: жеткілікті.</li><li>Learning rate: 0.1-0.5. Loss тербелсе: азайт.</li><li>Batch: 16-32.</li><li>Epoch: loss тегістелгенше (бірнеше жүз).</li></ul>
+<h3>Неге «бір параметр»</h3>
+<p>Үш нәрсені бірден өзгертсең, нәтиже жақсарса да, нақты нені себеп болғанын білмейсің. Бұл: ғылыми әдіс, ML-де де дәл солай.</p>
+<blockquote><p>⚠ Жиі қате: тек train дәлдігіне қарау. 100% train: мақсат емес; мақсат: жаңа деректердегі дәлдік.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Test жиынында кемінде 95% дәлдікке жет. Тапсырма тұрақты болуы керек: training біткенде де 95% сақталсын.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Test дәлдігі ≥ 95%</li></ul><a class="btn secondary" href="../app/index.html#ai-4-training">Симуляцияны ашу</a></div><details class="l3-hint"><summary>Кеңес</summary><ul><li>Мысалы: [8, 8] tanh, learning rate 0.3, batch 16, 150+ epoch.</li></ul></details><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-4-training:goal:metric"><p class="l3-qt">Модельдің сапасын қай көрсеткішпен бағалаймыз?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Train дәлдігі</button><button type="button" class="l3-opt" data-i="1">Test дәлдігі</button><button type="button" class="l3-opt" data-i="2">Epoch саны</button><button type="button" class="l3-opt" data-i="3">Параметрлер саны</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Test дәлдігі</p><p>Test: модель көрмеген деректер. Ол ғана шын өмірдегі сапаны болжайды.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-4-training:goal:method"><p class="l3-qt">Тәжірибе жасағанда неге бір уақытта бір ғана параметрді өзгерткен дұрыс?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Бұл жылдамырақ</button><button type="button" class="l3-opt" data-i="1">Нәтиже өзгерсе, нақты нені себеп болғанын білу үшін</button><button type="button" class="l3-opt" data-i="2">Бірнеше параметрді өзгерту мүмкін емес</button><button type="button" class="l3-opt" data-i="3">Модель бұзылады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Нәтиже өзгерсе, нақты нені себеп болғанын білу үшін</p><p>Бір айнымалы: бір себеп. Бұл ғылыми тәжірибенің негізгі ережесі.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="ai-3-network.html">← <span lang="en">Neural Networks</span></a><a href="../index.html#ai">Жасанды интеллект</a><a href="ai-5-overfitting.html"><span lang="en">Overfitting</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

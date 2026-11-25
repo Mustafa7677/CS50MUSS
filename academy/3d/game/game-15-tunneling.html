@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tunneling &amp; Continuous Collision Detection · Ойын әзірлеу - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Tunneling &amp;amp; Continuous Collision Detection · Ойын әзірлеу - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Оқ қабырғаға тимей, арғы жағынан шығады. Дискретті тексерудің шегі, ішкі қадамдардың бағасы және траекторияны тұтас тексеретін CCD.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/game/game-15-tunneling.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/game/game-15-tunneling.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Tunneling &amp; Continuous Collision Detection · Ойын әзірлеу - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/game/game-15-tunneling.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Оқ қабырғаға тимей, арғы жағынан шығады. Дискретті тексерудің шегі, ішкі қадамдардың бағасы және траекторияны тұтас тексеретін CCD.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="game-15-tunneling" style="--lc:#b8466a">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#game">Ойын әзірлеу</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Ойын әзірлеу · 15-сабақ · ≈20 мин · 2 қадам · 4 сұрақ</p>
+        <h1 lang="en">Tunneling &amp; Continuous Collision Detection</h1>
+        <p class="l3-lede">Оқ қабырғаға тимей, арғы жағынан шығады. Дискретті тексерудің шегі, ішкі қадамдардың бағасы және траекторияны тұтас тексеретін CCD.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#game-15-tunneling">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Қабырғадан өтіп кетті</a></li><li><a href="#s2">Ішкі қадам мен CCD</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Қабырғадан өтіп кетті</h2><div class="l3-body"><h3>Идея</h3>
+<p>Ойын физикасы уақытты <strong>кадрлармен</strong> өлшейді. Дискретті соқтығысу тексеруі тек «қазір нысан бір-біріне кіріп тұр ма?» деп сұрайды. Ал екі кадрдың арасында не болғанын көрмейді.</p>
+<p>Нысан бір кадрда өзінің не кедергінің қалыңдығынан ұзақ жол жүрсе, ол кедергінің «үстінен секіреді». Бұл <strong>туннельдеу</strong> (tunneling).</p>
+<h3>Түйсік</h3>
+<p>Желдеткіштің қалақшаларын фотоаппаратпен түсіру. Секундына бір кадр түсірсең, қолыңды қалақшалардың арасынан өткізгеніңді суреттер көрсетпейді: әр суретте қолың не алдында, не артында.</p>
+<h3>Есептеп көрейік</h3>
+<p>Бір кадрдағы жол = жылдамдық / FPS.</p>
+<ul><li>5 м/с: 0,083 м &lt; 0,15 м. Ең болмаса бір кадр оқты қабырғаның ішінде көреді.</li><li>20 м/с: 0,333 м &gt; 0,15 м. Оқ 9,87 м-де, келесі кадрда 10,2 м-де: қабырға 10,0-10,15 м арасында, ешбір тексеру тимейді.</li><li>60 м/с: бір кадрда 1 м.</li></ul>
+<h3>Нақты әлемде</h3>
+<p>Ойыншылардың «қабырғадан өтіп кетті» деген шағымдары, жоғары жылдамдықтағы көліктің жұқа қоршаудан өтіп кетуі: бәрі туннельдеу. FPS төмендегенде мәселе ушығады, өйткені бір кадрдағы жол ұзарады.</p>
+<h3>Енді сен</h3>
+<p>5 м/с-та ат. Сосын 20 м/с-қа ауыстыр да, тексеру нүктелерінің қабырғаны қалай аттап өткенін көр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>5 м/с: дискретті тексеру оқты ұстайды</li><li>20 м/с: оқ қабырғадан өтіп кетеді</li></ul><a class="btn secondary" href="../app/index.html#game-15-tunneling">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="0" data-qid="game-15-tunneling:tunnel:predict"><p class="l3-qt">Оқ 20 м/с ұшады, ойын 60 FPS. Қабырғаның қалыңдығы 15 см. Әр кадрда тек оқтың нүктесі қабырғаның ішінде ме деп тексерілсе не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Оқ қабырғадан өтіп кетуі мүмкін: бір кадрда 33 см жүреді</button><button type="button" class="l3-opt" data-i="1">Әрқашан тиеді</button><button type="button" class="l3-opt" data-i="2">Ойын баяулайды, бірақ оқ тиеді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Оқ қабырғадан өтіп кетуі мүмкін: бір кадрда 33 см жүреді</p><p>20 / 60 ≈ 0,33 м. Бір кадрда оқ қабырғаның алдында, келесісінде артында: ешбір тексеру оны қабырғаның ішінде көрмейді.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="game-15-tunneling:tunnel:when"><p class="l3-qt">Туннельдеу қашан болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Нысан бір қадамда кедергінің қалыңдығынан ұзақ жол жүргенде</button><button type="button" class="l3-opt" data-i="1">Кедергі тым қалың болғанда</button><button type="button" class="l3-opt" data-i="2">FPS тым жоғары болғанда</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Нысан бір қадамда кедергінің қалыңдығынан ұзақ жол жүргенде</p><p>Тексерулер арасындағы жол кедергінің қалыңдығынан асса, ешбір тексеру нысанды кедергінің ішінде көрмеуі мүмкін.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="game-15-tunneling:tunnel:fps"><p class="l3-qt">FPS 60-тан 30-ға түссе, туннельдеу не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Ықтималдығы артады: бір кадрдағы жол екі есе ұзарады</button><button type="button" class="l3-opt" data-i="1">Азаяды</button><button type="button" class="l3-opt" data-i="2">Өзгермейді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Ықтималдығы артады: бір кадрдағы жол екі есе ұзарады</p><p>Сондықтан физиканы тұрақты қадаммен (14-сабақ) жүргізу де туннельдеуге қарсы көмектеседі.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Ішкі қадам мен CCD</h2><div class="l3-body"><h3>Идея</h3>
+<p>Екі шешім бар:</p>
+<ol><li><strong>Ішкі қадамдар</strong> (substeps): кадрды N бөлікке бөліп, әрқайсысында тексеру. Жол N есе қысқарады, бірақ тексерулер N есе көбейеді. Жеткілікті жылдам нысан бәрібір өтеді.</li><li><strong>Үздіксіз соқтығысу тексеруі</strong> (CCD, continuous collision detection): нүктені емес, нысанның осы кадрда <strong>сыпырып өткен кесіндісін</strong> тексеру: «алдыңғы орын мен жаңа орын арасындағы кесінді қабырғаны қиып өте ме?» Жылдамдыққа тәуелсіз, ал тексеру саны сол.</li></ol>
+<h3>Түйсік</h3>
+<p>Желдеткіштің суретін қысқа экспозициямен емес, ұзақ экспозициямен түсіру: қолың суретте із болып көрінеді. Із қалақшаны қиса, соқтығыс болды.</p>
+<h3>Есептеп көрейік</h3>
+<ul><li>4 ішкі қадам, 20 м/с: қадам 0,083 м, тиді; тексеру 118 (дискреттіде 30).</li><li>4 ішкі қадам, 60 м/с: қадам 0,25 м, өтіп кетті; тексеру 40.</li><li>CCD, 60 м/с: тиді, тексеру 10, дискреттімен бірдей.</li></ul>
+<h3>Нақты әлемде</h3>
+<p>Unity-де Rigidbody-дің <code>Collision Detection</code> баптауы (Discrete, Continuous, Continuous Dynamic), Box2D мен PhysX-та «bullet» белгісі дәл осы. CCD қымбатырақ есептеледі (кесінді мен пішіннің қиылысуы), сондықтан оны тек жылдам әрі кішкене нысандарға қосады: оқ, доп.</p>
+<h3>Енді сен</h3>
+<p>Ішкі қадамдармен 20 м/с-та ат. Сосын 60 м/с-та көр, кейін CCD-ге ауыстыр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>4 ішкі қадам 20 м/с-тағы оқты ұстайды (тексеру 4 есе көп)</li><li>CCD 60 м/с-тағы оқты да ұстайды</li></ul><a class="btn secondary" href="../app/index.html#game-15-tunneling">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="0" data-qid="game-15-tunneling:fix:predict"><p class="l3-qt">Әр кадрды 4 ішкі қадамға бөлдік. 60 м/с-тағы оқ не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Бәрібір өтіп кетеді: бір ішкі қадам 25 см, қабырға 15 см</button><button type="button" class="l3-opt" data-i="1">Енді әрқашан тиеді</button><button type="button" class="l3-opt" data-i="2">Ойын тоқтап қалады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Бәрібір өтіп кетеді: бір ішкі қадам 25 см, қабырға 15 см</p><p>Ішкі қадамдар жолды қысқартады, бірақ шексіз емес. 60 / 60 / 4 = 0,25 м, бұл әлі 0,15 м-ден ұзақ.</p></details></div></div><div class="l3-box l3-self"><h3>Өз сөзіңмен түсіндір</h3><p>Неге 20 м/с-тағы оқ қабырғадан өтіп кетті, неге ішкі қадамдар 60 м/с-та жетпеді, ал CCD неге әрқашан ұстайды?</p><details class="l3-ans"><summary>Жақсы түсіндірмеде болатын ойлар</summary><ul><li>бір қадамдағы жол қабырғадан қалың</li><li>тексеру тек нүктелерді көреді, арасын емес</li><li>ішкі қадам жолды қысқартады, бірақ 25 см әлі көп</li><li>CCD кесіндіні тексереді</li></ul></details></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="game-15-tunneling:fix:ccd"><p class="l3-qt">CCD нені тексереді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Нысанның екі кадр арасында сыпырып өткен жолын</button><button type="button" class="l3-opt" data-i="1">Тек соңғы орнын</button><button type="button" class="l3-opt" data-i="2">Нысанның түсін</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Нысанның екі кадр арасында сыпырып өткен жолын</p><p>Кесінді кедергіні қиса, соқтығыс болды: қадамның ұзындығы маңызды емес.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="game-15-tunneling:fix:cost"><p class="l3-qt">Неге барлық нысанға CCD қоспайды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Ол қымбатырақ есептеледі, ал баяу нысандарға керегі жоқ</button><button type="button" class="l3-opt" data-i="1">Ол қате нәтиже береді</button><button type="button" class="l3-opt" data-i="2">Ол тек 2D ойындарда жұмыс істейді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Ол қымбатырақ есептеледі, ал баяу нысандарға керегі жоқ</p><p>Жылдам, кішкене нысандарға ғана қосу: дәлдік пен жылдамдықтың тепе-теңдігі.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="game-14-timestep.html">← <span lang="en">Fixed Timestep Physics</span></a><a href="../index.html#game">Ойын әзірлеу</a><span></span></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

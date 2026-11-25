@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pagination: OFFSET vs Keyset · Дерекқорлар - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Pagination: OFFSET vs Keyset · Дерекқорлар - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Тереңдегі бетті ашу неге баяу, ал лента неге бір жазбаны екі рет көрсетеді. OFFSET-тің бағасы және «осы id-ден кейінгілер» әдісі.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/db/db-14-pagination.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/db/db-14-pagination.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Pagination: OFFSET vs Keyset · Дерекқорлар - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/db/db-14-pagination.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Тереңдегі бетті ашу неге баяу, ал лента неге бір жазбаны екі рет көрсетеді. OFFSET-тің бағасы және «осы id-ден кейінгілер» әдісі.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="db-14-pagination" style="--lc:#0a4c7a">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#db">Дерекқорлар</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Дерекқорлар · 14-сабақ · ≈25 мин · 2 қадам · 4 сұрақ</p>
+        <h1 lang="en">Pagination: OFFSET vs Keyset</h1>
+        <p class="l3-lede">Тереңдегі бетті ашу неге баяу, ал лента неге бір жазбаны екі рет көрсетеді. OFFSET-тің бағасы және «осы id-ден кейінгілер» әдісі.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#db-14-pagination">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Тереңдегі бет</a></li><li><a href="#s2">Қозғалатын лента</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Тереңдегі бет</h2><div class="l3-body"><h3>Идея</h3>
+<p>Үлкен тізімді беттерге бөлудің ең қарапайым жолы:</p>
+<pre class="l3-pre"><code>SELECT ... ORDER BY id LIMIT 20 OFFSET 4980</code></pre>
+<p>Бірақ <strong>OFFSET тегін емес</strong>. Дерекқор 4980 жолды индекс бойымен оқиды, оларды санайды да, лақтырып тастайды. Бет неғұрлым терең болса, соғұрлым баяу: 1-бет 20 жол, 250-бет 5000 жол.</p>
+<p><strong>Keyset</strong> (seek) беттеу басқаша сұрайды: «қай орында» емес, «қай мәннен кейін»:</p>
+<pre class="l3-pre"><code>SELECT ... WHERE id &gt; 4980 ORDER BY id LIMIT 20</code></pre>
+<p>Индекс B-ағаш: ол id = 4980 орнын логарифмдік уақытта табады, сосын тек 20 жол оқиды. Тереңдік маңызды емес.</p>
+<h3>Түйсік</h3>
+<p>Кітаптың 250-бетін ашу. OFFSET: бірінші беттен бастап парақтарды санап шығу. Keyset: бетбелгі қойылған жерден ашу.</p>
+<h3>Есептеп көрейік</h3>
+<p>EXPLAIN нәтижесінде «оқылды» санын қара:</p>
+<ul><li>OFFSET 4980: 5000 жол оқылды, 20 жол қайтарылды. Оқылғанның 99,6%-ы босқа.</li><li>WHERE id &gt; 4980: 20 жол оқылды, 20 қайтарылды.</li></ul>
+<p>Мыңдаған пайдаланушы ары қарай парақтаса, бұл айырма серверлердің санына айналады.</p>
+<h3>Нақты әлемде</h3>
+<p>Twitter, Instagram, GitHub API-лері «келесі бет» үшін сан емес, курсор береді (мысалы, <code>?after=4980</code>): бұл keyset. Бағасы: «250-бетке бірден өту» мүмкіндігі жоғалады, тек алға не артқа жүруге болады.</p>
+<blockquote><p>⚠ Keyset үшін сұрыптау бағаны бірегей және индекстелген болуы керек. Бірдей мәндер болса, (created_at, id) сияқты екі бағанды кілт керек.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Дайын OFFSET сұранысын орында да, оқылған жолдарды көр. Сосын сол 20 жолды WHERE id &gt; 4980 арқылы ал.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Соңғы бетті OFFSET-пен аш: 20 жол үшін 5000 жол оқылды</li><li>Сол бетті WHERE id &gt; ... арқылы аш: 20 жол оқылды</li></ul><a class="btn secondary" href="../app/index.html#db-14-pagination">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="0" data-qid="db-14-pagination:deep:predict"><p class="l3-qt">events кестесінде 5000 жол, id бойынша индекс бар. «ORDER BY id LIMIT 20 OFFSET 4980» сұранысы неше жолды оқиды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">5000: алдымен 4980 жолды оқып, лақтырады, сосын 20-сын береді</button><button type="button" class="l3-opt" data-i="1">20: дерекқор 4981-жолға бірден секіреді</button><button type="button" class="l3-opt" data-i="2">4980</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 5000: алдымен 4980 жолды оқып, лақтырады, сосын 20-сын береді</p><p>Индекс жолдарды ретімен береді, бірақ «4980-орын» қай жерде екенін білмейді. OFFSET жолдарды бір-бірлеп санап өтуге мәжбүрлейді.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="db-14-pagination:deep:cost"><p class="l3-qt">Неге OFFSET беттің тереңдігіне қарай баяулайды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Дерекқор өткізіп жіберілетін жолдарды да оқып, санап өтуі керек</button><button type="button" class="l3-opt" data-i="1">OFFSET индексті өшіреді</button><button type="button" class="l3-opt" data-i="2">Терең беттер дискіде алыс жатады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Дерекқор өткізіп жіберілетін жолдарды да оқып, санап өтуі керек</p><p>Индекс ретті береді, бірақ «N-орынға» секіре алмайды. Ал мәнге (id &gt; 4980) секіре алады.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="db-14-pagination:deep:need"><p class="l3-qt">Keyset беттеуге не керек?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Бірегей әрі индекстелген сұрыптау кілті және алдыңғы беттің соңғы мәні</button><button type="button" class="l3-opt" data-i="1">Кестенің жалпы жол саны</button><button type="button" class="l3-opt" data-i="2">Әр беттің нөмірі</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Бірегей әрі индекстелген сұрыптау кілті және алдыңғы беттің соңғы мәні</p><p>«Осы мәннен кейінгілер» деп сұрау үшін соңғы көрген мәнді есте сақтау жеткілікті.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Қозғалатын лента</h2><div class="l3-body"><h3>Идея</h3>
+<p>OFFSET орынмен санайды, ал орындар жылжиды. Беттер арасында:</p>
+<ul><li>басына жаңа жол <strong>қосылса</strong>: келесі бетте бір жазба <strong>қайталанады</strong>;</li><li>алдыңғы беттен жол <strong>өшірілсе</strong>: бір жазба <strong>көрінбей қалады</strong>, ешкім байқамайды.</li></ul>
+<p>Keyset мәнмен санайды: «id &lt; 4981 болғандар». Жаңа жолдың id-і үлкен, ол шартқа кірмейді. Ығысу жоқ.</p>
+<h3>Түйсік</h3>
+<p>Кезекте тұрғанда «маған 20-орыннан кейінгілерді шақыр» десең, біреу алдыға кіріп кетсе, сен бір адамды екі рет көресің. «Мына кісіден кейінгілерді шақыр» десең, ешкім шатаспайды.</p>
+<h3>Есептеп көрейік</h3>
+<p>1-бет (DESC): 5000, 4999, ..., 4981. Жаңа оқиға: id = 5001.</p>
+<ul><li>OFFSET 20: 4981, 4980, ..., 4962. 4981 екі бетте де бар.</li><li>WHERE id &lt; 4981: 4980, 4979, ..., 4961. Қайталану жоқ.</li></ul>
+<h3>Нақты әлемде</h3>
+<p>Шексіз айналдырылатын ленталарда (жаңалықтар, чат, хабарламалар) OFFSET-тің бұл ақауы жиі кездеседі: пайдаланушы бір постты екі рет көреді, не біреуін мүлде көрмейді. Сондықтан ленталар әрқашан курсормен жасалады.</p>
+<h3>Енді сен</h3>
+<ol><li>1-бетті аш.</li><li>Жаңа оқиға қос: INSERT INTO events (id, user_id, kind, amount) VALUES (5001, 1, &#x27;buy&#x27;, 100).</li><li>2-бетті OFFSET 20-пен аш да, қайталанған id-ді тап.</li><li>Сол бетті WHERE id &lt; 4981 арқылы аш.</li></ol></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>1-бетті аш, жаңа оқиға қос, 2-бетті OFFSET 20-пен аш: бір жазба қайталанды</li><li>Жаңа оқиғадан кейін 2-бетті WHERE id &lt; ... арқылы аш: қайталану жоқ</li></ul><a class="btn secondary" href="../app/index.html#db-14-pagination">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="0" data-qid="db-14-pagination:feed:predict"><p class="l3-qt">Лента ең жаңасынан басталады (ORDER BY id DESC). Сен 1-бетті көрдің, сол кезде біреу жаңа оқиға қосты. 2-бетті OFFSET 20-пен ашсаң не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">1-беттің соңғы жазбасы 2-беттің басында тағы шығады</button><button type="button" class="l3-opt" data-i="1">Бәрі дұрыс: 2-бет жаңа жазбаларды көрсетеді</button><button type="button" class="l3-opt" data-i="2">Бір жазба жоғалып кетеді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 1-беттің соңғы жазбасы 2-беттің басында тағы шығады</p><p>Жаңа жол басына қосылды да, бәрін бір орынға ығыстырды. 20-орындағы жол енді 21-орында: OFFSET 20 оны тағы береді.</p></details></div></div><div class="l3-box l3-self"><h3>Өз сөзіңмен түсіндір</h3><p>Жаңа оқиға қосылғанда неге OFFSET 20 бір жазбаны қайталады, ал WHERE id &lt; ... қайталамады?</p><details class="l3-ans"><summary>Жақсы түсіндірмеде болатын ойлар</summary><ul><li>OFFSET орынмен санайды, орындар жылжиды</li><li>жаңа жол басына қосылды</li><li>keyset мәнмен санайды</li></ul></details></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="db-14-pagination:feed:why"><p class="l3-qt">Беттер арасында басына жол қосылғанда OFFSET неге қайталайды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Барлық жолдың орны бір орынға жылжиды, ал OFFSET орынмен санайды</button><button type="button" class="l3-opt" data-i="1">Дерекқор кэштен ескі бетті береді</button><button type="button" class="l3-opt" data-i="2">INSERT индексті бұзады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Барлық жолдың орны бір орынға жылжиды, ал OFFSET орынмен санайды</p><p>OFFSET 20 «21-орыннан баста» дейді. Жаңа жол қосылғанда бұрынғы 20-орын 21-орынға айналды.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="db-14-pagination:feed:delete"><p class="l3-qt">Ал беттер арасында бірінші беттен жол өшірілсе, OFFSET беттеуде не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Бір жазба ешбір бетте көрсетілмей қалады</button><button type="button" class="l3-opt" data-i="1">Бір жазба екі рет шығады</button><button type="button" class="l3-opt" data-i="2">Ештеңе өзгермейді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Бір жазба ешбір бетте көрсетілмей қалады</p><p>Жолдар бір орын алға жылжиды. 21-орындағы жол 20-орынға келіп, келесі беттің сыртында қалады.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="db-13-normalization.html">← <span lang="en">Normalization: One Fact, One Place</span></a><a href="../index.html#db">Дерекқорлар</a><a href="db-15-selectivity.html"><span lang="en">Selectivity &amp; the Query Planner</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

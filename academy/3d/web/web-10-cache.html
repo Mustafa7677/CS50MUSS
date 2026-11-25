@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HTTP Caching: max-age &amp; ETag · Веб-әзірлеу - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="HTTP Caching: max-age &amp;amp; ETag · Веб-әзірлеу - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Кэш қашан көмектеседі, қашан ескіреді, және «өзгерді ме?» деп сұрау неге бүкіл бетті қайта жүктегеннен арзан.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/web/web-10-cache.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/web/web-10-cache.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"HTTP Caching: max-age &amp; ETag · Веб-әзірлеу - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/web/web-10-cache.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Кэш қашан көмектеседі, қашан ескіреді, және «өзгерді ме?» деп сұрау неге бүкіл бетті қайта жүктегеннен арзан.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="web-10-cache" style="--lc:#1d84a6">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#web">Веб-әзірлеу</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Веб-әзірлеу · 10-сабақ · ≈25 мин · 2 қадам · 4 сұрақ</p>
+        <h1 lang="en">HTTP Caching: max-age &amp; ETag</h1>
+        <p class="l3-lede">Кэш қашан көмектеседі, қашан ескіреді, және «өзгерді ме?» деп сұрау неге бүкіл бетті қайта жүктегеннен арзан.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#web-10-cache">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">max-age</a></li><li><a href="#s2">Өзгерді ме? 304</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>max-age</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Cache-Control: max-age=N</strong> сервердің браузерге берген уәдесі: «бұл жауап N секунд бойы өзгермейді, қайта сұрама». Сол уақыт ішінде браузер бетті өз кэшінен көрсетеді: DNS те, TCP те, TLS те, сервер де болмайды.</p>
+<h3>Түйсік</h3>
+<p>Сүт қорабындағы «жарамдылық мерзімі». Мерзімі өтпесе, дүкенге қайта бармайсың, тоңазытқыштан аласың.</p>
+<h3>Есептеп көрейік</h3>
+<p>Бірінші сұраныс толық жолды жүреді: DNS, үш TCP хабары, екі TLS хабары, HTTP, жауап. 40 мс кідірісте бұл шамамен 350 мс. Екінші сұраныс кэштен алынады: бір кезең, бірнеше миллисекунд.</p>
+<h3>Нақты әлемде</h3>
+<p>Сайттың суреттері, CSS және JS файлдары көбіне бір жылдық max-age алады. Ал файлдың аты оның мазмұнына байланысты болады (app.3f9c1.js): мазмұны өзгерсе, аты да өзгереді, сондықтан ескі кэш ешқашан кедергі болмайды.</p>
+<blockquote><p>⚠ HTML бетке ұзақ max-age берсең, жаңартуды пайдаланушылар бірнеше сағат көрмей қалуы мүмкін. Мұны Junior деңгейдегі deploy сабағында көрдің.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Бетті екі рет аш та, екінші рет қай кезеңдер жоқ болғанын көр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Бетті екі рет аш: екіншісі серверге бармай, кэштен ашылады</li></ul><a class="btn secondary" href="../app/index.html#web-10-cache">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="0" data-qid="web-10-cache:maxage:predict"><p class="l3-qt">Сервер «Cache-Control: max-age=60» деп жауап берді. Бетті 10 секундтан кейін қайта ашсаң не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Браузер оны кэштен алады, серверге мүлде бармайды</button><button type="button" class="l3-opt" data-i="1">Сервер бетті қайта жібереді, тек тезірек</button><button type="button" class="l3-opt" data-i="2">Браузер серверден «өзгерді ме?» деп сұрайды</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Браузер оны кэштен алады, серверге мүлде бармайды</p><p>60 секунд ішінде көшірме «жаңа» саналады, сондықтан браузер желіге шықпайды. Ең жылдам сұраныс: жіберілмеген сұраныс.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="web-10-cache:maxage:skip"><p class="l3-qt">Кэштен алынған жауап кезінде қай кезеңдер мүлде болмайды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">DNS, TCP, TLS және HTTP: желіге шықпаймыз</button><button type="button" class="l3-opt" data-i="1">Тек DNS</button><button type="button" class="l3-opt" data-i="2">Тек сервердегі SQL</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> DNS, TCP, TLS және HTTP: желіге шықпаймыз</p><p>max-age ішіндегі кэш жауабы браузердің ішінде қалады. Сондықтан ол ең жылдам.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="web-10-cache:maxage:who"><p class="l3-qt">Жауапты қанша уақыт кэштеуге болатынын кім шешеді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Сервер, Cache-Control тақырыбы арқылы</button><button type="button" class="l3-opt" data-i="1">Браузер өзі кездейсоқ</button><button type="button" class="l3-opt" data-i="2">DNS сервер</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Сервер, Cache-Control тақырыбы арқылы</p><p>Мазмұнның қаншалықты жиі өзгеретінін сервер біледі, сондықтан шешім сонда.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Өзгерді ме? 304</h2><div class="l3-body"><h3>Идея</h3>
+<p>max-age өткен соң көшірме «ескірген» болып саналады. Бірақ ол әлі де дұрыс болуы мүмкін: бет өзгермеген болса ше? Оны бүкіл денесімен қайта жүктеу ысырап.</p>
+<p><strong>ETag</strong> нұсқаның белгісі (мұнда &quot;v0&quot;). Мерзімі өткен көшірме болса, браузер шартты сұраныс жібереді:</p>
+<pre class="l3-pre"><code>GET /  +  If-None-Match: &quot;v0&quot;</code></pre>
+<ul><li>Нұсқа сол болса: <strong>304 Not Modified</strong>. Дене жоқ, браузер өз көшірмесін қайта «жаңартады».</li><li>Өзгерген болса: <strong>200</strong>, жаңа денемен және жаңа ETag-пен.</li></ul>
+<h3>Түйсік</h3>
+<p>Кітапханаға «менде 5-басылым бар, жаңасы шықты ма?» деп қоңырау шалу. «Жоқ» деген жауап бүкіл кітапты қайта алып келуден әлдеқайда арзан.</p>
+<h3>Есептеп көрейік</h3>
+<p>304 сұранысы әлі де желіге шығады: DNS кэштен, TCP, TLS, HTTP. Бірақ жауап бірнеше байт қана. Үлкен бетте немесе баяу желіде ең көп уақыт деректі тасуға кетеді, сондықтан ұтыс та сонда.</p>
+<h3>Нақты әлемде</h3>
+<p>max-age пен ETag бірге жұмыс істейді: max-age «мүлде сұрама» дейді, ETag «сұрасаң, арзанға сұра» дейді. CDN-дер де осы механизммен шыққан көздерінен (origin) тексеріп отырады.</p>
+<h3>Енді сен</h3>
+<p>Кэш бөлімінде ETag-ті қос. Уақытты +60 с жылжыт (кэштің мерзімі өтеді), сосын бетті қайта сұра.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Серверде ETag-ті қос</li><li>Уақытты max-age-тен әрі жылжыт да, бетті қайта сұра: 304 Not Modified келеді</li></ul><a class="btn secondary" href="../app/index.html#web-10-cache">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="0" data-qid="web-10-cache:etag:predict"><p class="l3-qt">max-age өтіп кетті, бірақ бет өзгерген жоқ. Сервер ETag-ті қолдаса, бетті қайта ашқанда не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Браузер «v0 нұсқам бар, өзгерді ме?» деп сұрайды, ал сервер денесіз 304 жауабын береді</button><button type="button" class="l3-opt" data-i="1">Сервер бүкіл бетті қайта жібереді, 200</button><button type="button" class="l3-opt" data-i="2">Браузер ескі бетті сұрамай-ақ көрсете береді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Браузер «v0 нұсқам бар, өзгерді ме?» деп сұрайды, ал сервер денесіз 304 жауабын береді</p><p>If-None-Match тақырыбы бар шартты сұраныс жіберіледі. Нұсқа сәйкес келсе, сервер тек «304 Not Modified» деп жауап береді, ал дене жіберілмейді.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="web-10-cache:etag:body"><p class="l3-qt">304 жауабында не жоқ?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Беттің денесі: браузер өз көшірмесін қолданады</button><button type="button" class="l3-opt" data-i="1">Статус коды</button><button type="button" class="l3-opt" data-i="2">Тақырыптар</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Беттің денесі: браузер өз көшірмесін қолданады</p><p>304-тің бар мәні осында: бүкіл бетті қайта тасымаймыз, тек «өзгерген жоқ» деген растау келеді.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="web-10-cache:etag:both"><p class="l3-qt">max-age пен ETag-тің айырмасы неде?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">max-age мерзім ішінде мүлде сұратпайды; ETag мерзім өткенде тексеруді арзандатады</button><button type="button" class="l3-opt" data-i="1">Екеуі бірдей</button><button type="button" class="l3-opt" data-i="2">ETag тек суреттерге арналған</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> max-age мерзім ішінде мүлде сұратпайды; ETag мерзім өткенде тексеруді арзандатады</p><p>Біріншісі сұраныс санын азайтады, екіншісі әр сұраныстың салмағын азайтады.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="web-9-pset.html">← <span lang="en">Problem Set: full-stack</span></a><a href="../index.html#web">Веб-әзірлеу</a><a href="web-11-roles.html"><span lang="en">401 vs 403: Identity &amp; Roles</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

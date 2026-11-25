@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Diffie-Hellman &amp; Man in the Middle · Киберқауіпсіздік - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Diffie-Hellman &amp;amp; Man in the Middle · Киберқауіпсіздік - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Ашық арна арқылы ортақ құпия кілт: дискретті логарифм, Ева және ортадағы адам.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/sec/sec-12-dh.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/sec/sec-12-dh.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Diffie-Hellman &amp; Man in the Middle · Киберқауіпсіздік - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/sec/sec-12-dh.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Ашық арна арқылы ортақ құпия кілт: дискретті логарифм, Ева және ортадағы адам.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="sec-12-dh" style="--lc:#2b3a5c">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#sec">Киберқауіпсіздік</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Киберқауіпсіздік · 12-сабақ · ≈25 мин · 2 қадам · 6 сұрақ</p>
+        <h1 lang="en">Diffie-Hellman &amp; Man in the Middle</h1>
+        <p class="l3-lede">Ашық арна арқылы ортақ құпия кілт: дискретті логарифм, Ева және ортадағы адам.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#sec-12-dh">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Ашық арнада ортақ кілт</a></li><li><a href="#s2">Ортадағы адам</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Ашық арнада ортақ кілт</h2><div class="l3-body"><h3>Идея</h3>
+<p>1976 жылы Диффи мен Хеллман ашық арна арқылы <strong>ортақ құпия</strong> жасаудың жолын көрсетті. Ашық параметрлер: жай сан <strong>p</strong> және генератор <strong>g</strong>.</p>
+<ol><li>Нұрай құпия <strong>a</strong> таңдап, <strong>A = gᵃ mod p</strong> жібереді.</li><li>Бекзат құпия <strong>b</strong> таңдап, <strong>B = gᵇ mod p</strong> жібереді.</li><li>Нұрай <strong>Bᵃ mod p</strong>, Бекзат <strong>Aᵇ mod p</strong> есептейді. Екеуі де <strong>gᵃᵇ mod p</strong>.</li></ol>
+<h3>Есептеп көрейік</h3>
+<p>p = 23, g = 5, a = 6, b = 15:</p>
+<ul><li>A = 5⁶ mod 23 = <strong>8</strong>, B = 5¹⁵ mod 23 = <strong>19</strong>.</li><li>Нұрай: 19⁶ mod 23 = <strong>2</strong>. Бекзат: 8¹⁵ mod 23 = <strong>2</strong>.</li></ul>
+<h3>Ева не біледі?</h3>
+<p>Ева p, g, A = 8 және B = 19-ды көреді. Ортақ кілт үшін оған a не b керек: «5 қай дәрежеде 8 болады?» Бұл <strong>дискретті логарифм</strong>. p = 23-те бар-жоғы 22 нұсқа, Ева бірден табады. Модельдегі үлкен топта (p = 2³¹ − 1) миллион әрекет жетпейді.</p>
+<blockquote><p>⚠ Шынын айтсақ, 2³¹ − 1 топты компьютер бірнеше секундта шешер еді. Нақты жүйелер 2048 биттік p (RFC 7919) не эллипстік қисықтағы X25519 қолданады: онда ең жақсы алгоритмдерге де ғасырлар жетпейді.</p></blockquote>
+<h3>Нақты әлемде</h3>
+<p>TLS 1.3-тің әр байланысы осыдан басталады (көбіне X25519). Әр сессияға жаңа a мен b: <strong>forward secrecy</strong>. Сервердің ұзақ мерзімді кілті кейін ұрланса да, бұрынғы сессиялар ашылмайды.</p>
+<h3>Енді сен</h3>
+<p>Кілт алмас, Еваны кішкентай топта іске қос, сосын үлкен топта.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Нұрай мен Бекзат кілт алмассын: екеуінде бірдей құпия</li><li>Ева p = 23 топта құпияны тауып алсын</li><li>Үлкен топта (p = 2³¹ − 1) Ева миллион әрекетте таба алмайды</li></ul><a class="btn secondary" href="../app/index.html#sec-12-dh">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="1" data-qid="sec-12-dh:exchange:predict"><p class="l3-qt">Нұрай мен Бекзат бұрын ешқашан кездеспеген. Олар барлығы тыңдап тұрған арна арқылы ғана хабарласады. Ортақ құпия кілт жасай ала ма?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Жоқ: арнада айтылғанның бәрін тыңдаушы да біледі</button><button type="button" class="l3-opt" data-i="1">Иә: әрқайсысы өз құпиясын арнаға шығармай-ақ ортақ санды есептей алады</button><button type="button" class="l3-opt" data-i="2">Тек кілтті алдын ала флешкамен берсе</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Иә: әрқайсысы өз құпиясын арнаға шығармай-ақ ортақ санды есептей алады</p><p>Diffie-Hellman дәл осыны жасайды: арнада тек g^a мен g^b жүреді, ал ортақ g^(ab) әр жақта жеке есептеледі. Тыңдаушыға a не b керек, ал оны табу: дискретті логарифм есебі.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="sec-12-dh:exchange:calc"><p class="l3-qt">p = 23, g = 5, Нұрайдың құпиясы a = 6. Ол арнаға қандай сан жібереді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">6</button><button type="button" class="l3-opt" data-i="1">8</button><button type="button" class="l3-opt" data-i="2">2</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 8</p><p>A = 5⁶ mod 23 = 15625 mod 23 = 8. Құпия a арнаға шықпайды.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="sec-12-dh:exchange:eve"><p class="l3-qt">Ева ортақ кілтті табу үшін не шешуі керек?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Үлкен санды жай көбейткіштерге жіктеу</button><button type="button" class="l3-opt" data-i="1">Дискретті логарифм: gˣ mod p = A болатын x-ті табу</button><button type="button" class="l3-opt" data-i="2">SHA-256-ны бұзу</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Дискретті логарифм: gˣ mod p = A болатын x-ті табу</p><p>RSA жіктеуге сүйенеді, ал Diffie-Hellman дискретті логарифмнің қиындығына.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="sec-12-dh:exchange:fs"><p class="l3-qt">Forward secrecy дегеніміз не?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Кілт ешқашан өзгермейді</button><button type="button" class="l3-opt" data-i="1">Әр сессияға жаңа DH құпиясы: ұзақ мерзімді кілт ұрланса да ескі сессиялар ашылмайды</button><button type="button" class="l3-opt" data-i="2">Хабарлар алдын ала шифрланады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Әр сессияға жаңа DH құпиясы: ұзақ мерзімді кілт ұрланса да ескі сессиялар ашылмайды</p><p>Сессия біткенде a мен b жойылады. Оларсыз жазып алынған трафикті ашатын ештеңе қалмайды.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Ортадағы адам</h2><div class="l3-body"><h3>Идея</h3>
+<p>DH <strong>тыңдаушыдан</strong> (Ева) қорғайды, бірақ <strong>белсенді</strong> шабуылшыдан (Мәлік) қорғамайды. Мәлік ортада тұрып:</p>
+<ul><li>Нұрайға Бекзаттың B-сының орнына өзінің <strong>M = gᵐ</strong>-ін береді;</li><li>Бекзатқа Нұрайдың A-сының орнына сол M-ді береді.</li></ul>
+<p>Нәтиже: Нұрай <strong>Mᵃ</strong>-ны «Бекзатпен ортақ» деп ойлайды, Бекзат <strong>Mᵇ</strong>-ны «Нұраймен ортақ» деп ойлайды. Мәлік екеуін де біледі. Нұрайдың хабарын ашады, оқиды (не өзгертеді), Бекзаттың кілтімен қайта шифрлап, жібереді.</p>
+<h3>Шешімі: аутентификация</h3>
+<p>Ашық кілтке <strong>қолтаңба</strong> қою керек: «бұл A-ны шынымен Нұрай жіберді». TLS-те сервер өз DH кілтіне сертификаттағы кілтпен қол қояды (CertificateVerify), браузер сертификатты сенімді орталықтар тізбегімен тексереді. Мәлік M-ге Бекзаттың атынан қол қоя алмайды, сондықтан ауыстыру бірден ұсталады.</p>
+<h3>Нақты әлемде</h3>
+<ul><li><strong>TLS</strong>: сертификат + қолтаңба. Браузердегі «Қауіпсіз емес байланыс» ескертуі: MITM болуы мүмкін деген белгі, оны өткізіп жіберме.</li><li><strong>Signal, WhatsApp</strong>: «қауіпсіздік нөмірлері» (safety numbers). Оларды кездесіп салыстырсаң, ортада ешкім жоқ екеніне көз жеткізесің.</li><li><strong>SSH</strong>: бірінші қосылғанда сервердің саусақ ізін (fingerprint) сұрайды. Кейін ол өзгерсе, қатты ескерту береді.</li></ul>
+<blockquote><p>Шифрлау + аутентификациясыз = белгісіз біреумен құпия сөйлесу.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Мәлікті ортаға қой да, екі кілтті салыстыр. Сосын ашық кілттерге қолтаңба қос.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Мәлік ортаға тұрсын: Нұрай мен Бекзаттың кілттері әр түрлі</li><li>Ашық кілттерге қолтаңба қос: алмасу тоқтатылады</li></ul><a class="btn secondary" href="../app/index.html#sec-12-dh">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="2" data-qid="sec-12-dh:mitm:predict"><p class="l3-qt">Мәлік арнаны тек тыңдамайды, хабарларды ауыстыра алады. Ол A мен B-ны өз ашық кілтімен ауыстырса не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Нұрай мен Бекзат кілттерінің әр түрлі екенін бірден байқайды</button><button type="button" class="l3-opt" data-i="1">Ештеңе: DH бұдан қорғалған</button><button type="button" class="l3-opt" data-i="2">Нұрай Мәлікпен, Бекзат Мәлікпен кілт жасайды, ал Мәлік бәрін оқиды</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Нұрай Мәлікпен, Бекзат Мәлікпен кілт жасайды, ал Мәлік бәрін оқиды</p><p>Таза DH «кіммен сөйлесіп тұрмын?» деген сұраққа жауап бермейді. Мәлік екі бөлек алмасуды жүргізіп, хабарларды ашып, қайта шифрлап, ары жібереді.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="sec-12-dh:mitm:eve-vs"><p class="l3-qt">Ева (тыңдаушы) мен Мәліктің (ортадағы адам) айырмасы?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Айырмасы жоқ</button><button type="button" class="l3-opt" data-i="1">Ева тек тыңдайды, Мәлік хабарларды ауыстырады</button><button type="button" class="l3-opt" data-i="2">Мәлік тек тыңдайды</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Ева тек тыңдайды, Мәлік хабарларды ауыстырады</p><p>Пассивті шабуылшыдан DH қорғайды. Белсенді шабуылшыдан тек аутентификация қорғайды.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="sec-12-dh:mitm:fix"><p class="l3-qt">TLS ортадағы адамды қалай тоқтатады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">DH-ті екі рет жасайды</button><button type="button" class="l3-opt" data-i="1">Сервер DH кілтіне сертификаттағы кілтпен қол қояды</button><button type="button" class="l3-opt" data-i="2">Трафикті екі рет шифрлайды</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Сервер DH кілтіне сертификаттағы кілтпен қол қояды</p><p>Қолтаңбаны тек сертификаттың жеке кілті бар сервер жасай алады. Мәлікте ол жоқ.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="sec-12-dh:mitm:warn"><p class="l3-qt">Браузер «сертификат жарамсыз» деп ескертті. Ең дұрыс әрекет?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">«Бәрібір өту» батырмасын басу</button><button type="button" class="l3-opt" data-i="1">Тоқтау: бұл ортадағы адамның белгісі болуы мүмкін</button><button type="button" class="l3-opt" data-i="2">Бетті жаңарту</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Тоқтау: бұл ортадағы адамның белгісі болуы мүмкін</p><p>Сертификат тексерілмесе, кіммен кілт алмасқаныңды білмейсің. Бұл дәл MITM жағдайы.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="sec-11-hmac.html">← <span lang="en">Integrity: Hash vs HMAC</span></a><a href="../index.html#sec">Киберқауіпсіздік</a><a href="sec-13-certs.html"><span lang="en">Certificates &amp; the Chain of Trust</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

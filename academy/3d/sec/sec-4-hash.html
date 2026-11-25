@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hashing · Киберқауіпсіздік - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Hashing · Киберқауіпсіздік - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: SHA-256: кез келген деректің 256 биттік «саусақ ізі».">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/sec/sec-4-hash.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/sec/sec-4-hash.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Hashing · Киберқауіпсіздік - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/sec/sec-4-hash.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: SHA-256: кез келген деректің 256 биттік «саусақ ізі».">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="sec-4-hash" style="--lc:#2b3a5c">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#sec">Киберқауіпсіздік</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Киберқауіпсіздік · 4-сабақ · ≈20 мин · 3 қадам · 6 сұрақ</p>
+        <h1 lang="en">Hashing</h1>
+        <p class="l3-lede">SHA-256: кез келген деректің 256 биттік «саусақ ізі».</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#sec-4-hash">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Хэш функциясы</a></li><li><a href="#s2">Лавина әсері</a></li><li><a href="#s3">Тұтастықты тексеру</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Хэш функциясы</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Хэш функциясы</strong> кез келген ұзындықтағы деректі <strong>бекітілген ұзындықтағы</strong> «саусақ ізіне» айналдырады. SHA-256: әрдайым 256 бит (64 hex таңба).</p>
+<p>Криптографиялық хэштің қасиеттері:</p>
+<ol><li><strong>Детерминді</strong>: бір кіріс: әрдайым бір нәтиже</li><li><strong>Бір бағытты</strong>: хэштен кірісті табу мүмкін емес (preimage resistance)</li><li><strong>Коллизияға төзімді</strong>: бірдей хэш беретін екі кірісті табу мүмкін емес</li><li><strong>Лавина әсері</strong>: кірістің кішкене өзгерісі хэшті толық өзгертеді</li></ol>
+<h3>Түйсік</h3>
+<p>Мәтінді «миксерге» салып, 256 биттік «бүлдіршін» аласың. Бүлдіршіннен мәтінді қалпына келтіре алмайсың, бірақ бірдей мәтін әрдайым бірдей бүлдіршін береді.</p>
+<h3>Есептеп көрейік</h3>
+<p>SHA-256 нәтижелерінің саны: 2²⁵⁶ ≈ 1.16·10⁷⁷: Әлемдегі атомдар санына жақын (≈ 10⁸⁰). Кездейсоқ коллизия табу үшін «туған күн парадоксы» бойынша ≈ 2¹²⁸ әрекет керек.</p>
+<p>Біздің симулятор: <strong>нақты</strong> SHA-256 (FIPS 180-4 стандартының тест-векторларымен тексерілген): «abc» → ba7816bf…</p>
+<h3>Нақты әлемде</h3>
+<p>Git әр коммитті хэшпен атайды; Bitcoin блоктарды хэштер тізбегімен байланыстырады; құпиясөздер хэш түрінде сақталады; файлдың бүтіндігі хэшпен тексеріледі.</p>
+<blockquote><p>⚠ Жиі қате: хэшті «шифрлау» деп атау. Шифрлау қайтымды (кілтпен), хэш: қайтымсыз. Хэшті «дешифрлау» мүмкін емес.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Кемінде 3 түрлі мәтін жазып, хэштерін салыстыр. Ұзын мәтін мен бір әріптің хэші бірдей ұзындықта ма?</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Кемінде 3 түрлі мәтіннің хэшін ал</li></ul><a class="btn secondary" href="../app/index.html#sec-4-hash">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="sec-4-hash:hash:len"><p class="l3-qt">1 ГБ файлдың SHA-256 хэші неше таңба (hex)?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">64</button><button type="button" class="l3-opt" data-i="1">1 000 000 000</button><button type="button" class="l3-opt" data-i="2">256</button><button type="button" class="l3-opt" data-i="3">32</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 64</p><p>256 бит / 4 бит (бір hex таңба) = 64. Кіріс ұзындығына тәуелсіз.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="sec-4-hash:hash:reverse"><p class="l3-qt">Хэштен бастапқы мәтінді неге табу мүмкін емес?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Функция бір бағытты: ақпарат жоғалады, ал кері есептеудің тиімді жолы жоқ</button><button type="button" class="l3-opt" data-i="1">Себебі хэш құпия кілтпен шифрланған</button><button type="button" class="l3-opt" data-i="2">Себебі хэш кездейсоқ сан</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Функция бір бағытты: ақпарат жоғалады, ал кері есептеудің тиімді жолы жоқ</p><p>Шексіз көп кіріс 2²⁵⁶ шығысқа түседі: ақпарат міндетті түрде жоғалады. Ал белгілі хэшке сай кірісті табудың brute force-тан жақсы жолы белгісіз.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Лавина әсері</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Лавина әсері</strong>: кірістің <strong>бір битін</strong> өзгертсең, шығыстың шамамен <strong>жартысы</strong> (≈ 128 биттің) өзгереді. Ұқсас кірістер мүлде ұқсас емес хэштер береді.</p>
+<h3>Түйсік</h3>
+<p>Таудан домалаған кішкене тас көшкінге айналады. SHA-256-ның 64 раундының әрқайсысында биттер араласады, ығысады, қосылады: бір өзгеріс бүкіл күйге тарап кетеді.</p>
+<h3>Есептеп көрейік</h3>
+<p>«Сәлем» мен «Сәлем!»: бір таңба айырма. Хэштердің айырмасын биттермен санасақ (Хэмминг қашықтығы): шамамен 128 ± 8 бит. Бұл: кездейсоқ екі 256 биттік санның айырмасына тең.</p>
+<p>Неге бұл маңызды? Егер ұқсас кірістер ұқсас хэш берсе, шабуылшы хэшке «жақындап» кірісті біртіндеп таба алар еді (ыстық-суық ойыны). Лавина әсері мұны мүмкін емес етеді.</p>
+<h3>Нақты әлемде</h3>
+<p><strong>MD5</strong> (1992) және <strong>SHA-1</strong> (1995) хэштерінде коллизиялар табылды (2004 және 2017: Google-дың «SHAttered» шабуылы). Сондықтан қазір SHA-256, SHA-3, BLAKE3 қолданылады.</p>
+<blockquote><p>💡 Түйін: 3D-де 256 бит 16×16 торда; соңғы өзгерісте ауысқан биттер жарқырайды.</p></blockquote>
+<h3>Тереңірек: туған күн парадоксы және 2¹²⁸</h3>
+<p>23 адамның ішінде екеуінің туған күні бірдей болу ықтималдығы &gt; 50%. Неге соншалық аз? Жұптар саны C(23, 2) = 253: әр жұп 1/365 ықтималдықпен «соқтығысады».</p>
+<p>Жалпы: N мәнді хэште коллизияның 50% ықтималдығына шамамен</p>
+<pre class="l3-pre"><code>k ≈ 1.18 · √N</code></pre>
+<p>кездейсоқ кіріс жеткілікті. SHA-256: N = 2²⁵⁶ → k ≈ 2¹²⁸. Сондықтан n биттік хэш коллизияға тек n/2 бит қауіпсіздік береді.</p>
+<p>Ал <strong>preimage</strong> (берілген хэшке кіріс табу): толық 2²⁵⁶ әрекет: мұнда «жұп» жоқ, белгілі бір мәнді табу керек.</p>
+<p>Салыстыру үшін: бүкіл Bitcoin желісі секундына ≈ 6·10²⁰ ≈ 2⁶⁹ хэш есептейді (2024). 2¹²⁸ хэшке оған ≈ 2⁵⁹ секунд ≈ 18 трлн жыл керек.</p>
+<h3>Енді сен</h3>
+<p>Мәтінге бір ғана таңба қос не өзгерт. Ауысқан биттер санына қара: 90-нан көп болуы керек.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Бір таңбаны өзгертіп, ≥ 90 биттің ауысқанын көр</li></ul><a class="btn secondary" href="../app/index.html#sec-4-hash">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="sec-4-hash:avalanche:half"><p class="l3-qt">Бір таңба өзгергенде SHA-256-ның шамамен неше биті өзгереді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">≈ 128</button><button type="button" class="l3-opt" data-i="1">≈ 1</button><button type="button" class="l3-opt" data-i="2">≈ 8</button><button type="button" class="l3-opt" data-i="3">Барлық 256</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> ≈ 128</p><p>Әр бит ½ ықтималдықпен өзгереді: 256 · ½ = 128.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="sec-4-hash:avalanche:why"><p class="l3-qt">Лавина әсері болмаса, қандай шабуыл мүмкін болар еді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Хэшке жақын нәтижелерге қарап, кірісті біртіндеп табу</button><button type="button" class="l3-opt" data-i="1">Хэшті ұзарту</button><button type="button" class="l3-opt" data-i="2">Хэшті жылдамырақ есептеу</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Хэшке жақын нәтижелерге қарап, кірісті біртіндеп табу</p><p>Ұқсас кірістер ұқсас хэш берсе, «ыстық-суық» әдісімен іздеу кеңістігін тарылтуға болар еді.</p></details></div></div></section><section class="l3-step" id="s3" aria-labelledby="s3-h"><h2 id="s3-h"><span class="l3-n">3</span>Тұтастықты тексеру</h2><div class="l3-body"><h3>Идея</h3>
+<p>Бағдарламаны интернеттен жүктегенде, жол бойында біреу оны вирусты нұсқаға <strong>алмастыруы</strong> мүмкін. Әзірлеуші өз сайтында ресми хэшті жариялайды; сен жүктегеннің хэшін есептеп, салыстырасың. Бір бит өзгерсе: хэш мүлде басқа.</p>
+<h3>Түйсік</h3>
+<p>Хэш: құжаттың «саусақ ізі». Күдікті құжаттың ізі түпнұсқаның ізімен сәйкес келмесе: бұл басқа құжат.</p>
+<h3>Есептеп көрейік</h3>
+<p>Ресми хэш (INSIDE TECH v1.0):</p>
+<pre class="l3-pre"><code>f01e4fbfcb61cd495e757a5e17dca40f0b9e7f4f7a739db4d8450e2e3ed5f8b0</code></pre>
+<p>Сенде екі «жүктелген файл» бар: <code>INSIDE TECH v1.0</code> және <code>INSIDE TECH v1.O</code> (соңында нөл емес, О әрпі!). Көзбен айыру қиын: хэш айырады.</p>
+<h3>Нақты әлемде</h3>
+<p>Linux дистрибутивтері ISO файлдарымен бірге SHA-256 тізімін жариялайды; npm, pip пакеттердің хэшін lock-файлда сақтайды (сен бүкіл курс бойы pnpm-lock.yaml-да осыны көрдің); Docker образдары хэшпен (<code>sha256:…</code>) аталады.</p>
+<blockquote><p>⚠ Жиі қате: хэш пен файлды бір сайттан алу. Шабуылшы сайтты бұзса, екеуін де алмастырады. Хэшті сенімді, бөлек арнадан ал: немесе цифрлық <strong>қолтаңбаны</strong> тексер (7-сабақ).</p></blockquote>
+<h3>Енді сен</h3>
+<p>Екі нұсқаның да хэшін есепте, қайсысы ресми хэшпен сәйкес келетінін тап.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Екі «жүктелген файлдың» да хэшін есептеп, түпнұсқасын тап</li></ul><a class="btn secondary" href="../app/index.html#sec-4-hash">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="sec-4-hash:integrity:match"><p class="l3-qt">Жүктелген файлдың хэші ресми хэштен бір ғана таңбамен ерекшеленеді. Не істеу керек?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Файлды пайдаланба: хэштердің кез келген айырмасы: басқа файл</button><button type="button" class="l3-opt" data-i="1">Пайдалана беруге болады, айырма аз</button><button type="button" class="l3-opt" data-i="2">Хэшті қайта есептеп, сәйкес келгенше күту</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Файлды пайдаланба: хэштердің кез келген айырмасы: басқа файл</p><p>Лавина әсеріне байланысты «жақын» хэш деген ұғым жоқ. Бір таңбасы басқа хэш: мүлде басқа файл.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="sec-4-hash:integrity:same-site"><p class="l3-qt">Неге хэшті файлмен бір серверден алу жеткіліксіз қорғаныс?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Сервер бұзылса, шабуылшы файлды да, хэшті де алмастырады</button><button type="button" class="l3-opt" data-i="1">Себебі хэш тым қысқа</button><button type="button" class="l3-opt" data-i="2">Себебі серверлер хэшті дұрыс есептемейді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Сервер бұзылса, шабуылшы файлды да, хэшті де алмастырады</p><p>Тұтастық тексеруі хэштің өзіне сенімге сүйенеді. Сондықтан цифрлық қолтаңба қолданылады: оны тек әзірлеушінің жабық кілтімен жасауға болады.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="sec-3-xor.html">← <span lang="en">XOR &amp; One-Time Pad</span></a><a href="../index.html#sec">Киберқауіпсіздік</a><a href="sec-5-passwords.html"><span lang="en">Storing Passwords</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

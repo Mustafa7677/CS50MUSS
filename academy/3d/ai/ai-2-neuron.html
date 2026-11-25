@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Artificial Neuron · Жасанды интеллект - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Artificial Neuron · Жасанды интеллект - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Weight, bias және activation-ды қолмен баптап, бір нейронмен деректерді бөл.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/ai/ai-2-neuron.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/ai/ai-2-neuron.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Artificial Neuron · Жасанды интеллект - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/ai/ai-2-neuron.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Weight, bias және activation-ды қолмен баптап, бір нейронмен деректерді бөл.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="ai-2-neuron" style="--lc:#7a5cd6">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#ai">Жасанды интеллект</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Жасанды интеллект · 2-сабақ · ≈12 мин · 4 қадам · 8 сұрақ</p>
+        <h1 lang="en">Artificial Neuron</h1>
+        <p class="l3-lede">Weight, bias және activation-ды қолмен баптап, бір нейронмен деректерді бөл.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#ai-2-neuron">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Нейронның құрылымы</a></li><li><a href="#s2">Шешім шекарасы</a></li><li><a href="#s3">Activation: step және sigmoid</a></li><li><a href="#s4">Бір нейронның шегі: XOR</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Нейронның құрылымы</h2><div class="l3-body"><h3>Идея</h3>
+<p>Жасанды нейрон: өте қарапайым формула:</p>
+<pre class="l3-pre"><code>z = w₁·x₁ + w₂·x₂ + b
+y = activation(z)</code></pre>
+<ul><li><strong>w₁, w₂ (weights, салмақтар)</strong>: әр кірістің маңыздылығы. Үлкен оң салмақ: «бұл белгі өссе, жауап 1-ге жақындайды».</li><li><strong>b (bias)</strong>: нейронның «бейімділігі», кірістер нөл болғанда да z-ті жылжытады.</li><li><strong>activation</strong>: z-ті шығысқа айналдыратын функция.</li></ul>
+<h3>Түйсік</h3>
+<p>Нейрон: дауыс беру: әр кіріс өз дауысын береді, ал салмақ: сол дауыстың күші. Bias: дауыс беруге дейінгі «алдын ала пікір».</p>
+<h3>Есептеп көрейік</h3>
+<p>w₁ = 0.5, w₂ = −0.5, b = 0, нүкте (0.6, 0.2):</p>
+<pre class="l3-pre"><code>z = 0.5·0.6 + (−0.5)·0.2 + 0 = 0.3 − 0.1 = 0.2
+step(z) = 1   (себебі z ≥ 0)</code></pre>
+<p>Нейрон бұл нүктені 1-класс деп болжайды.</p>
+<blockquote><p>💡 Түйін: биологиялық нейронмен ұқсастық: тек метафора. Жасанды нейрон: көбейту, қосу және бір функция.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Оң жақтағы жүгірткілермен w₁, w₂ немесе b-ны өзгерт. 3D сахнада сымның жуандығы: салмақтың шамасы, түсі: таңбасы.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>w₁, w₂ немесе b мәнін өзгерт</li></ul><a class="btn secondary" href="../app/index.html#ai-2-neuron">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-2-neuron:anatomy:z" data-hint="Әр кірісті өз салмағына көбейт, қос, сосын bias-ты қос."><p class="l3-qt">w₁ = 2, w₂ = 1, b = −1. Нүкте (0.5, 0). z неге тең?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">−1</button><button type="button" class="l3-opt" data-i="1">0</button><button type="button" class="l3-opt" data-i="2">1</button><button type="button" class="l3-opt" data-i="3">2</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 0</p><p>z = 2·0.5 + 1·0 + (−1) = 1 + 0 − 1 = 0.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-2-neuron:anatomy:bias"><p class="l3-qt">Bias (b) не істейді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Кірістерді көбейтеді</button><button type="button" class="l3-opt" data-i="1">Нейронның шешімін кірістерге тәуелсіз түрде жылжытады</button><button type="button" class="l3-opt" data-i="2">Activation функциясын таңдайды</button><button type="button" class="l3-opt" data-i="3">Оқу жылдамдығын анықтайды</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Нейронның шешімін кірістерге тәуелсіз түрде жылжытады</p><p>b: тұрақты қосылғыш. Ол шешім шекарасын салмақтарды өзгертпей жылжытады.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Шешім шекарасы</h2><div class="l3-body"><h3>Идея</h3>
+<p>Нейрон z = 0 болатын нүктелерді бөлшекке бөледі. Бұл нүктелер жиыны: <strong>шешім шекарасы (decision boundary)</strong>. Екі кіріс болғанда ол түзу сызық:</p>
+<pre class="l3-pre"><code>w₁·x₁ + w₂·x₂ + b = 0</code></pre>
+<ul><li><strong>Салмақтар</strong> түзудің <strong>бағытын</strong> анықтайды (бұрады).</li><li><strong>Bias</strong> түзуді <strong>жылжытады</strong>.</li></ul>
+<h3>Есептеп көрейік</h3>
+<p>w₁ = 1, w₂ = 1, b = 0 → шекара x₁ + x₂ = 0, яғни төменгі солдан жоғарғы оңға қарай диагональ. Нүкте (0.5, 0.5): z = 1 &gt; 0 → класс 1. Нүкте (−0.5, −0.5): z = −1 &lt; 0 → класс 0.</p>
+<p>b = 0.5 етсек: шекара x₁ + x₂ = −0.5: түзу төмен-солға жылжиды, 1-класс аймағы үлкейеді.</p>
+<h3>Дәлдік қалай есептеледі</h3>
+<pre class="l3-pre"><code>дәлдік = дұрыс жіктелген нүктелер / барлық нүктелер</code></pre>
+<p>120 нүктенің 111-і дұрыс болса: 111/120 = 92.5%.</p>
+<blockquote><p>⚠ Жиі қате: салмақтарды үлкейту шекараны жылжытады деп ойлау. Барлық салмақтар мен bias-ты бірдей санға көбейтсең, шекара <strong>өзгермейді</strong>: тек z-тің «сенімділігі» өседі (бұл sigmoid-та маңызды болады).</p></blockquote>
+<h3>Тереңірек: шекара неге түзу және w векторы нені білдіреді</h3>
+<p>Нейрон <code>p = σ(w·x + b)</code>. p = 0.5 болатын нүктелер: шекара. σ(z) = 0.5 тек z = 0 болғанда, демек шекара:</p>
+<pre class="l3-pre"><code>w₁x₁ + w₂x₂ + b = 0</code></pre>
+<p>Бұл: түзудің теңдеуі (3D-де жазықтық, n өлшемде гипержазықтық).</p>
+<p><strong>w: шекараға перпендикуляр (нормаль).</strong> Шекарадағы екі нүкте a мен c алайық: w·a + b = 0 және w·c + b = 0. Азайтсақ: w·(a − c) = 0. Ал a − c: шекара бойымен жатқан вектор. Демек w шекараның кез келген бағытына перпендикуляр.</p>
+<p><strong>Шекараның басынан (0,0) қашықтығы</strong> = |b| / ‖w‖. Мысалы w = (3, 4), b = −10: ‖w‖ = 5, қашықтық = 2.</p>
+<p><strong>Масштабтау тәжірибесі.</strong> w мен b-ны 10-ға көбейтсек: шекара сол орында қалады (0 = 0·10), бірақ z 10 есе үлкен → σ әлдеқайда тік. Яғни ‖w‖: модельдің <strong>сенімділігі</strong>, ал w/‖w‖ пен b/‖w‖: шекараның <strong>орны</strong>.</p>
+<h3>Енді сен</h3>
+<p>Салмақтар мен bias-ты баптап, train дәлдігін 90%-дан асыр. Bias-ты міндетті түрде қолдан.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Train дәлдігін ≥ 90%-ға жеткіз</li><li>Bias мәнін 0-ден өзгерт</li></ul><a class="btn secondary" href="../app/index.html#ai-2-neuron">Симуляцияны ашу</a></div><details class="l3-hint"><summary>Кеңес</summary><ul><li>Нүктелер сол жақ төменде (0) және оң жақ жоғарыда (1). w₁ мен w₂ екеуін де оң мәнге қойып көр.</li></ul></details><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-2-neuron:boundary:scale" data-hint="Теңдеудің екі жағын бірдей санға көбейтсең, шешімдері өзгере ме?"><p class="l3-qt">w₁, w₂ және b-ның бәрін 10-ға көбейтсек, шешім шекарасы не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">10 есе жылжиды</button><button type="button" class="l3-opt" data-i="1">Өзгермейді</button><button type="button" class="l3-opt" data-i="2">Айналады</button><button type="button" class="l3-opt" data-i="3">Жойылады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Өзгермейді</p><p>10·(w₁x₁ + w₂x₂ + b) = 0 теңдеуі w₁x₁ + w₂x₂ + b = 0-мен бірдей. Түзу сол күйінде қалады.</p></details></div><div class="l3-q l3-quiz" data-answer="2" data-qid="ai-2-neuron:boundary:acc"><p class="l3-qt">80 нүктенің 68-і дұрыс жіктелді. Дәлдік қанша?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">68%</button><button type="button" class="l3-opt" data-i="1">80%</button><button type="button" class="l3-opt" data-i="2">85%</button><button type="button" class="l3-opt" data-i="3">88%</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 85%</p><p>68 / 80 = 0.85 = 85%.</p></details></div></div></section><section class="l3-step" id="s3" aria-labelledby="s3-h"><h2 id="s3-h"><span class="l3-n">3</span>Activation: step және sigmoid</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Step</strong> функциясы қатал: z ≥ 0 → 1, әйтпесе 0. Ол «қаншалықты сенімді» деген ақпаратты жоғалтады. <strong>Sigmoid</strong> тегіс:</p>
+<pre class="l3-pre"><code>σ(z) = 1 / (1 + e^(−z))</code></pre>
+<p>Нәтиже 0 мен 1 арасындағы сан: оны <strong>ықтималдық</strong> деп оқимыз: «бұл нүктенің 1-класс болу ықтималдығы 0.83».</p>
+<h3>Есептеп көрейік</h3>
+<pre class="l3-pre"><code>z = 0    → σ = 0.50   (екіұдай)
+z = 2    → σ ≈ 0.88
+z = −2   → σ ≈ 0.12
+z = 5    → σ ≈ 0.993</code></pre>
+<p>Салмақтарды үлкейтсең, z-тің мәндері де үлкейеді → sigmoid «тіктеледі» және step-ке ұқсай бастайды.</p>
+<h3>Неге бұл маңызды</h3>
+<p>Training (4-сабақ) салмақтарды <strong>кішкене</strong> өзгертіп, нәтиже қаншалықты жақсарғанын өлшейді. Step-те кішкене өзгеріс көбінесе ештеңені өзгертпейді: қадам бағытын табу мүмкін емес. Sigmoid тегіс болғандықтан, әр кішкене өзгерістің әсері көрінеді: бұл <strong>градиенттің</strong> болуы үшін керек.</p>
+<blockquote><p>💡 Түйін: тегістік: оқытудың шарты. Сондықтан нейрондық желілерде step емес, тегіс activation-дар қолданылады.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Activation-ды sigmoid-қа ауыстыр, сосын |w| ≥ 3 етіп, 3D беттің қалай тіктелетінін көр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Activation-ды sigmoid-ке ауыстыр</li><li>Салмақтарды үлкейтіп (|w| ≥ 3), бетті тіктеп көр</li></ul><a class="btn secondary" href="../app/index.html#ai-2-neuron">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-2-neuron:activation:sig0"><p class="l3-qt">σ(0) неге тең?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">0</button><button type="button" class="l3-opt" data-i="1">0.5</button><button type="button" class="l3-opt" data-i="2">1</button><button type="button" class="l3-opt" data-i="3">e</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 0.5</p><p>σ(0) = 1 / (1 + e⁰) = 1 / (1 + 1) = 0.5.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-2-neuron:activation:smooth"><p class="l3-qt">Неге training үшін step емес, sigmoid ыңғайлы?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Sigmoid жылдамырақ есептеледі</button><button type="button" class="l3-opt" data-i="1">Sigmoid тегіс: салмақтың кішкене өзгерісі шығысты да кішкене өзгертеді, сондықтан қай бағытқа жылжу керегін есептеуге болады</button><button type="button" class="l3-opt" data-i="2">Step тек теріс сандармен жұмыс істейді</button><button type="button" class="l3-opt" data-i="3">Айырмашылық жоқ</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Sigmoid тегіс: салмақтың кішкене өзгерісі шығысты да кішкене өзгертеді, сондықтан қай бағытқа жылжу керегін есептеуге болады</p><p>Градиенттік оқыту «салмақты сәл өзгертсем, қате қалай өзгереді?» деген сұраққа сүйенеді. Step-те бұл сұрақтың жауабы көбінесе нөл.</p></details></div></div></section><section class="l3-step" id="s4" aria-labelledby="s4-h"><h2 id="s4-h"><span class="l3-n">4</span>Бір нейронның шегі: XOR</h2><div class="l3-body"><h3>Идея</h3>
+<p>XOR есебінде қарама-қарсы бұрыштар бір класқа жатады:</p>
+<pre class="l3-pre"><code>x₁   x₂   XOR
+ −    −    0
+ −    +    1
+ +    −    1
+ +    +    0</code></pre>
+<p>Бір нейронның шекарасы: <strong>бір түзу</strong>. Ал XOR класын бөлу үшін кемінде <strong>екі</strong> түзу керек. Сондықтан бір нейрон XOR-ды шеше алмайды: бұл математикалық факт, баптау мәселесі емес.</p>
+<h3>Тарих</h3>
+<p>1969 жылы Минский мен Пейперт осыны дәлелдеді. Перцептронға деген қызығушылық күрт төмендеп, «бірінші AI қысы» басталды. Шешім: нейрондарды <strong>қабаттарға</strong> біріктіру: 1980-жылдары backpropagation алгоритмімен бірге кең таралды.</p>
+<h3>Есептеп көрейік</h3>
+<p>Ең жақсы түзу бір бұрышты қалған үшеуінен бөледі. Сонда 4 бұрыштың 3-еуі дұрыс → шамамен <strong>75%</strong>. Одан жоғары бір түзумен мүмкін емес.</p>
+<blockquote><p>⚠ Жиі қате: «Ұзағырақ баптасам, бір нейрон да XOR-ды шешеді». Жоқ: шектеу модельдің <strong>құрылымында</strong>, параметрлерде емес.</p></blockquote>
+<h3>Тереңірек: XOR-ды бір нейрон шеше алмайтынының дәлелі</h3>
+<p>Шешетін w₁, w₂, b бар деп ұйғарайық (z &gt; 0 → класс 1):</p>
+<ol><li>(0,0) → 0: <code>b &lt; 0</code></li><li>(1,0) → 1: <code>w₁ + b &gt; 0</code></li><li>(0,1) → 1: <code>w₂ + b &gt; 0</code></li><li>(1,1) → 0: <code>w₁ + w₂ + b &lt; 0</code></li></ol>
+<p>(2) мен (3)-ті қоссақ: w₁ + w₂ + 2b &gt; 0, яғни w₁ + w₂ + b &gt; −b. Ал (1) бойынша b &lt; 0, сондықтан −b &gt; 0. Демек w₁ + w₂ + b &gt; 0: бұл (4)-ке қайшы. ∎</p>
+<p>Бұл: 1969 жылғы Минский мен Пейперт кітабындағы атақты нәтиже; ол нейрон желілерге деген қызығушылықты көп жылға суытты. Шешімі: <strong>жасырын қабат</strong>: бір нейрон «x₁ OR x₂», екіншісі «x₁ AND x₂» болса, шығыс «OR және AND емес» = XOR.</p>
+<h3>Енді сен</h3>
+<p>XOR-да нейронды кемінде 5 рет баптап көр. Дәлдік 80%-дан аспайтынына көз жеткіз.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>XOR-да нейронды кемінде 5 рет баптап көр</li><li>Дәлдік 80%-дан аспайтынын байқа</li></ul><a class="btn secondary" href="../app/index.html#ai-2-neuron">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-2-neuron:limits:why"><p class="l3-qt">Неге бір нейрон XOR-ды шеше алмайды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Learning rate тым кіші</button><button type="button" class="l3-opt" data-i="1">Бір нейронның шекарасы: бір түзу, ал XOR-ға кемінде екі түзу керек</button><button type="button" class="l3-opt" data-i="2">Деректер аз</button><button type="button" class="l3-opt" data-i="3">Sigmoid қолданылмаған</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Бір нейронның шекарасы: бір түзу, ал XOR-ға кемінде екі түзу керек</p><p>Бұл құрылымдық шектеу. Шешім: жасырын қабат (3-сабақ).</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-2-neuron:limits:max"><p class="l3-qt">XOR-дың 4 бұрышында бір түзумен ең көбі неше бұрышты дұрыс жіктеуге болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">2</button><button type="button" class="l3-opt" data-i="1">3</button><button type="button" class="l3-opt" data-i="2">4</button><button type="button" class="l3-opt" data-i="3">1</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 3</p><p>Мысалы, түзу (−,−) бұрышын қалған үшеуінен бөліп, оны 0, қалғанын 1 десін: (−,+) және (+,−) дұрыс, (+,+) қате. Нәтиже 3/4 = 75%.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="ai-1-data.html">← <span lang="en">Data &amp; Dataset</span></a><a href="../index.html#ai">Жасанды интеллект</a><a href="ai-3-network.html"><span lang="en">Neural Networks</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

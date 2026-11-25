@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Caches &amp; Locality · Компьютер архитектурасы - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Caches &amp;amp; Locality · Компьютер архитектурасы - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Бір деректі әр түрлі ретпен оқу 4 есе баяу болуы мүмкін. Неге?">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/arch/arch-8-cache.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/arch/arch-8-cache.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Caches &amp; Locality · Компьютер архитектурасы - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/arch/arch-8-cache.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Бір деректі әр түрлі ретпен оқу 4 есе баяу болуы мүмкін. Неге?">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="arch-8-cache" style="--lc:#b3262e">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#arch">Компьютер архитектурасы</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Компьютер архитектурасы · 8-сабақ · ≈25 мин · 3 қадам · 6 сұрақ</p>
+        <h1 lang="en">Caches &amp; Locality</h1>
+        <p class="l3-lede">Бір деректі әр түрлі ретпен оқу 4 есе баяу болуы мүмкін. Неге?</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#arch-8-cache">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Жол бойымен</a></li><li><a href="#s2">Баған бойымен</a></li><li><a href="#s3">Кэшті үлкейт</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Жол бойымен</h2><div class="l3-body"><h3>Идея</h3>
+<p>RAM баяу (≈ 100 нс), сондықтан процессор мен жадтың арасында кішкене, жылдам <strong>кэш</strong> тұр. Ол жадты <strong>жолдар</strong> (cache line) бойынша жүктейді: бір элемент сұралса, оның көршілері де бірге келеді (біздің модельде 16 байт = 4 int).</p>
+<ul><li><strong>Hit</strong>: дерек кэште: 1 такт</li><li><strong>Miss</strong>: жоқ: жадтан әкелу, 100 такт</li></ul>
+<h3>Түйсік</h3>
+<p>Кітапханадан бір бет емес, бүкіл кітапты аласың: келесі беттер де керек болатыны анық. Бұл: <strong>кеңістіктік локальдық</strong> (spatial locality): көрші деректер бірге қолданылады.</p>
+<h3>Есептеп көрейік</h3>
+<p>8 × 8 int матрицасы жадта <strong>жол бойымен</strong> жатыр: (r, c) элементінің адресі (r·8 + c)·4.</p>
+<p>Жол бойымен оқысақ: (0,0): miss, жол жүктелді; (0,1), (0,2), (0,3): hit; (0,4): miss…</p>
+<ul><li>64 элемент, әр 4-тің біреуі miss → <strong>16 miss, 48 hit (75%)</strong></li><li>Уақыт: 48·1 + 16·100 = <strong>1648</strong> такт</li></ul>
+<h3>Нақты әлемде</h3>
+<p>Заманауи кэш жолы: 64 байт. Intel/AMD процессорларында L1 ≈ 32-48 КБ, L2 ≈ 1-2 МБ, L3 ≈ 30+ МБ. Кэшке сыятын бағдарлама RAM-ға жүгінетіннен ондаған есе жылдам.</p>
+<blockquote><p>💡 Түйін: 3D-де торда: матрица (жасыл: hit, қызыл: miss), оң жақта: кэш жолдары және ондағы блоктар.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Матрицаны жол бойымен соңына дейін оқы. Hit пен miss санын жаз.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Матрицаны жол бойымен оқы (4 жол × 16 байт кэш)</li></ul><a class="btn secondary" href="../app/index.html#arch-8-cache">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="arch-8-cache:row:rate"><p class="l3-qt">Кэш жолы 32 байт (8 int) болса, жол бойымен оқудың hit rate-і қандай?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">87.5%</button><button type="button" class="l3-opt" data-i="1">75%</button><button type="button" class="l3-opt" data-i="2">50%</button><button type="button" class="l3-opt" data-i="3">100%</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 87.5%</p><p>Әр 8 элементтің біреуі ғана miss: 7/8 = 87.5%.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="arch-8-cache:row:time"><p class="l3-qt">16 miss және 48 hit кезінде miss-тердің уақыттағы үлесі қандай?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">≈ 97%</button><button type="button" class="l3-opt" data-i="1">≈ 25%</button><button type="button" class="l3-opt" data-i="2">≈ 50%</button><button type="button" class="l3-opt" data-i="3">≈ 75%</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> ≈ 97%</p><p>1600 / 1648 ≈ 97%. Hit rate 75% болса да, уақыттың дерлік бәрі miss-терге кетеді: сондықтан miss санын азайту ең маңызды.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Баған бойымен</h2><div class="l3-body"><h3>Идея</h3>
+<p>Енді <strong>сол</strong> матрицаның <strong>сол</strong> 64 элементін оқимыз: тек <strong>баған</strong> бойымен: (0,0), (1,0), (2,0)…</p>
+<p>Сандардың қосындысы бірдей. Нұсқаулар саны бірдей. Бірақ уақыт…</p>
+<h3>Түйсік</h3>
+<p>Кітапханадан әр жолы басқа кітаптың бір ғана бетін оқисың. Кітапты алып келесің, бір бетін оқисың, қайтарасың: келесі кітапқа. Ал қайтадан бірінші кітаптың келесі беті керек болғанда, ол әлдеқашан сөреде.</p>
+<h3>Есептеп көрейік</h3>
+<p>Баған бойымен көрші элементтер арасы 32 байт (бір матрица жолы). Әр элемент: жаңа кэш жолы. <strong>Direct-mapped</strong> кэште әр блок тек бір орынға түседі: жол = блок mod (жолдар саны). 4 жолдық кэште 0 және 2 жолдардың блоктары бір орынға таласады, бірін-бірі <strong>ығыстырады</strong> (conflict miss).</p>
+<p>Нәтиже: <strong>64 miss, 0 hit</strong> → 6400 такт. Жол бойымен: 1648. <strong>≈ 3.9 есе баяу</strong>: бір ғана циклдардың ретін ауыстырғаннан.</p>
+<h3>Нақты әлемде</h3>
+<p>C, C++, Python NumPy (әдепкі): row-major: жол бойымен оқу жылдам. Fortran, MATLAB, Julia: column-major: керісінше. Матрицаларды көбейту сияқты есептеулерде циклдардың ретін ауыстыру ғана бағдарламаны 5-10 есе жылдамдатуы мүмкін.</p>
+<blockquote><p>⚠ Жиі қате: «Big O бірдей: жылдамдық бірдей». Екеуі де O(n²), бірақ кэш оларды бірнеше есе ажыратады.</p></blockquote>
+<h3>Тереңірек: адрес → тег, индекс, ығысу</h3>
+<p>Direct-mapped кэш адресті үш бөлікке бөледі. Жол өлшемі 16 байт (2⁴), 4 жол (2²):</p>
+<pre class="l3-pre"><code>адрес:  [ тег | индекс (2 бит) | ығысу (4 бит) ]
+блок   = адрес / 16          (ығысуды тастаймыз)
+индекс = блок mod 4          (қай кэш жолы)
+тег    = блок / 4            (сол жолда қай блок тұр)</code></pre>
+<p>Баған бойымен оқу: (r, 0) адресі = 32·r. Блок = 2r, индекс = 2r mod 4 ∈ {0, 2}. Сегіз жолдың бәрі тек <strong>екі</strong> кэш жолына таласады: сондықтан бір-бірін үнемі ығыстырады. Бұл: <strong>conflict miss</strong>.</p>
+<p>Үш түрлі miss («3C»):</p>
+<ul><li><strong>Compulsory</strong> (міндетті): блок бірінші рет керек: ешқандай кэш құтқармайды</li><li><strong>Capacity</strong> (сыйымдылық): деректер кэшке сыймайды</li><li><strong>Conflict</strong> (қақтығыс): кэште орын бар, бірақ блоктар бір индекске түседі</li></ul>
+<p><strong>Associative</strong> кэштер (әр индексте 2, 4, 8 «жол») conflict miss-тердің көбін жояды: нақты L1 кэштер 8-way associative.</p>
+<p><strong>Орташа қатынау уақыты</strong> (AMAT):</p>
+<pre class="l3-pre"><code>AMAT = hit time + miss rate × miss penalty
+     = 1 + 0.25 × 100 = 26 такт   (жол бойымен)
+     = 1 + 1.00 × 100 = 101 такт  (баған бойымен)</code></pre>
+<h3>Енді сен</h3>
+<p>Баған бойымен оқы. Hit rate пен уақытты жол бойымен оқумен салыстыр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Сол кэшпен баған бойымен оқы</li></ul><a class="btn secondary" href="../app/index.html#arch-8-cache">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="arch-8-cache:column:ratio"><p class="l3-qt">Біздің модельде баған бойымен оқу жол бойымен оқудан шамамен қанша есе баяу?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">≈ 3.9 есе</button><button type="button" class="l3-opt" data-i="1">Бірдей</button><button type="button" class="l3-opt" data-i="2">≈ 64 есе</button><button type="button" class="l3-opt" data-i="3">≈ 1.1 есе</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> ≈ 3.9 есе</p><p>6400 / 1648 ≈ 3.9. Деректер де, нұсқаулар да бірдей: айырма тек жадқа қатынау ретінде.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="arch-8-cache:column:c"><p class="l3-qt">C тілінде int a[1000][1000] массивін қай ретпен аралаған жылдам?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Сыртқы цикл: жолдар, ішкі цикл: бағандар (a[i][j], j ішкі)</button><button type="button" class="l3-opt" data-i="1">Сыртқы цикл: бағандар</button><button type="button" class="l3-opt" data-i="2">Айырмашылық жоқ</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Сыртқы цикл: жолдар, ішкі цикл: бағандар (a[i][j], j ішкі)</p><p>C: row-major: a[i][j] мен a[i][j+1] жадта көрші. Ішкі цикл j бойынша жүрсе, кэш жолы толық пайдаланылады.</p></details></div></div></section><section class="l3-step" id="s3" aria-labelledby="s3-h"><h2 id="s3-h"><span class="l3-n">3</span>Кэшті үлкейт</h2><div class="l3-body"><h3>Идея</h3>
+<p>Баған бойымен оқуды жылдамдатудың бір жолы: <strong>кэшті үлкейту</strong>, сонда ығыстыру азаяды. Екі параметр бар:</p>
+<ul><li><strong>жол саны</strong> (lines)</li><li><strong>жол өлшемі</strong> (line size, байт)</li></ul>
+<p>Кэш көлемі = жол саны × жол өлшемі.</p>
+<h3>Түйсік</h3>
+<p>Бүкіл матрица (256 байт) кэшке сыйса, әр блок бір рет қана жүктеледі: содан кейін ретке қарамастан бәрі hit.</p>
+<h3>Есептеп көрейік</h3>
+<p>Баған бойымен оқу:</p>
+<ul><li>16 жол × 16 байт = 256 байт: 16 miss (әр блок бір рет) → <strong>75%</strong></li><li>8 жол × 32 байт = 256 байт: әр матрица жолы: бір кэш жолы → 8 miss → <strong>87.5%</strong></li><li>4 жол × 16 байт = 64 байт: <strong>0%</strong></li></ul>
+<p>Бірақ үлкен кэш: <strong>баяу</strong> әрі <strong>қымбат</strong> (чиптегі орын, энергия). Сондықтан иерархия бар: кішкене жылдам L1, үлкенірек L2, одан да үлкен L3.</p>
+<h3>Нақты әлемде</h3>
+<p>Кэшті жақсы пайдалану: <strong>уақыттық локальдық</strong> (temporal locality: жақында қолданылған дерек қайта керек болады) мен <strong>кеңістіктік локальдық</strong>. Ойын қозғалтқыштарындағы «data-oriented design», дерекқорлардағы бағандық сақтау (columnar storage): бәрі осы идеялар.</p>
+<blockquote><p>💡 Түйін: алгоритмнің жылдамдығы тек Big O-да емес, деректердің жадта қалай орналасқанында да.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Кэштің жол санын не өлшемін өзгертіп, баған бойымен оқығанда hit rate ≥ 75% болатын баптауды тап.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Баған бойымен оқығанда hit rate ≥ 75% болатын кэш таңда</li></ul><a class="btn secondary" href="../app/index.html#arch-8-cache">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="arch-8-cache:bigger:size"><p class="l3-qt">8 × 8 int матрицасы неше байт?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">256</button><button type="button" class="l3-opt" data-i="1">64</button><button type="button" class="l3-opt" data-i="2">512</button><button type="button" class="l3-opt" data-i="3">32</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 256</p><p>64 элемент × 4 байт = 256 байт.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="arch-8-cache:bigger:tradeoff"><p class="l3-qt">Неге L1 кэшті 1 ГБ етіп жасамайды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Үлкен кэш баяу, қымбат және көп энергия жұмсайды: L1-дің бар мәні жылдамдықта</button><button type="button" class="l3-opt" data-i="1">Себебі 1 ГБ адрестеу мүмкін емес</button><button type="button" class="l3-opt" data-i="2">Себебі кэш тек 64 байт бола алады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Үлкен кэш баяу, қымбат және көп энергия жұмсайды: L1-дің бар мәні жылдамдықта</p><p>Сигнал үлкен жад массивін аралап шығуға көбірек уақыт алады. Сондықтан кіші әрі жылдам L1 және үлкен, баяу L2/L3 иерархиясы қолданылады.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="arch-7-memory.html">← <span lang="en">Memory</span></a><a href="../index.html#arch">Компьютер архитектурасы</a><a href="arch-9-pset.html"><span lang="en">Problem Set: биттен бағдарламаға</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

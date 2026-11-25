@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JavaScript · Веб-әзірлеу - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="JavaScript · Веб-әзірлеу - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Call stack, Web API, microtask және task кезектері: JavaScript бір ағында қалай «көп іс» істейді.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/web/web-4-js.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/web/web-4-js.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"JavaScript · Веб-әзірлеу - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/web/web-4-js.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Call stack, Web API, microtask және task кезектері: JavaScript бір ағында қалай «көп іс» істейді.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="web-4-js" style="--lc:#1d84a6">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#web">Веб-әзірлеу</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Веб-әзірлеу · 4-сабақ · ≈15 мин · 4 қадам · 8 сұрақ</p>
+        <h1 lang="en">JavaScript</h1>
+        <p class="l3-lede">Call stack, Web API, microtask және task кезектері: JavaScript бір ағында қалай «көп іс» істейді.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#web-4-js">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Call stack</a></li><li><a href="#s2">Нәтижені болжа</a></li><li><a href="#s3">Таймерлер</a></li><li><a href="#s4">fetch және Promise</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Call stack</h2><div class="l3-body"><h3>Идея</h3>
+<p>JavaScript: <strong>бір ағынды</strong> (single-threaded): бір уақытта бір ғана код орындалады. Орындалып жатқан функциялар <strong>call stack</strong>-та тұрады: шақырылған функция үстіне қойылады, аяқталғанда алынады (LIFO: соңғы кірген бірінші шығады).</p>
+<p>Ұзақ әрекеттер (таймер, желі) стекті бөгемейді: олар <strong>браузерге (Web API)</strong> беріледі. Дайын болғанда олардың callback-і <strong>кезекке</strong> түседі.</p>
+<h3>Үш кезек түрі</h3>
+<ul><li><strong>call stack</strong>: қазір орындалып жатқан;</li><li><strong>microtask кезегі</strong>: Promise.then callback-тері;</li><li><strong>task (macrotask) кезегі</strong>: setTimeout, оқиғалар, fetch-тің жауабы.</li></ul>
+<h3>Event loop ережесі</h3>
+<pre class="l3-pre"><code>while (true):
+    стек бос па? →
+        барлық microtask-ты орында
+        бір task-ты алып орында</code></pre>
+<blockquote><p>💡 Түйін: «асинхронды» = «кейінірек, стек босағанда». Параллель емес!</p></blockquote>
+<h3>Енді сен</h3>
+<p>«setTimeout(0) vs Promise» бағдарламасын соңына дейін қадамдап орында. Әр қадамда стек пен кезектерге қара.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>«setTimeout(0) vs Promise» бағдарламасын соңына дейін орында</li></ul><a class="btn secondary" href="../app/index.html#web-4-js">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="web-4-js:stack:single"><p class="l3-qt">JavaScript бір уақытта неше функцияны орындай алады (бір ағында)?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Шексіз</button><button type="button" class="l3-opt" data-i="1">Бір</button><button type="button" class="l3-opt" data-i="2">Екі</button><button type="button" class="l3-opt" data-i="3">Процессор ядроларының санындай</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Бір</p><p>Бір call stack: бір уақытта бір орындалу. Асинхрондылық кезектер арқылы жасалады.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="web-4-js:stack:lifo"><p class="l3-qt">Call stack қандай принциппен жұмыс істейді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">FIFO: бірінші кірген бірінші шығады</button><button type="button" class="l3-opt" data-i="1">LIFO: соңғы кірген бірінші шығады</button><button type="button" class="l3-opt" data-i="2">Кездейсоқ</button><button type="button" class="l3-opt" data-i="3">Ұзындығы бойынша</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> LIFO: соңғы кірген бірінші шығады</p><p>Ішкі шақыру аяқталмай, сыртқысы аяқтала алмайды: бұл LIFO.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Нәтижені болжа</h2><div class="l3-body"><h3>Идея</h3>
+<p>Бағдарламаны оқып, нәтижесін <strong>болжау</strong> : бағдарламалаудың басты дағдысы. Ереже:</p>
+<ol><li>Барлық синхронды код бірінші.</li><li>Стек босағанда: <strong>барлық</strong> microtask (Promise).</li><li>Сосын <strong>бір</strong> task (setTimeout), тағы microtask-тар, тағы бір task...</li></ol>
+<h3>Есептеп көрейік</h3>
+<pre class="l3-pre"><code>console.log(&quot;A&quot;);
+setTimeout(() =&gt; console.log(&quot;B&quot;), 0);
+Promise.resolve().then(() =&gt; console.log(&quot;C&quot;));
+console.log(&quot;D&quot;);</code></pre>
+<ol><li>«A»: синхронды.</li><li>setTimeout → Web API → дайын → task кезегі: [B].</li><li>Promise.then → microtask кезегі: [C].</li><li>«D»: синхронды.</li><li>Стек бос → microtask: «C».</li><li>Task: «B».</li></ol>
+<p>Нәтиже: <strong>A D C B</strong>.</p>
+<blockquote><p>⚠ Жиі қате: «setTimeout(…, 0): бірден орындалады». Жоқ: 0 мс: «ең ерте дегенде», және тек стек пен microtask-тар босағаннан кейін.</p></blockquote>
+<h3>Тереңірек: event loop алгоритмі дәл</h3>
+<pre class="l3-pre"><code>1. Скриптті соңына дейін орында (стек бос болғанша)
+2. Microtask кезегін ТОЛЫҚ босат (жаңа microtask-тар да кезекке қосылады)
+3. Қажет болса: экранды сал (render)
+4. Macrotask кезегінен БІР тапсырма ал, орында → 2-қадамға</code></pre>
+<p>Мысал:</p>
+<pre class="l3-pre"><code>console.log(&quot;A&quot;);
+setTimeout(() =&gt; console.log(&quot;B&quot;), 0);
+Promise.resolve().then(() =&gt; {
+  console.log(&quot;C&quot;);
+  Promise.resolve().then(() =&gt; console.log(&quot;D&quot;));
+});
+console.log(&quot;E&quot;);</code></pre>
+<p>Нәтиже: <strong>A E C D B</strong>. A мен E: синхронды. C: microtask. D: C ішінде қосылған microtask, бірақ кезек толық босатылатындықтан B-дан бұрын. B: macrotask, ең соңында.</p>
+<p>Салдары: шексіз microtask (then ішінде өзін қайта шақыру) экранды <strong>мүлдем</strong> салдырмайды: бет қатып қалады. Ал шексіз setTimeout қатырмайды: әр macrotask арасында render мүмкіндігі бар.</p>
+<p><code>setTimeout(f, 0)</code>: «кемінде 0 мс», «дәл 0 мс» емес. Браузерлер 5 деңгейден терең кірістірілген таймерлерге кемінде ~4 мс қояды.</p>
+<h3>Енді сен</h3>
+<p>Консольге шығатын ретті батырмалармен құрастыр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>«setTimeout(0) vs Promise» ретін дұрыс болжа</li></ul><a class="btn secondary" href="../app/index.html#web-4-js">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="web-4-js:predict:order"><p class="l3-qt">console.log(1); setTimeout(() =&gt; console.log(2)); Promise.resolve().then(() =&gt; console.log(3));: нәтиже?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">1 2 3</button><button type="button" class="l3-opt" data-i="1">1 3 2</button><button type="button" class="l3-opt" data-i="2">3 1 2</button><button type="button" class="l3-opt" data-i="3">2 3 1</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 1 3 2</p><p>Синхронды 1, сосын microtask 3, сосын task 2.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="web-4-js:predict:zero"><p class="l3-qt">setTimeout(fn, 0) қашан орындалады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Дәл қазір</button><button type="button" class="l3-opt" data-i="1">Ағымдағы код пен барлық microtask-тардан кейін</button><button type="button" class="l3-opt" data-i="2">0 секундтан кейін, кез келген кодты үзіп</button><button type="button" class="l3-opt" data-i="3">Ешқашан</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Ағымдағы код пен барлық microtask-тардан кейін</p><p>Task кезегіндегі callback стек бос және microtask кезегі бос болғанда ғана алынады.</p></details></div></div></section><section class="l3-step" id="s3" aria-labelledby="s3-h"><h2 id="s3-h"><span class="l3-n">3</span>Таймерлер</h2><div class="l3-body"><h3>Идея</h3>
+<p>Таймерлер кодтағы <strong>ретпен</strong> емес, <strong>мерзімі</strong> бойынша дайын болады. Web API әр таймерді өзі санайды; уақыты біткен callback task кезегіне түседі.</p>
+<h3>Есептеп көрейік</h3>
+<pre class="l3-pre"><code>setTimeout(() =&gt; console.log(&quot;1&quot;), 100);
+setTimeout(() =&gt; console.log(&quot;2&quot;), 10);
+console.log(&quot;3&quot;);</code></pre>
+<ul><li>0 мс: «3» (синхронды).</li><li>10 мс: екінші таймер дайын → «2».</li><li>100 мс: бірінші таймер дайын → «1».</li></ul>
+<p>Нәтиже: <strong>3 2 1</strong>.</p>
+<h3>Нақты әлемде</h3>
+<p>setTimeout-тың уақыты: <strong>минимум</strong>, кепілдік емес. Стек ұзақ есептеумен бос болмаса, таймер кешігеді. Сондықтан ойындар мен анимация requestAnimationFrame және delta time қолданады (Game LAB, 3-сабақ).</p>
+<blockquote><p>💡 Түйін: асинхронды кодта «кодта бірінші жазылған» ≠ «бірінші орындалатын».</p></blockquote>
+<h3>Енді сен</h3>
+<p>«Екі таймер» бағдарламасының нәтижесін болжа.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>«Екі таймер» ретін дұрыс болжа</li></ul><a class="btn secondary" href="../app/index.html#web-4-js">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="web-4-js:timers:timers"><p class="l3-qt">setTimeout(A, 50); setTimeout(B, 20); setTimeout(C, 50);: қандай ретпен?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">A B C</button><button type="button" class="l3-opt" data-i="1">B A C</button><button type="button" class="l3-opt" data-i="2">B C A</button><button type="button" class="l3-opt" data-i="3">C B A</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> B A C</p><p>B (20 мс) бірінші. A мен C-ның мерзімі бірдей: тіркелген реті бойынша A, сосын C.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="web-4-js:timers:late"><p class="l3-qt">Стекте 200 мс бойы ауыр есептеу жүрсе, setTimeout(fn, 10) қашан орындалады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Дәл 10 мс-та</button><button type="button" class="l3-opt" data-i="1">Кемінде 200 мс-тан кейін, стек босағанда</button><button type="button" class="l3-opt" data-i="2">Ешқашан</button><button type="button" class="l3-opt" data-i="3">Есептеуді үзіп</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Кемінде 200 мс-тан кейін, стек босағанда</p><p>Таймер дайын болса да, callback стек босағанша күтеді.</p></details></div></div></section><section class="l3-step" id="s4" aria-labelledby="s4-h"><h2 id="s4-h"><span class="l3-n">4</span>fetch және Promise</h2><div class="l3-body"><h3>Идея</h3>
+<p><code>fetch</code>: желіден деректерді сұрау. Ол бірден <strong>Promise</strong> қайтарады; жауап келгенде Promise орындалады. Бұл: веб-қосымшалардың негізі: бет «қатып қалмайды», жауап күтіп тұрғанда пайдаланушы басуды, жазуды жалғастырады.</p>
+<h3>Есептеп көрейік</h3>
+<pre class="l3-pre"><code>console.log(&quot;бастау&quot;);
+fetch(&quot;/api/user&quot;).then(() =&gt; {
+  console.log(&quot;жауап келді&quot;);
+  Promise.resolve().then(() =&gt; console.log(&quot;өңделді&quot;));
+});
+setTimeout(() =&gt; console.log(&quot;таймер&quot;), 0);
+console.log(&quot;соңы&quot;);</code></pre>
+<ul><li>синхронды: «бастау», «соңы»;</li><li>0 мс: таймер дайын → «таймер»;</li><li>120 мс: желі жауабы → «жауап келді», оның ішіндегі Promise бірден → «өңделді».</li></ul>
+<p>Нәтиже: <strong>бастау, соңы, таймер, жауап келді, өңделді</strong>.</p>
+<h3>async/await</h3>
+<p>Заманауи JS-те:</p>
+<pre class="l3-pre"><code>const res = await fetch(&quot;/api/user&quot;);</code></pre>
+<p>Бұл да Promise, тек оқуға оңай. <code>await</code> функцияны «тоқтатады», бірақ стекті <strong>бөгемейді</strong>.</p>
+<blockquote><p>⚠ Жиі қате: fetch-тің нәтижесін келесі жолда бірден қолдануға тырысу. Нәтиже: болашақта; оны then немесе await арқылы күт.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Бағдарламаны соңына дейін орында және ретін дұрыс болжа.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Бағдарламаны соңына дейін орында</li><li>Ретін дұрыс болжа</li></ul><a class="btn secondary" href="../app/index.html#web-4-js">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="web-4-js:fetch:fetch"><p class="l3-qt">fetch(...) шақырылғанда бірден не қайтарады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Сервердің жауабын</button><button type="button" class="l3-opt" data-i="1">Promise: болашақтағы жауапқа уәде</button><button type="button" class="l3-opt" data-i="2">undefined</button><button type="button" class="l3-opt" data-i="3">HTML</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Promise: болашақтағы жауапқа уәде</p><p>Желі уақыт алады; fetch бірден Promise береді, ол жауап келгенде орындалады.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="web-4-js:fetch:nested"><p class="l3-qt">Task callback-інің ішінде Promise.then тіркелсе, ол қашан орындалады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Келесі таймерден кейін</button><button type="button" class="l3-opt" data-i="1">Сол task аяқталғаннан кейін бірден, келесі task-тан бұрын</button><button type="button" class="l3-opt" data-i="2">Бағдарлама соңында</button><button type="button" class="l3-opt" data-i="3">Ешқашан</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Сол task аяқталғаннан кейін бірден, келесі task-тан бұрын</p><p>Әр task-тан кейін event loop барлық microtask кезегін босатады.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="web-3-css.html">← <span lang="en">CSS &amp; Layout</span></a><a href="../index.html#web">Веб-әзірлеу</a><a href="web-5-backend.html"><span lang="en">Backend &amp; API</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

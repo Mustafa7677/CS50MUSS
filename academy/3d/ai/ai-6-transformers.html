@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Transformers · Жасанды интеллект - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Transformers · Жасанды интеллект - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Мәтін қалай токенге, токен қалай векторға айналады және attention қалай жұмыс істейді.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/ai/ai-6-transformers.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/ai/ai-6-transformers.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Transformers · Жасанды интеллект - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/ai/ai-6-transformers.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Мәтін қалай токенге, токен қалай векторға айналады және attention қалай жұмыс істейді.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="ai-6-transformers" style="--lc:#7a5cd6">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#ai">Жасанды интеллект</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Жасанды интеллект · 6-сабақ · ≈18 мин · 4 қадам · 8 сұрақ</p>
+        <h1 lang="en">Transformers</h1>
+        <p class="l3-lede">Мәтін қалай токенге, токен қалай векторға айналады және attention қалай жұмыс істейді.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#ai-6-transformers">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Токенизация</a></li><li><a href="#s2">Embedding: мағына: сан</a></li><li><a href="#s3">Self-attention</a></li><li><a href="#s4">Назардың өткірлігі</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Токенизация</h2><div class="l3-body"><h3>Идея</h3>
+<p>Нейрондық желі тек сандармен жұмыс істейді. Мәтінді санға айналдырудың бірінші қадамы: <strong>токенизация</strong>: мәтінді бөліктерге (токендерге) бөлу, әр бөлікке сөздіктегі нөмір беру.</p>
+<p>Үш жол бар:</p>
+<ul><li><strong>әріптер</strong> бойынша: сөздік кішкентай (~40), бірақ тізбектер өте ұзын;</li><li><strong>сөздер</strong> бойынша: тізбек қысқа, бірақ сөздік шексіз, ал жаңа сөз: «белгісіз»;</li><li><strong>сөз бөліктері (subword)</strong>: ортасы. GPT, BERT осыны қолданады.</li></ul>
+<h3>BPE алгоритмі</h3>
+<p>Byte-Pair Encoding қарапайым:</p>
+<ol><li>Әр сөзді әріптерге бөл.</li><li>Корпуста ең жиі кездесетін көрші жұпты тап.</li><li>Оны бір жаңа токенге біріктір. 2-қадамға қайт.</li></ol>
+<h3>Есептеп көрейік</h3>
+<p>«ы» + «▁» (сөз соңы) өте жиі → «ы▁». Кейін «д» + «і▁» → «ді▁», сосын «е» + «ді▁» → «еді▁» (жейді, ішеді...). 40 біріктіруден кейін «мысық» бір токен, ал корпуста жоқ «бағдарламашы»: бірнеше бөлік.</p>
+<h3>Қазақ тілі үшін маңызы</h3>
+<p>Агглютинативті тілде бір түбірден жүздеген форма жасалады: кітап-тар-ымыз-да. Subword токенизация түбір мен жалғауларды бөлек токендер етіп, сөздікті шағын ұстайды. Ағылшынға үйретілген токенизаторлар қазақ мәтінін әлдеқайда көп токенге бөледі: сондықтан мұндай модельдерде қазақ мәтіні «қымбатырақ».</p>
+<h3>Тереңірек: BPE алгоритмі қадамдап</h3>
+<pre class="l3-pre"><code>сөздік ← барлық жеке таңбалар
+қайтала K рет:
+    (a, b) ← корпуста қатар ең жиі кездесетін жұп
+    жаңа токен ab-ны сөздікке қос
+    корпустағы барлық &quot;a b&quot; → &quot;ab&quot;</code></pre>
+<p>Мысал корпусы: «ала ала алма». 1-қадам: «а л» жұбы 3 рет → «ал». Енді: «ал а ал а ал м а». 2-қадам: «ал а» 2 рет → «ала». Тағы сол сияқты.</p>
+<p><strong>Неге сөз емес?</strong> Сөздер тізімі шексіз (қазақ тілінде жалғаулар көп: «үй, үйлер, үйлеріміздегі»). Таңбалар: тым ұзақ тізбек. BPE ортасын табады: жиі бөліктер бір токен, сирек сөздер бөлшектеніп жазылады: <strong>белгісіз сөз болмайды</strong>.</p>
+<p>Салдары: модель «таңбаларды» көрмейді. Сондықтан LLM «strawberry сөзінде неше r бар?» деген сұрақта қателесуі мүмкін: ол «straw» + «berry» токендерін көреді.</p>
+<h3>Енді сен</h3>
+<p>Өз сөйлеміңді жаз. Merge санын 0-ге, сосын үлкен мәнге қойып, токен санының қалай өзгеретінін көр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Өз сөйлеміңді жаз</li><li>Merge санының кемінде 3 түрлі мәнін байқап көр (0-ді қоса)</li></ul><a class="btn secondary" href="../app/index.html#ai-6-transformers">Симуляцияны ашу</a></div><details class="l3-hint"><summary>Кеңес</summary><ul><li>Корпуста жоқ сөз жазып көр: ол көп ұсақ токенге бөлінеді.</li></ul></details><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-6-transformers:tokens:bpe"><p class="l3-qt">BPE алгоритмі әр қадамда не істейді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Ең сирек әріпті өшіреді</button><button type="button" class="l3-opt" data-i="1">Ең жиі кездесетін көрші токендер жұбын бір токенге біріктіреді</button><button type="button" class="l3-opt" data-i="2">Сөздерді кездейсоқ бөледі</button><button type="button" class="l3-opt" data-i="3">Барлық сөзді бір токенге айналдырады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Ең жиі кездесетін көрші токендер жұбын бір токенге біріктіреді</p><p>Жиі жұп → жаңа токен. Осылай жиі сөздер мен жалғаулар бүтін токен болады.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-6-transformers:tokens:unknown"><p class="l3-qt">Корпуста жоқ жаңа сөз subword токенизацияда қалай өңделеді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Өшіріледі</button><button type="button" class="l3-opt" data-i="1">Белгілі кішірек бөліктерге (ең соңында әріптерге) бөлінеді</button><button type="button" class="l3-opt" data-i="2">Қате береді</button><button type="button" class="l3-opt" data-i="3">Ең жақын сөзбен ауыстырылады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Белгілі кішірек бөліктерге (ең соңында әріптерге) бөлінеді</p><p>Бұл subword-тің басты артықшылығы: «белгісіз сөз» болмайды, тек ұзынырақ токендер тізбегі.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Embedding: мағына: сан</h2><div class="l3-body"><h3>Идея</h3>
+<p>Токен нөмірі (мысалы, «мысық» = 57) мағына бермейді: 57 мен 58 «ұқсас» емес. Сондықтан әр токенге <strong>вектор</strong>: сандар тізімі береміз. Бұл: <strong>embedding</strong>. Мұнда әр сөз 8 саннан тұрады; GPT-де: мыңдаған.</p>
+<h3>Мағына қайдан шығады?</h3>
+<p>Лингвистикадағы <strong>дистрибутивтік гипотеза</strong>: «сөздің мағынасы: оның көршілері». «Мысық» пен «ит» бірдей сөздердің қасында жүреді (сүт, ойнайды, үйде): демек олардың векторлары жақын болуы керек.</p>
+<p>Бұл зертханада векторлар былай есептелді:</p>
+<ol><li>Әр сөз жұбы қатар неше рет кездесетінін санадық (co-occurrence матрицасы).</li><li>Кездейсоқтықтан артық жиілікті PPMI арқылы бөліп алдық.</li><li>SVD-мен 8 өлшемге қысқарттық.</li></ol>
+<h3>Ұқсастық қалай өлшенеді</h3>
+<p>Косинус ұқсастығы: екі вектордың арасындағы бұрыш:</p>
+<pre class="l3-pre"><code>cos(a, b) = (a · b) / (|a| · |b|)</code></pre>
+<p>1: бір бағыт, 0: байланыссыз, −1: қарама-қарсы.</p>
+<h3>Есептеп көрейік</h3>
+<p>a = (1, 0), b = (0.8, 0.6): a·b = 0.8, |a| = 1, |b| = 1 → cos = 0.8 (жақын).</p>
+<blockquote><p>⚠ Жиі қате: «Embedding-тің әр саны бір мағынаны білдіреді». Әдетте жоқ: мағына барлық өлшемдер бойынша «таралған».</p></blockquote>
+<h3>Тереңірек: PPMI және SVD: мағынаны санау</h3>
+<p><strong>PMI</strong> (pointwise mutual information): w сөзі мен c контексі кездейсоқтан қаншалықты жиі бірге кездеседі:</p>
+<pre class="l3-pre"><code>PMI(w, c) = log [ P(w, c) / (P(w)·P(c)) ]
+PPMI = max(0, PMI)</code></pre>
+<p>Тәуелсіз болса P(w,c) = P(w)P(c) → PMI = 0. Жиі бірге → оң.</p>
+<p>Сөз × контекст PPMI матрицасы үлкен және сирек. <strong>SVD</strong> оны M ≈ U·Σ·Vᵀ деп ыдыратады, ал алғашқы k компонентті қалдыру: Эккарт-Янг теоремасы бойынша <strong>ең жақсы</strong> k-рангты жуықтау. U·Σ жолдары: сөздердің тығыз векторлары.</p>
+<p>Ұқсастық: <strong>косинус</strong>: cos(u, v) = u·v / (‖u‖·‖v‖). Ол вектор ұзындығына (сөз жиілігіне) тәуелсіз, тек бағытқа қарайды.</p>
+<p>Біздің 3D көрініс 1-3 компоненттерді көрсетеді: 0-компонент көбіне жай «жиілікті» білдіреді, ол мағыналық айырмашылықты жасырып тастайды.</p>
+<h3>Енді сен</h3>
+<p>Кемінде 3 сөзді таңда. «компьютер» мен «жылқы» сөздерінің көршілерін салыстыр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Кемінде 3 сөзді таңдап, көршілерін қара</li></ul><a class="btn secondary" href="../app/index.html#ai-6-transformers">Симуляцияны ашу</a></div><details class="l3-hint"><summary>Кеңес</summary><ul><li>«мысық», «компьютер», «аспан» сөздерін салыстыр: көршілері әр тақырыптан болады.</li></ul></details><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-6-transformers:embeddings:cos"><p class="l3-qt">a = (1, 0), b = (0, 1). Косинус ұқсастығы қанша?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">1</button><button type="button" class="l3-opt" data-i="1">0</button><button type="button" class="l3-opt" data-i="2">−1</button><button type="button" class="l3-opt" data-i="3">0.5</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 0</p><p>a·b = 0 → cos = 0. Векторлар перпендикуляр: «байланыссыз».</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-6-transformers:embeddings:meaning"><p class="l3-qt">Бұл зертханадағы сөз векторлары мағынаны қайдан «біледі»?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Адам әр сөзге қолмен жазды</button><button type="button" class="l3-opt" data-i="1">Сөздердің корпуста қандай сөздермен қатар кездесетінінен</button><button type="button" class="l3-opt" data-i="2">Сөздің ұзындығынан</button><button type="button" class="l3-opt" data-i="3">Алфавиттік реттен</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Сөздердің корпуста қандай сөздермен қатар кездесетінінен</p><p>Дистрибутивтік гипотеза: ұқсас контекстегі сөздердің мағынасы ұқсас.</p></details></div></div></section><section class="l3-step" id="s3" aria-labelledby="s3-h"><h2 id="s3-h"><span class="l3-n">3</span>Self-attention</h2><div class="l3-body"><h3>Идея</h3>
+<p>Сөздің мағынасы контекстке тәуелді: «бал»: тамақ па, баға ма? Transformer-дің жүрегі: <strong>self-attention</strong>: әр токен сөйлемдегі басқа токендерге қарап, өзіне маңыздыларынан ақпарат жинайды.</p>
+<h3>Механизм</h3>
+<p>Әр токен үш векторға айналады:</p>
+<ul><li><strong>Query (Q)</strong>: «мен не іздеймін?»</li><li><strong>Key (K)</strong>: «менде не бар?»</li><li><strong>Value (V)</strong>: «мен не беремін?»</li></ul>
+<pre class="l3-pre"><code>score(i, j) = Qᵢ · Kⱼ / √d
+weights(i)  = softmax(score(i, ·))
+output(i)   = Σⱼ weights(i, j) · Vⱼ</code></pre>
+<p>Нақты модельде Q, K, V: үйретілетін матрицалар. Мұнда түсінікті болу үшін Q = K = V = сөз векторы: назар <strong>мағыналық ұқсастықты</strong> көрсетеді.</p>
+<h3>Softmax</h3>
+<p>Ұпайларды қосындысы 1 болатын ықтималдыққа айналдырады:</p>
+<pre class="l3-pre"><code>softmax(xᵢ) = e^xᵢ / Σ e^xⱼ</code></pre>
+<p>Ұпайлар (2, 1, 0) → (0.67, 0.24, 0.09).</p>
+<h3>Causal mask</h3>
+<p>GPT мәтінді солдан оңға генерациялайды, сондықтан training кезінде токен <strong>болашақты көрмеуі</strong> керек: j &gt; i ұпайлары −∞ етіледі, softmax-тан кейін олар 0 болады.</p>
+<blockquote><p>💡 Түйін: RNN мәтінді сөзбе-сөз оқиды; attention барлық жұптарды <strong>бір уақытта</strong> салыстырады: сондықтан GPU-да тез және алыс байланыстарды жақсы ұстайды.</p></blockquote>
+<h3>Тереңірек: Attention формуласы, √d және O(n²)</h3>
+<pre class="l3-pre"><code>Attention(Q, K, V) = softmax(Q·Kᵀ / √d) · V</code></pre>
+<p>Әр токен i үшін: qᵢ: «мен не іздеймін», kⱼ: «менде не бар», vⱼ: «мен не беремін». Салмақ αᵢⱼ = softmax_j(qᵢ·kⱼ/√d), шығыс = Σⱼ αᵢⱼ·vⱼ.</p>
+<p><strong>Неге √d-ге бөлеміз?</strong> q мен k компоненттері тәуелсіз, орташасы 0, дисперсиясы 1 болса, q·k = Σ qₜkₜ: d қосылғыштың қосындысы, дисперсиясы d, ауытқуы √d. d = 64 болса, ұпайлар ±8 айналасында → softmax бір токенге жабысады (one-hot), градиент жоғалады. √d-ге бөлу ауытқуды 1-ге қайтарады.</p>
+<p><strong>Құны.</strong> n токен → n² ұпай әр бас, әр қабат үшін:</p>
+<ul><li>n = 1 000 → 10⁶</li><li>n = 100 000 → 10¹⁰</li></ul>
+<p>Контекст 10 есе ұзарса, attention 100 есе қымбаттайды. Ұзын контексті модельдердің негізгі инженерлік мәселесі осы.</p>
+<p><strong>Multi-head.</strong> Бір бас бір «сұрақ» қояды. h бас әр түрлі Q, K, V проекцияларымен параллель жұмыс істейді (біреуі грамматиканы, біреуі есімдіктің кімге сілтейтінін…), нәтижелер біріктіріледі.</p>
+<p><strong>Causal mask.</strong> Мәтін генерациясында i токен j &gt; i токендерді көрмеуі керек: оларға ұпай −∞ қойылады → e⁻∞ = 0 салмақ.</p>
+<h3>Енді сен</h3>
+<p>Кестеде кемінде 2 токенді таңдап, оның назарын қара. Causal mask-ты қосып, кестенің жоғарғы-оң үшбұрышы нөлге айналғанын көр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Кемінде 2 токенді таңдап, оның назарын қара</li><li>Causal mask-ты қосып көр</li></ul><a class="btn secondary" href="../app/index.html#ai-6-transformers">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-6-transformers:attention:softmax"><p class="l3-qt">softmax нәтижесінің қасиеті қандай?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Барлық мәндер теріс</button><button type="button" class="l3-opt" data-i="1">Мәндер оң және қосындысы 1</button><button type="button" class="l3-opt" data-i="2">Ең үлкені әрдайым 1</button><button type="button" class="l3-opt" data-i="3">Мәндер өзгермейді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Мәндер оң және қосындысы 1</p><p>e^x әрдайым оң, ал қосындыға бөлу оларды 1-ге қалыптайды: ықтималдық үлестірімі.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-6-transformers:attention:causal"><p class="l3-qt">Causal mask 3-токенге қай токендерге назар аударуға рұқсат береді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Тек 3-токенге</button><button type="button" class="l3-opt" data-i="1">1, 2 және 3-токендерге</button><button type="button" class="l3-opt" data-i="2">Барлық токендерге</button><button type="button" class="l3-opt" data-i="3">Тек 4 және одан кейінгілерге</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 1, 2 және 3-токендерге</p><p>Causal = тек өзі мен өзінен бұрынғылар. Болашақ токендер жасырылады.</p></details></div></div></section><section class="l3-step" id="s4" aria-labelledby="s4-h"><h2 id="s4-h"><span class="l3-n">4</span>Назардың өткірлігі</h2><div class="l3-body"><h3>Идея</h3>
+<p>Неге ұпайлар <strong>√d</strong>-ға бөлінеді? Вектор өлшемі d үлкен болса, Q·K скаляр көбейтіндісінің мәндері де үлкейеді (d қосылғыштың қосындысы). Үлкен ұпайлар softmax-ты «қанықтырады»: бір токен ~1, қалғаны ~0 алады, ал градиенттер жоғалады. √d-ға бөлу ұпайлардың шашырауын тұрақты ұстайды.</p>
+<h3>Энтропия: назардың «шашыраңқылығы»</h3>
+<pre class="l3-pre"><code>H = −Σ pᵢ · ln(pᵢ)</code></pre>
+<ul><li>бір токенге толық назар: H = 0;</li><li>n токенге біркелкі: H = ln(n).</li></ul>
+<h3>Есептеп көрейік</h3>
+<p>5 токенге біркелкі: H = ln 5 ≈ 1.61. (0.97, 0.01, 0.01, 0.01): H ≈ 0.17: өте шоғырланған.</p>
+<p>Өткірлік жүгірткісі: ұпайлардың алдындағы көбейткіш (кері temperature). Нөлде барлық ұпай бірдей → біркелкі назар. Үлкен мәнде ең ұқсас токен бәрін «тартып алады».</p>
+<h3>Нақты модельдерде</h3>
+<p>Transformer-де бір емес, бірнеше attention «басы» (multi-head) болады: біреуі синтаксисті, біреуі алыс сілтемелерді, біреуі көрші сөзді бақылайды. Олардың энтропиясы әртүрлі.</p>
+<blockquote><p>⚠ Жиі қате: «Назар: модельдің түсіндірмесі». Attention салмақтары пайдалы көрсеткіш, бірақ модельдің шешімін толық түсіндірмейді.</p></blockquote>
+<h3>Енді сен</h3>
+<p>«сүт» токенін таңда. Өткірлікті 0-ге қойып энтропияны 1.3-тен асыр, сосын 100-ге жақындатып, 0.3-тен төмен түсір.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Энтропияны 0.3-тен төмен түсір (назар бір токенде)</li><li>Энтропияны 1.3-тен жоғары көтер (назар біркелкі)</li></ul><a class="btn secondary" href="../app/index.html#ai-6-transformers">Симуляцияны ашу</a></div><details class="l3-hint"><summary>Кеңес</summary><ul><li>Алдымен «сүт» токенін таңда. Өткірлікті 0-ге қой (біркелкі), сосын 100-ге жақындат (өткір).</li></ul></details><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="2" data-qid="ai-6-transformers:sharpness:uniform"><p class="l3-qt">4 токенге біркелкі назардың энтропиясы қанша?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">0</button><button type="button" class="l3-opt" data-i="1">1</button><button type="button" class="l3-opt" data-i="2">ln 4 ≈ 1.39</button><button type="button" class="l3-opt" data-i="3">4</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> ln 4 ≈ 1.39</p><p>Біркелкі үлестірімде H = ln(n) = ln 4 ≈ 1.39.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-6-transformers:sharpness:sqrt"><p class="l3-qt">Attention ұпайлары неге √d-ға бөлінеді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Есептеуді жылдамдату үшін</button><button type="button" class="l3-opt" data-i="1">Үлкен d-да ұпайлар тым үлкейіп, softmax қанықпауы және градиенттер жоғалмауы үшін</button><button type="button" class="l3-opt" data-i="2">Векторларды бүтін сан ету үшін</button><button type="button" class="l3-opt" data-i="3">Causal mask үшін</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Үлкен d-да ұпайлар тым үлкейіп, softmax қанықпауы және градиенттер жоғалмауы үшін</p><p>d өскен сайын Q·K-ның шашырауы өседі; √d-ға бөлу оны тұрақтандырады.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="ai-5-overfitting.html">← <span lang="en">Overfitting</span></a><a href="../index.html#ai">Жасанды интеллект</a><a href="ai-7-llm.html"><span lang="en">LLM Inference</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

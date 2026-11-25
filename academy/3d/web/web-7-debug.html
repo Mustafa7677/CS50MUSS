@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Debugging · Веб-әзірлеу - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Debugging · Веб-әзірлеу - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: shop.kz бұзылған: DNS, 404, 500 және баяу сұрауды тауып, түзет.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/web/web-7-debug.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/web/web-7-debug.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Debugging · Веб-әзірлеу - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/web/web-7-debug.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: shop.kz бұзылған: DNS, 404, 500 және баяу сұрауды тауып, түзет.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="web-7-debug" style="--lc:#1d84a6">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#web">Веб-әзірлеу</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Веб-әзірлеу · 7-сабақ · ≈18 мин · 4 қадам · 8 сұрақ</p>
+        <h1 lang="en">Debugging</h1>
+        <p class="l3-lede">shop.kz бұзылған: DNS, 404, 500 және баяу сұрауды тауып, түзет.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#web-7-debug">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Сайт ашылмайды</a></li><li><a href="#s2">404 Not Found</a></li><li><a href="#s3">500 Internal Server Error</a></li><li><a href="#s4">Баяу API</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Сайт ашылмайды</h2><div class="l3-body"><h3>Идея</h3>
+<p>Debugging: болжау емес, <strong>жүйелі іздеу</strong>. Жүйелі әдіс:</p>
+<ol><li><strong>Симптомды</strong> нақты сипатта: «бет ашылмайды» емес: «DNS_PROBE_FINISHED_NXDOMAIN».</li><li><strong>Гипотеза</strong>: қай кезеңде сынды?</li><li><strong>Тексер</strong>: бір нәрсені өзгерт, нәтижені бақыла.</li><li>Қайтала.</li></ol>
+<h3>Қате хабарларын оқы</h3>
+<pre class="l3-pre"><code>NXDOMAIN              → DNS: мұндай домен жоқ
+ERR_CONNECTION_TIMED_OUT → сервер жауап бермейді (өшірулі / брандмауэр)
+ERR_SSL_PROTOCOL_ERROR → TLS/сертификат мәселесі
+404 / 500             → сервер бар, мәселе қосымшада</code></pre>
+<p>Хабар қай кезеңді атайды: сол кезеңнен баста.</p>
+<h3>Есептеп көрейік</h3>
+<p>Кезеңдер тізімінде браузер «DNS сұрауы» кезеңінде тоқтады. Демек TCP, HTTP, сервер коды: әзірге кінәлі емес. Тек DNS жазбаларын тексер.</p>
+<blockquote><p>⚠ Жиі қате: бірден кодты өзгертуге кірісу. Алдымен мәселенің <strong>қай деңгейде</strong> екенін анықта.</p></blockquote>
+<h3>Енді сен</h3>
+<p>shop.kz ашылмайды. Қате хабарын оқы, DNS жазбаларын тексер, түзет.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>shop.kz домені IP адреске шешілсін</li></ul><a class="btn secondary" href="../app/index.html#web-7-debug">Симуляцияны ашу</a></div><details class="l3-hint"><summary>Кеңес</summary><ul><li>DNS бөлімінде shpo.kz деп жазылған. shop.kz → 93.184.10.5 жазбасын қос.</li></ul></details><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="web-7-debug:dns:nx"><p class="l3-qt">NXDOMAIN қатесі қай кезеңде мәселе барын білдіреді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">HTML</button><button type="button" class="l3-opt" data-i="1">DNS</button><button type="button" class="l3-opt" data-i="2">Дерекқор</button><button type="button" class="l3-opt" data-i="3">CSS</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> DNS</p><p>NXDOMAIN = Non-Existent Domain: DNS бұл атауды таппады.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="web-7-debug:dns:method"><p class="l3-qt">Debugging-тің бірінші қадамы қандай?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Кодты қайта жазу</button><button type="button" class="l3-opt" data-i="1">Симптомды нақты сипаттап, мәселенің қай деңгейде екенін анықтау</button><button type="button" class="l3-opt" data-i="2">Серверді қайта жүктеу</button><button type="button" class="l3-opt" data-i="3">Басқа браузерді ашу</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Симптомды нақты сипаттап, мәселенің қай деңгейде екенін анықтау</p><p>Нақты симптом → гипотеза → тексеріс. Кездейсоқ өзгерістер уақытты жейді.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>404 Not Found</h2><div class="l3-body"><h3>Идея</h3>
+<p>Енді DNS, TCP, TLS жұмыс істейді: сервер жауап береді. Бірақ <strong>404 Not Found</strong>: сервер бар, бірақ сұралған <strong>жол</strong> бойынша маршрут жоқ.</p>
+<h3>Тексеру жолы</h3>
+<ol><li>Қандай жол сұралды? → <code>/</code></li><li>Серверде қандай маршруттар бар? → <code>/home</code></li><li>Сәйкессіздік: басты бет қате жолда тұр.</li></ol>
+<h3>Шешім нұсқалары</h3>
+<ul><li>маршруттың жолын <code>/</code>-ге өзгерту;</li><li>немесе <code>/</code>-ден <code>/home</code>-ға <strong>redirect</strong> (301) жасау.</li></ul>
+<h3>Нақты әлемде</h3>
+<p>404 көбінесе сайтты қайта құрылымдағанда пайда болады: ескі сілтемелер интернетте қалады. Сондықтан ірі сайттар ескі адрестерден жаңасына 301 redirect қояды: әйтпесе іздеу жүйесіндегі орнын жоғалтады.</p>
+<blockquote><p>💡 Түйін: 404: «сен жоқ нәрсені сұрадың». Сервер дұрыс жұмыс істеп тұр.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Сервердің маршруттарын қара және https://shop.kz/ 200 қайтаратындай түзет.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>https://shop.kz/ → 200</li></ul><a class="btn secondary" href="../app/index.html#web-7-debug">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="web-7-debug:404:means"><p class="l3-qt">404 алдық. Не дұрыс жұмыс істеп тұр?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Ештеңе</button><button type="button" class="l3-opt" data-i="1">DNS, байланыс және сервер: тек маршрут табылмады</button><button type="button" class="l3-opt" data-i="2">Тек DNS</button><button type="button" class="l3-opt" data-i="3">Тек дерекқор</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> DNS, байланыс және сервер: тек маршрут табылмады</p><p>Сервер жауап берді (статус кодпен): демек желі мен сервер жұмыс істейді.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="web-7-debug:404:move"><p class="l3-qt">Сайттағы бетті жаңа адреске көшірдің. Ескі сілтемелер жұмыс істеуі үшін не дұрыс?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Ескі адресте 404 қалдыру</button><button type="button" class="l3-opt" data-i="1">Ескі адрестен жаңасына 301 redirect</button><button type="button" class="l3-opt" data-i="2">DNS-ті өзгерту</button><button type="button" class="l3-opt" data-i="3">Серверді өшіру</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Ескі адрестен жаңасына 301 redirect</p><p>301 Moved Permanently браузерге де, іздеу жүйесіне де жаңа адресті айтады.</p></details></div></div></section><section class="l3-step" id="s3" aria-labelledby="s3-h"><h2 id="s3-h"><span class="l3-n">3</span>500 Internal Server Error</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>500 Internal Server Error</strong>: сервер кодының өзінде қате (exception). Клиент дұрыс сұрады; мәселе: серверде. Мұнда маршрут «crash» түрінде: код <code>undefined</code>-тың қасиетін оқуға тырысып құлайды.</p>
+<h3>Нақты әлемде қалай іздейді</h3>
+<ol><li><strong>Логтар</strong>: сервер қатенің stack trace-ін жазады: файл, жол, функция.</li><li><strong>Қайталау</strong>: сол сұрауды қайта жіберіп, қате тұрақты ма тексер.</li><li><strong>Соңғы өзгеріс</strong>: көбінесе 500 жаңа deploy-дан кейін пайда болады.</li><li><strong>Мониторинг</strong>: Sentry сияқты жүйелер әр 500-ді бірден хабарлайды.</li></ol>
+<h3>Есептеп көрейік</h3>
+<pre class="l3-pre"><code>TypeError: Cannot read properties of undefined (reading &#x27;price&#x27;)
+    at handler (products.js:12)</code></pre>
+<p>12-жолда <code>product.price</code>: бірақ <code>product</code> табылмаған. Түзету: тексеріс қосу немесе 404 қайтару.</p>
+<blockquote><p>⚠ Жиі қате: пайдаланушыға stack trace-ті көрсету. Бұл шабуылдаушыға кодтың ішкі құрылымын ашады. Клиентке: жалпы хабар, логқа: толық мәлімет.</p></blockquote>
+<h3>Енді сен</h3>
+<p>/api/products сұрауымен 500 қатесін көр, сосын маршрутты түзетіп, 200 ал.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>500 қатесін көр</li><li>Маршрутты түзетіп, 200 ал</li></ul><a class="btn secondary" href="../app/index.html#web-7-debug">Симуляцияны ашу</a></div><details class="l3-hint"><summary>Кеңес</summary><ul><li>Маршрут түрін «crash»-тан «JSON»-ға ауыстыр.</li></ul></details><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="web-7-debug:500:who"><p class="l3-qt">500 қатесінде кім кінәлі?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Пайдаланушы</button><button type="button" class="l3-opt" data-i="1">Сервердің коды</button><button type="button" class="l3-opt" data-i="2">DNS</button><button type="button" class="l3-opt" data-i="3">Браузер</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Сервердің коды</p><p>5xx: сервер жағы. Клиенттің сұрауы дұрыс болуы мүмкін.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="web-7-debug:500:trace"><p class="l3-qt">Stack trace-ті пайдаланушыға неге көрсетпеу керек?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Ол тым ұзын</button><button type="button" class="l3-opt" data-i="1">Ол кодтың ішкі құрылымын ашып, шабуылдаушыға көмектеседі</button><button type="button" class="l3-opt" data-i="2">Браузер оны көрсете алмайды</button><button type="button" class="l3-opt" data-i="3">Ол ағылшынша</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Ол кодтың ішкі құрылымын ашып, шабуылдаушыға көмектеседі</p><p>Ішкі мәліметтер: логқа, пайдаланушыға: қысқа, қауіпсіз хабар.</p></details></div></div></section><section class="l3-step" id="s4" aria-labelledby="s4-h"><h2 id="s4-h"><span class="l3-n">4</span>Баяу API</h2><div class="l3-body"><h3>Идея</h3>
+<p>Сұрау жұмыс істейді, бірақ <strong>баяу</strong>. Өнімділік мәселесінде басты ереже: <strong>алдымен өлше, сосын оңтайландыр</strong>. Кезеңдер тізімінде уақыттың қай жерге кететінін тап.</p>
+<h3>Есептеп көрейік</h3>
+<pre class="l3-pre"><code>DNS + TCP + TLS + HTTP ≈ 330 мс
+SQL сұрауы            ≈ 1200 мс  ← мәселе осында</code></pre>
+<p>SQL: <code>SELECT * FROM orders WHERE user_id = 7</code>: «2000 жол қаралды (толық сканерлеу)». Бұл 6-сабақтағы жағдай! Индекс → ~260 жол → ~160 мс.</p>
+<h3>Неге «алдымен өлше»</h3>
+<p>Интуиция жиі алдайды: желіні не кодты оңтайландыруға бір апта жұмсап, нақты баяулықтың 80%-ы бір SQL сұрауында болғанын кейін білесің. Профайлер: debugging-тің өнімділіктегі нұсқасы.</p>
+<blockquote><p>💡 Түйін: «Premature optimization is the root of all evil»: Дональд Кнут. Өлшемей оңтайландырма.</p></blockquote>
+<h3>Тереңірек: N+1 сұраныс және Амдаль заңы</h3>
+<p>Классикалық баяулық:</p>
+<pre class="l3-pre"><code>posts = db.query(&quot;SELECT * FROM posts LIMIT 50&quot;)      -- 1 сұраныс
+for p in posts:
+    p.author = db.query(&quot;SELECT * FROM users WHERE id = ?&quot;, [p.author_id])   -- 50 сұраныс</code></pre>
+<p>51 сұраныс × 2 мс желі = 102 мс. JOIN не <code>WHERE id IN (…)</code> арқылы: 1-2 сұраныс, ~4 мс. Бұл <strong>N+1</strong> мәселесі, ORM-дерде өте жиі.</p>
+<p><strong>Амдаль заңы</strong>: нені оңтайландыру керегін айтады. Жұмыстың f бөлігін s есе жылдамдатсақ:</p>
+<pre class="l3-pre"><code>жалпы жылдамдау = 1 / ((1 − f) + f/s)</code></pre>
+<p>Сұраныстың 90%-ы: база, 10%-ы: код. Кодты 10 есе жылдамдатсақ: 1/(0.9 + 0.01) ≈ <strong>1.1×</strong>. Базаны 10 есе: 1/(0.1 + 0.09) ≈ <strong>5.3×</strong>.</p>
+<p>Сабақ: алдымен <strong>өлше</strong> (profiler, trace), сосын ең үлкен бөлікті түзет. Болжам бойынша оңтайландыру: уақыт ысырабы.</p>
+<h3>Енді сен</h3>
+<p>Баяу сұрауды көр (≥ 1 с), себебін кезеңдерден тап, түзет және сол сұрауды 600 мс-тан жылдам ет.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Баяу сұрауды көр (≥ 1000 мс)</li><li>Сол сұрау &lt; 600 мс</li></ul><a class="btn secondary" href="../app/index.html#web-7-debug">Симуляцияны ашу</a></div><details class="l3-hint"><summary>Кеңес</summary><ul><li>SQL консолінде: CREATE INDEX ON orders (user_id)</li></ul></details><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="web-7-debug:slow:measure"><p class="l3-qt">Сұрау баяу. Бірінші не істейміз?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Серверді күштірек етеміз</button><button type="button" class="l3-opt" data-i="1">Уақыттың қай кезеңде кететінін өлшейміз</button><button type="button" class="l3-opt" data-i="2">Кодты қайта жазамыз</button><button type="button" class="l3-opt" data-i="3">Кэшті өшіреміз</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Уақыттың қай кезеңде кететінін өлшейміз</p><p>Тар жерді тапқанша, кез келген оңтайландыру: болжам.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="web-7-debug:slow:fix"><p class="l3-qt">«2000 жол қаралды (толық сканерлеу)»: ең тиімді түзету қайсы?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">LIMIT қосу</button><button type="button" class="l3-opt" data-i="1">Іздеу бағанына индекс жасау</button><button type="button" class="l3-opt" data-i="2">Кестені екіге бөлу</button><button type="button" class="l3-opt" data-i="3">Серверді жақындату</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Іздеу бағанына индекс жасау</p><p>Индекс сканерлеуді бинарлық іздеуге айналдырады.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="web-6-db.html">← <span lang="en">Databases</span></a><a href="../index.html#web">Веб-әзірлеу</a><a href="web-8-deploy.html"><span lang="en">Deploy</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

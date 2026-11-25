@@ -37,9 +37,10 @@ TOOLS = {"practice.html": "task", "exam.html": "test", "flashcards.html": "task"
          "detective.html": "game", "debug.html": "task", "playground.html": "task", "glossary.html": "page",
          "cheatsheet.html": "page", "viz.html": "page", "flask.html": "task"}
 PROJECTS = {"projects.html": "task"}
-ACADEMY_PUBLIC = {"academy/index.html", "academy/map.html", "academy/models.html", "academy/study.html"}
+ACADEMY_PUBLIC = {"academy/index.html", "academy/map.html", "academy/models.html", "academy/study.html",
+                  "academy/course.html", "academy/comics.html"}   # AO17 CS курсының беті және комикс хабы - каталог
 # IELTS, Digital SAT және CS зертханалары - ашық жаттығу орталары (деректері браузерде): жария
-ACADEMY_PUBLIC_DIRS = ("academy/tracks/", "academy/ielts/", "academy/sat/", "academy/labs/")
+ACADEMY_PUBLIC_DIRS = ("academy/tracks/", "academy/ielts/", "academy/sat/", "academy/labs/", "academy/3d/")   # 3D зертхана: ашық лекциялар мен симуляция
 # Курстың ішкі беттерінің түрі (атауы бойынша)
 SUB_KIND = {"exam": "test", "ubt": "test", "placement": "test", "practice": "task", "vocab": "task",
             "grammar": "task", "phrasebank": "task", "skills": "task"}

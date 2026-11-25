@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Collision: Broad Phase with a Grid · Ойын әзірлеу - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Collision: Broad Phase with a Grid · Ойын әзірлеу - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: 1000 дене: жарты миллион жұп. Кеңістіктік тор тексерістерді жүздеген есе азайтады.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/game/game-12-broadphase.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/game/game-12-broadphase.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Collision: Broad Phase with a Grid · Ойын әзірлеу - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/game/game-12-broadphase.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: 1000 дене: жарты миллион жұп. Кеңістіктік тор тексерістерді жүздеген есе азайтады.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="game-12-broadphase" style="--lc:#b8466a">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#game">Ойын әзірлеу</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Ойын әзірлеу · 12-сабақ · ≈20 мин · 2 қадам · 6 сұрақ</p>
+        <h1 lang="en">Collision: Broad Phase with a Grid</h1>
+        <p class="l3-lede">1000 дене: жарты миллион жұп. Кеңістіктік тор тексерістерді жүздеген есе азайтады.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#game-12-broadphase">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Әр жұпты тексеру</a></li><li><a href="#s2">Кеңістіктік тор</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Әр жұпты тексеру</h2><div class="l3-body"><h3>Идея</h3>
+<p>Соқтығысты табу екі кезеңнен тұрады:</p>
+<ol><li><strong>Broad phase</strong> (кең кезең): «қай жұптар соқтығысуы <strong>мүмкін</strong>?» деген арзан сүзгі.</li><li><strong>Narrow phase</strong> (тар кезең): тек сол жұптар үшін нақты, қымбат геометриялық тексеріс.</li></ol>
+<p>Ең қарапайым broad phase: <strong>ештеңе сүзбеу</strong>, әр жұпты тексеру.</p>
+<h3>Есептеп көрейік</h3>
+<p>Жұптар саны: n(n − 1) / 2.</p>
+<ul><li>50 дене: 1 225.</li><li>200 дене: <strong>19 900</strong>.</li><li>1000 дене: <strong>499 500</strong>.</li></ul>
+<p>1000 денеде секундына 60 кадр: секундына 30 миллион тексеріс. Ал шын соқтығыстар саны (200 денеде) небәрі <strong>30</strong>. Тексерістердің 99.8%-ы бекер.</p>
+<h3>Нақты әлемде</h3>
+<p>Бөлшектер жүйесі, оқтар, тобыр, физикалық конструктор: мыңдаған дене әдеттегі нәрсе. O(n²) алгоритм 100 денеде байқалмайды, 1000-да кадрларды жейді. Algorithms зертханасындағы Big-O дәл осы жерде ойынның FPS-іне айналады.</p>
+<h3>Енді сен</h3>
+<p>200 денемен, сосын 1000 денемен іске қос. Жұптар санының өсуіне қара.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>200 дене: барлық жұптарды сана</li><li>1000 дене: жұптар санының қалай өсетінін көр</li></ul><a class="btn secondary" href="../app/index.html#game-12-broadphase">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="1" data-qid="game-12-broadphase:brute:predict"><p class="l3-qt">200 дене бар, әр жұпты соқтығысқа тексереміз. Денелер 5 есе көбейіп 1000 болса, тексерістер саны неше есе өседі?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">5 есе</button><button type="button" class="l3-opt" data-i="1">Шамамен 25 есе</button><button type="button" class="l3-opt" data-i="2">Өзгермейді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Шамамен 25 есе</p><p>Жұптар саны n(n − 1)/2. 200 денеде 19 900, 1000 денеде 499 500: шамамен 25 есе. Квадраттық өсу.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="game-12-broadphase:brute:pairs"><p class="l3-qt">n дене үшін барлық жұптар саны?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">n</button><button type="button" class="l3-opt" data-i="1">n(n − 1)/2</button><button type="button" class="l3-opt" data-i="2">2n</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> n(n − 1)/2</p><p>Әр дене қалған n − 1 денемен, әр жұп екі рет саналмайды.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="game-12-broadphase:brute:phases"><p class="l3-qt">Broad phase-тің міндеті?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Нақты соқтығыс нүктесін табу</button><button type="button" class="l3-opt" data-i="1">Соқтығысуы мүмкін емес жұптарды арзан тәсілмен алып тастау</button><button type="button" class="l3-opt" data-i="2">Денелерді салу</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Соқтығысуы мүмкін емес жұптарды арзан тәсілмен алып тастау</p><p>Қымбат тексеріс тек үміткер жұптарға қалуы үшін.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="game-12-broadphase:brute:waste"><p class="l3-qt">200 денеде 19 900 тексерістің неше пайызы шын соқтығыс тапты?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Шамамен 0.15% (30 жұп)</button><button type="button" class="l3-opt" data-i="1">50%</button><button type="button" class="l3-opt" data-i="2">100%</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Шамамен 0.15% (30 жұп)</p><p>30 / 19 900 ≈ 0.0015. Қалғаны: бір-бірінен алыс денелер.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Кеңістіктік тор</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Біркелкі тор</strong> (uniform grid): әлемді бірдей ұяшықтарға бөл, әр денені өз ұяшығына сал. Соқтығысатын денелер міндетті түрде бір ұяшықта не көрші ұяшықтарда болады (ұяшық денеден үлкен болса). Сондықтан тек сол 9 ұяшықты тексеру жеткілікті.</p>
+<h3>Есептеп көрейік</h3>
+<p>200 дене, радиусы 1, әлем 100 × 100:</p>
+<ul><li>Ұяшық 50: <strong>19 900</strong> тексеріс. Ештеңе үнемделмеді.</li><li>Ұяшық 10: <strong>1 643</strong>.</li><li>Ұяшық 2: <strong>84</strong>. Шамамен 240 есе аз. Табылған соқтығыстар саны сол: <strong>30</strong>.</li></ul>
+<h3>Ұяшық өлшемі</h3>
+<ul><li>Тым үлкен: әр ұяшықта көп дене, үнем аз.</li><li>Тым кішкентай: дене бірнеше ұяшыққа жатады, бос ұяшықтарға жад кетеді.</li><li>Ереже: ұяшық шамамен ең үлкен дененің диаметріндей.</li></ul>
+<h3>Басқа құрылымдар</h3>
+<ul><li><strong>Quadtree / octree</strong>: денелер біркелкі таралмаса, тығыз жерде ұсақ, бос жерде ірі бөледі.</li><li><strong>BVH</strong> және <strong>dynamic AABB tree</strong>: Box2D мен Bullet қолданады.</li><li><strong>Sweep and prune</strong>: денелерді бір осьте сұрыптап, қабаттасатындарын ғана тексереді.</li></ul>
+<h3>Нақты әлемде</h3>
+<p>Мультиплеер серверлері дәл осындай торды «кімге кімнің қозғалысын жіберу керек» деген сұраққа да қолданады (interest management).</p>
+<h3>Енді сен</h3>
+<p>Ұяшық 50-ден бастап 10, сосын 2. Тексерістер мен соқтығыстарды салыстыр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Ұяшық 50: тор ештеңе үнемдемейді</li><li>Ұяшық 2: тексеріс 100 есе азайсын, ал соқтығыстар саны сол</li></ul><a class="btn secondary" href="../app/index.html#game-12-broadphase">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="1" data-qid="game-12-broadphase:grid:predict"><p class="l3-qt">Әлемді ұяшықтарға бөлеміз де, денені тек өз ұяшығындағы және көрші ұяшықтардағы денелермен тексереміз. Ұяшық тым үлкен болса (әлемнің жартысы)?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Тексерістер бәрібір азаяды</button><button type="button" class="l3-opt" data-i="1">Ештеңе үнемделмейді: бәрі көрші ұяшықта</button><button type="button" class="l3-opt" data-i="2">Соқтығыстар жоғалады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Ештеңе үнемделмейді: бәрі көрші ұяшықта</p><p>100 × 100 әлемде 50-лік ұяшықта бар-жоғы 4 ұяшық, бәрі бір-біріне көрші. Модельде 19 900: әр жұпты тексеру сияқты.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="game-12-broadphase:grid:nine"><p class="l3-qt">Тордағы денені неше ұяшықпен тексеру жеткілікті (2D, ұяшық ≥ дене диаметрі)?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Тек өз ұяшығымен</button><button type="button" class="l3-opt" data-i="1">Өз ұяшығы мен 8 көршісімен, барлығы 9</button><button type="button" class="l3-opt" data-i="2">Барлық ұяшықпен</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Өз ұяшығы мен 8 көршісімен, барлығы 9</p><p>Дене ұяшықтың шетінде тұрса, көршісіндегі денемен соқтығысуы мүмкін. Одан әрі ұяшықтағы дене жете алмайды.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="game-12-broadphase:grid:size"><p class="l3-qt">Ұяшық өлшемін қалай таңдаған дұрыс?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Әлем өлшеміндей</button><button type="button" class="l3-opt" data-i="1">Шамамен ең үлкен дененің диаметріндей</button><button type="button" class="l3-opt" data-i="2">Мүмкіндігінше кішкентай</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Шамамен ең үлкен дененің диаметріндей</p><p>Тым үлкен ұяшық сүзбейді, тым кішкентайы денені көп ұяшыққа бөліп, жадты жейді.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="game-12-broadphase:grid:result"><p class="l3-qt">Модельде ұяшық 2-де тексеріс 84, ал соқтығыстар?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Азырақ, кейбіреуі жоғалды</button><button type="button" class="l3-opt" data-i="1">Сол 30: тор тек бекер тексерістерді алып тастайды</button><button type="button" class="l3-opt" data-i="2">Көбірек</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Сол 30: тор тек бекер тексерістерді алып тастайды</p><p>Broad phase дұрыс болса, ол ешқандай шын соқтығысты жоғалтпайды. Тек жұмысты азайтады.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="game-11-fsm.html">← <span lang="en">Enemy AI: State Machines</span></a><a href="../index.html#game">Ойын әзірлеу</a><a href="game-13-pooling.html"><span lang="en">Object Pooling &amp; GC Spikes</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

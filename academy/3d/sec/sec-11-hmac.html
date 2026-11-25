@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Integrity: Hash vs HMAC · Киберқауіпсіздік - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Integrity: Hash vs HMAC · Киберқауіпсіздік - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Хэш хабардың өзгермегенін дәлелдемейді, егер оны шабуылшы да есептей алса. HMAC: кілтпен қорғалған тұтастық.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/sec/sec-11-hmac.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/sec/sec-11-hmac.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Integrity: Hash vs HMAC · Киберқауіпсіздік - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/sec/sec-11-hmac.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Хэш хабардың өзгермегенін дәлелдемейді, егер оны шабуылшы да есептей алса. HMAC: кілтпен қорғалған тұтастық.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="sec-11-hmac" style="--lc:#2b3a5c">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#sec">Киберқауіпсіздік</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Киберқауіпсіздік · 11-сабақ · ≈20 мин · 2 қадам · 6 сұрақ</p>
+        <h1 lang="en">Integrity: Hash vs HMAC</h1>
+        <p class="l3-lede">Хэш хабардың өзгермегенін дәлелдемейді, егер оны шабуылшы да есептей алса. HMAC: кілтпен қорғалған тұтастық.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#sec-11-hmac">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Хэшті қайта есептеу</a></li><li><a href="#s2">Кілтпен қорғалған тег</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Хэшті қайта есептеу</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Тұтастық</strong> (integrity): хабар жолда өзгермегеніне сенімділік. Хэш өзгерісті сезеді: бір әріп өзгерсе, SHA-256 мүлде басқа болады (4-сабақтағы көшкін әсері). Бірақ хэштің <strong>кілті жоқ</strong>. Хабарды өзгерте алатын адам хэшті де қайта есептей алады.</p>
+<h3>Үш жағдай</h3>
+<ol><li><strong>Тег жоқ</strong>: шабуылшы «1000 ₸»-ні «9000 ₸»-ге ауыстырады, банк ештеңе білмейді.</li><li><strong>SHA-256 тегі</strong>, шабуылшы тек соманы өзгертсе: банк хэшті тексеріп, сәйкессіздікті табады.</li><li><strong>SHA-256 тегі</strong>, шабуылшы хэшті де қайта есептесе: банк үшін бәрі дұрыс. Жалған төлем өтеді.</li></ol>
+<p>Яғни жай хэш тек <strong>кездейсоқ</strong> зақымнан (желідегі шу, бұзылған файл) қорғайды, <strong>қасақана</strong> өзгерістен емес.</p>
+<h3>Ал H(кілт ‖ хабар) ше?</h3>
+<p>Ойға келетін түзету: хэшке құпия кілтті қосу. Бірақ SHA-256 сияқты Merkle-Damgård хэштерінде <strong>length extension</strong> шабуылы бар: H(кілт ‖ m)-ді білетін шабуылшы кілтті білмей-ақ H(кілт ‖ m ‖ қосымша)-ны есептей алады. 2009 жылы Flickr API-дегі қолтаңба дәл осылай бұзылды.</p>
+<h3>Енді сен</h3>
+<p>Қорғаныссыз жібер, сосын SHA-256-мен тек соманы өзгерт, сосын хэшті де қайта есепте.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Қорғаныссыз: сомасы өзгертілген төлем қабылданады</li><li>SHA-256 тегімен: тек сома өзгерсе, банк қабылдамайды</li><li>Шабуылшы хэшті қайта есептесе, жалған төлем өтеді</li></ul><a class="btn secondary" href="../app/index.html#sec-11-hmac">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="1" data-qid="sec-11-hmac:hash:predict"><p class="l3-qt">Төлемге оның SHA-256 хэшін тіркедік. Шабуылшы соманы 1000-нан 9000-ға өзгертті. Банк жалғандықты байқай ма?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Иә, әрқашан: SHA-256 бұзылмайды</button><button type="button" class="l3-opt" data-i="1">Жоқ, егер шабуылшы жаңа хабардың хэшін өзі есептеп, оны да ауыстырса</button><button type="button" class="l3-opt" data-i="2">Тек хабар ұзын болса</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Жоқ, егер шабуылшы жаңа хабардың хэшін өзі есептеп, оны да ауыстырса</p><p>SHA-256 кез келген адамға қолжетімді функция, кілті жоқ. Хабарды өзгерткен адам оның хэшін де қайта есептей алады.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="sec-11-hmac:hash:why"><p class="l3-qt">Неге жай хэш қасақана өзгерістен қорғамайды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">SHA-256 әлсіз</button><button type="button" class="l3-opt" data-i="1">Хэшті кілтсіз кез келген адам есептей алады</button><button type="button" class="l3-opt" data-i="2">Хэш тым қысқа</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Хэшті кілтсіз кез келген адам есептей алады</p><p>Қорғаныс құпияға сүйенуі керек. Хэш функциясы ашық, сондықтан оны шабуылшы да қолданады.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="sec-11-hmac:hash:use"><p class="l3-qt">Жай хэш (кілтсіз) неге жарайды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Жүктелген файлдың кездейсоқ бұзылмағанын тексеруге</button><button type="button" class="l3-opt" data-i="1">Банк төлемін қорғауға</button><button type="button" class="l3-opt" data-i="2">Құпиясөзді шифрлауға</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Жүктелген файлдың кездейсоқ бұзылмағанын тексеруге</p><p>Файлдың хэші белгілі әрі сенімді жерден алынса, кездейсоқ зақымды табады. Ал жолдағы шабуылшыдан тек кілті бар тег қорғайды.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="sec-11-hmac:hash:ext"><p class="l3-qt">SHA-256(кілт ‖ хабар) неге жақсы тег емес?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Тым баяу</button><button type="button" class="l3-opt" data-i="1">Length extension: шабуылшы хабардың соңына мәтін қосып, тегін кілтсіз есептей алады</button><button type="button" class="l3-opt" data-i="2">Кілт хабарға ашық жазылады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Length extension: шабуылшы хабардың соңына мәтін қосып, тегін кілтсіз есептей алады</p><p>Merkle-Damgård хэштерінің ішкі күйі нәтиженің өзі. Сондықтан тегтен бастап «жалғастыруға» болады. HMAC осыны жабу үшін жасалған.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Кілтпен қорғалған тег</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>HMAC</strong> (Hash-based Message Authentication Code, RFC 2104): кілт пен хэштен жасалған тег.</p>
+<pre class="l3-pre"><code>HMAC(K, m) = H( (K ⊕ opad) ‖ H( (K ⊕ ipad) ‖ m ) )</code></pre>
+<p>Хэш екі рет, кілт екі түрлі маскамен (ipad = 0x36, opad = 0x5c). Сыртқы хэш ішкі хэштің нәтижесін жабады, сондықтан length extension жұмыс істемейді.</p>
+<h3>Не береді?</h3>
+<ul><li><strong>Тұтастық</strong>: хабар өзгерсе, тег сәйкес келмейді.</li><li><strong>Түпнұсқалық</strong>: тегті тек кілті бар жақ жасай алады.</li><li><strong>Бірақ</strong> бас тартпау (non-repudiation) жоқ: кілт екі жақта да бар, сондықтан «мұны мен емес, банк жасаған» деуге болады. Оған RSA сияқты <strong>қолтаңба</strong> керек (7-сабақ).</li></ul>
+<h3>Тексеруде абай бол</h3>
+<p>Тегті <code>==</code> арқылы салыстырсаң, салыстыру бірінші сәйкессіз байтта тоқтайды. Уақытты өлшеп, шабуылшы тегті байт-байтпен табуы мүмкін (timing attack). Сондықтан <strong>тұрақты уақытты</strong> салыстыру қолданылады: Node.js-те <code>crypto.timingSafeEqual</code>, Python-да <code>hmac.compare_digest</code>.</p>
+<h3>Нақты әлемде</h3>
+<p>JWT-дің HS256 қолтаңбасы, AWS сұраныстарының қолтаңбасы (SigV4), webhook-тардың <code>X-Hub-Signature-256</code> тақырыбы: бәрі HMAC-SHA256. Модельдегі HMAC нақты: RFC 4231 ресми сынақ мәнімен тексерілген.</p>
+<h3>Енді сен</h3>
+<p>HMAC-пен адал төлем жібер, сосын шабуылшыға соманы өзгертіп, тегті қайта есептетіп көр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>HMAC-пен адал төлем қабылданады</li><li>Шабуылшы тегті қайта есептесе де, банк қабылдамайды</li></ul><a class="btn secondary" href="../app/index.html#sec-11-hmac">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="0" data-qid="sec-11-hmac:hmac:predict"><p class="l3-qt">Енді тег HMAC-SHA256: оны тек банк пен қосымша білетін кілтпен есептейді. Шабуылшы соманы өзгертіп, тегті өз болжаған кілтімен қайта есептесе не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Банк қабылдамайды: тег дұрыс кілтсіз сәйкес келмейді</button><button type="button" class="l3-opt" data-i="1">Жалған төлем өтеді</button><button type="button" class="l3-opt" data-i="2">Банк тегті тексермейді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Банк қабылдамайды: тег дұрыс кілтсіз сәйкес келмейді</p><p>HMAC кілтке тәуелді. Кілтсіз есептелген тег банктің есептегенімен сәйкес келмейді, ал кілтті болжау 2²⁵⁶ сияқты мүмкін емес іс.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="sec-11-hmac:hmac:key"><p class="l3-qt">Шабуылшы HMAC тегін қайта есептей алмайтын себеп?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">HMAC алгоритмі құпия</button><button type="button" class="l3-opt" data-i="1">Оған кілт керек, ал кілт тек банк пен қосымшада</button><button type="button" class="l3-opt" data-i="2">Тег шифрланған</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Оған кілт керек, ал кілт тек банк пен қосымшада</p><p>Алгоритм ашық (RFC 2104), құпия тек кілтте. Бұл Керкгоффс принципі.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="sec-11-hmac:hmac:nonrep"><p class="l3-qt">HMAC нені бермейді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Тұтастықты</button><button type="button" class="l3-opt" data-i="1">Бас тартпауды: кілт екі жақта да бар</button><button type="button" class="l3-opt" data-i="2">Түпнұсқалықты</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Бас тартпауды: кілт екі жақта да бар</p><p>Бір кілт екі жақта болғандықтан, тегті кім жасағанын үшінші жаққа дәлелдей алмайсың. Оған асимметриялық қолтаңба керек.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="sec-11-hmac:hmac:timing"><p class="l3-qt">Тегті тексергенде неге тұрақты уақытты салыстыру керек?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Жылдамырақ болу үшін</button><button type="button" class="l3-opt" data-i="1">Салыстыру уақыты қай байтта сәйкессіздік барын айтып қоймауы үшін</button><button type="button" class="l3-opt" data-i="2">HMAC солай талап етеді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Салыстыру уақыты қай байтта сәйкессіздік барын айтып қоймауы үшін</p><p>Ерте тоқтайтын салыстыру уақыт арқылы ақпарат береді. Тұрақты уақыт бұл арнаны жабады.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="sec-10-modes.html">← <span lang="en">Block Cipher Modes: ECB vs CBC</span></a><a href="../index.html#sec">Киберқауіпсіздік</a><a href="sec-12-dh.html"><span lang="en">Diffie-Hellman &amp; Man in the Middle</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

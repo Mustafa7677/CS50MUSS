@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Serial Buses: UART, I2C, SPI · Робототехника және IoT - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Serial Buses: UART, I2C, SPI · Робототехника және IoT - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Микроконтроллер датчиктермен үш тілде сөйлеседі: жылдамдығы, сымдары және жиі қателері.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/iot/iot-11-buses.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/iot/iot-11-buses.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Serial Buses: UART, I2C, SPI · Робототехника және IoT - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/iot/iot-11-buses.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Микроконтроллер датчиктермен үш тілде сөйлеседі: жылдамдығы, сымдары және жиі қателері.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="iot-11-buses" style="--lc:#2e6b4f">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#iot">Робототехника және IoT</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Робототехника және IoT · 11-сабақ · ≈25 мин · 2 қадам · 6 сұрақ</p>
+        <h1 lang="en">Serial Buses: UART, I2C, SPI</h1>
+        <p class="l3-lede">Микроконтроллер датчиктермен үш тілде сөйлеседі: жылдамдығы, сымдары және жиі қателері.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#iot-11-buses">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Baud rate</a></li><li><a href="#s2">Адрес пен жылдамдық</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Baud rate</h2><div class="l3-body"><h3>UART</h3>
+<p><strong>UART</strong>: ең қарапайым тізбекті байланыс: екі сым (TX, RX) және ортақ жер. <strong>Тактілік сигнал жоқ</strong>: екі жақ жылдамдыққа (<strong>baud rate</strong>) алдын ала келіседі.</p>
+<h3>Кадр (8N1)</h3>
+<p>Әр байт: <strong>start бит</strong> (0), <strong>8 дерек биті</strong> (кішісі бірінші), <strong>stop бит</strong> (1). Бос сызық: 1. Қабылдаушы 1-ден 0-ге құлауды күтеді, сосын әр биттің ортасын өз сағатымен өлшейді.</p>
+<h3>Есептеп көрейік</h3>
+<p>Байтқа 10 бит. 9600 baud: секундына 960 байт. 1 КБ: <strong>шамамен 1067 мс</strong>.</p>
+<p>Жылдамдықтар сәйкес келмесе, қабылдаушы биттің ортасын емес, басқа биттерді оқиды: «HELLO» орнына қоқыс. Ал 4% айырма әлі де жұмыс істейді: әр кадр start бит бойынша қайта синхрондалады, 10 бит ішінде қате жиналып үлгермейді.</p>
+<h3>Нақты әлемде</h3>
+<p>Serial Monitor-да «����» көрсең: бірінші күдік: baud rate. Әдепкі жылдамдықтар: 9600, 115200. GPS модульдері, Bluetooth модульдері (HC-05), жүктеуші (bootloader): бәрі UART.</p>
+<blockquote><p>TX бір жақтың TX-і екіншісінің RX-іне қосылады. TX-ті TX-ке қосу: ең жиі қате.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Жылдамдықтары әр түрлі кезде жібер, сосын теңестір.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Жылдамдықтары әр түрлі: «HELLO» орнына қоқыс</li><li>Жылдамдықтарды теңестір: «HELLO» оқылады</li></ul><a class="btn secondary" href="../app/index.html#iot-11-buses">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="1" data-qid="iot-11-buses:uart:predict"><p class="l3-qt">Датчик UART арқылы 9600 baud жылдамдықпен «HELLO» жібереді, ал микроконтроллер 115200 baud күтеді. Не оқылады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">«HELLO», тек баяуырақ</button><button type="button" class="l3-opt" data-i="1">Мағынасыз байттар</button><button type="button" class="l3-opt" data-i="2">Ештеңе</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Мағынасыз байттар</p><p>UART-та тактілік сым жоқ: екі жақ жылдамдыққа алдын ала келіседі. Қабылдаушы биттерді өз уақытында оқиды, сондықтан қате биттерді алады.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="iot-11-buses:uart:clock"><p class="l3-qt">UART-та тактілік сым жоқ. Қабылдаушы биттерді қашан оқу керегін қайдан біледі?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Алдын ала келісілген baud rate пен start битінен</button><button type="button" class="l3-opt" data-i="1">Жіберуші сигнал береді</button><button type="button" class="l3-opt" data-i="2">Ол білмейді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Алдын ала келісілген baud rate пен start битінен</p><p>Start биті синхрондайды, baud rate биттің ұзақтығын береді.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="iot-11-buses:uart:time"><p class="l3-qt">115200 baud-та 1 байт (8N1) қанша уақыт алады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Шамамен 87 мкс</button><button type="button" class="l3-opt" data-i="1">1 мс</button><button type="button" class="l3-opt" data-i="2">8 мкс</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Шамамен 87 мкс</p><p>10 бит / 115200 ≈ 0.0000868 с.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="iot-11-buses:uart:garbage"><p class="l3-qt">Serial Monitor-да мағынасыз таңбалар шықты. Бірінші не тексеру керек?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Екі жақтың baud rate-і бірдей ме</button><button type="button" class="l3-opt" data-i="1">Кабельдің түсі</button><button type="button" class="l3-opt" data-i="2">Датчиктің адресі</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Екі жақтың baud rate-і бірдей ме</p><p>Жылдамдық сәйкессіздігі: ең жиі себеп.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Адрес пен жылдамдық</h2><div class="l3-body"><h3>I2C</h3>
+<p>Екі сым: <strong>SDA</strong> (деректер) және <strong>SCL</strong> (такт). Бір шинада ондаған құрылғы: әрқайсысының <strong>7 биттік адресі</strong> бар. Микроконтроллер адресті жібереді, тек сол құрылғы жауап береді. Сымдар аз, бірақ жылдамдық орташа (100 кГц, 400 кГц).</p>
+<p>Бірдей екі датчик бір адреспен шығады. Сондықтан көбінің <strong>ADDR</strong> пині бар: оны жерге не қорекке қосып, адресті 0x76-дан 0x77-ге ауыстырасың.</p>
+<h3>SPI</h3>
+<p>Төрт сым: <strong>MOSI</strong>, <strong>MISO</strong>, <strong>SCK</strong> және әр құрылғыға бөлек <strong>CS</strong> (chip select). Адрес жоқ: CS кімді таңдаса, сол жауап береді. Жылдамдығы ондаған МГц.</p>
+<h3>Есептеп көрейік</h3>
+<p>1 КБ жіберу:</p>
+<ul><li>UART 9600: <strong>≈ 1067 мс</strong>.</li><li>I2C 400 кГц (байтқа 9 такт): <strong>≈ 23 мс</strong>.</li><li>SPI 8 МГц: <strong>≈ 1 мс</strong>.</li></ul>
+<h3>Қайсысын таңдау?</h3>
+<ul><li><strong>UART</strong>: екі құрылғы, ұзын сым, модульдер (GPS).</li><li><strong>I2C</strong>: көп баяу датчик, аз сым (температура, акселерометр).</li><li><strong>SPI</strong>: жылдамдық керек (дисплей, SD карта, камера).</li></ul>
+<h3>Енді сен</h3>
+<p>Екі датчикті бір адресте оқы, сосын екіншісін 0x77-ге ауыстыр. Сосын 1 КБ-ты UART пен SPI арқылы жібер.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>I2C: екі датчик бір адресте (0x76): жауап бұзылады</li><li>Екінші датчикті 0x77-ге ауыстыр</li><li>1 КБ-ты UART пен SPI арқылы жібер: айырманы өлше</li></ul><a class="btn secondary" href="../app/index.html#iot-11-buses">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="1" data-qid="iot-11-buses:bus:predict"><p class="l3-qt">Бір I2C шинасында екі бірдей температура датчигі бар, екеуі де 0x76 адресінде. Микроконтроллер 0x76-дан оқиды. Не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Біріншісі жауап береді</button><button type="button" class="l3-opt" data-i="1">Екеуі бір мезетте жауап беріп, деректер бұзылады</button><button type="button" class="l3-opt" data-i="2">Шина өзі екінші адрес береді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Екеуі бір мезетте жауап беріп, деректер бұзылады</p><p>I2C-де әр құрылғы өз адресін біледі және оған жауап береді. Екеуі бірдей болса, екеуі де сызықты тартып, биттер араласады.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="iot-11-buses:bus:addr"><p class="l3-qt">I2C шинасында құрылғыны не таңдайды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">7 биттік адрес</button><button type="button" class="l3-opt" data-i="1">Бөлек CS сымы</button><button type="button" class="l3-opt" data-i="2">Сымның түсі</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 7 биттік адрес</p><p>I2C-де адрес, SPI-де CS сымы.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="iot-11-buses:bus:spi"><p class="l3-qt">Неге дисплей мен SD карта көбіне SPI-мен қосылады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">SPI әлдеқайда жылдам: ондаған МГц</button><button type="button" class="l3-opt" data-i="1">SPI-де сым аз</button><button type="button" class="l3-opt" data-i="2">SPI-де адрес бар</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> SPI әлдеқайда жылдам: ондаған МГц</p><p>Бір кадр суретті 1 мс-та жіберу мен 1 секундта жіберудің айырмасы: экранның жыпылықтауы.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="iot-11-buses:bus:clash"><p class="l3-qt">Екі бірдей I2C датчигін бір шинаға қалай қосуға болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Біреуінің ADDR пинімен адресін өзгертіп</button><button type="button" class="l3-opt" data-i="1">Мүмкін емес</button><button type="button" class="l3-opt" data-i="2">Біреуін SPI етіп</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Біреуінің ADDR пинімен адресін өзгертіп</p><p>Көп датчиктің бір-екі балама адресі бар. Олар жетпесе, I2C мультиплексор (TCA9548A) қолданылады.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="iot-10-pwm.html">← <span lang="en">PWM &amp; Motor Control</span></a><a href="../index.html#iot">Робототехника және IoT</a><a href="iot-12-rtos.html"><span lang="en">Real-Time Scheduling</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

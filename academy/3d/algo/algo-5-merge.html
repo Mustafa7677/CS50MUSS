@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Merge Sort · Алгоритмдер - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Merge Sort · Алгоритмдер - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Бөліп ал да, жеңе бер: рекурсия, біріктіру және n·log₂n.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/algo/algo-5-merge.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/algo/algo-5-merge.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Merge Sort · Алгоритмдер - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/algo/algo-5-merge.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Бөліп ал да, жеңе бер: рекурсия, біріктіру және n·log₂n.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="algo-5-merge" style="--lc:#a37a00">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#algo">Алгоритмдер</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Алгоритмдер · 5-сабақ · ≈25 мин · 2 қадам · 4 сұрақ</p>
+        <h1 lang="en">Merge Sort</h1>
+        <p class="l3-lede">Бөліп ал да, жеңе бер: рекурсия, біріктіру және n·log₂n.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#algo-5-merge">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Бөлу және біріктіру</a></li><li><a href="#s2">Кез келген деректе бірдей</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Бөлу және біріктіру</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Бөліп ал да, жеңе бер</strong> (divide and conquer):</p>
+<ol><li><strong>Бөл</strong>: массивті екі жартыға бөл.</li><li><strong>Жең</strong>: әр жартысын <em>сол алгоритммен</em> сұрыпта (рекурсия).</li><li><strong>Біріктір</strong>: екі сұрыпталған жартыны бір сұрыпталған массивке қос.</li></ol>
+<p>Рекурсия тоқтайтын жер (base case): бір элементті массив: әлдеқашан сұрыпталған.</p>
+<pre class="l3-pre"><code>sort(a, lo, hi):
+    if lo ≥ hi: return
+    mid = (lo + hi) / 2
+    sort(a, lo, mid)
+    sort(a, mid+1, hi)
+    merge(a, lo, mid, hi)</code></pre>
+<h3>Түйсік</h3>
+<p>Екі сұрыпталған карта бумасын біріктіру: екі бумның үстіңгі карталарын салыстырып, кішісін алып қоясың. Әр салыстыру бір картаны орнына қояды.</p>
+<h3>Есептеп көрейік</h3>
+<p>[2, 5] және [1, 4] біріктіру:</p>
+<ol><li>2 мен 1 → <strong>1</strong> алынды</li><li>2 мен 4 → <strong>2</strong></li><li>5 пен 4 → <strong>4</strong></li><li>Оң бума бітті → қалғаны <strong>5</strong></li></ol>
+<p>Нәтиже [1, 2, 4, 5], 3 салыстыру. Ұзындықтары p мен q бумаларды біріктіру ең көбі p + q − 1 салыстыру алады.</p>
+<p>16 элемент: 4 деңгей (16 → 8 → 4 → 2 → 1). Біздің кездейсоқ массивте: 46 салыстыру (16·4 = 64 жоғарғы шегінен аз).</p>
+<h3>Нақты әлемде</h3>
+<p>Merge sort: <strong>тұрақты</strong> (stable): тең элементтердің бастапқы ретін сақтайды. Сондықтан кестені алдымен аты бойынша, сосын қаласы бойынша сұрыптасаң, бір қаладағылар әлі де алфавитпен тұрады. Python мен Java-ның Timsort-ы: merge sort пен insertion sort-тың гибриді.</p>
+<blockquote><p>💡 Түйін: 3D-де ашық аймақ: алгоритм қазір жұмыс істеп жатқан бөлік [lo..hi]. Ол кішірейіп (бөлу), сосын үлкейеді (біріктіру).</p></blockquote>
+<h3>Тереңірек: T(n) = 2T(n/2) + n рекурренттік теңдеуі</h3>
+<p>Merge sort-тың уақыты: екі жартыны сұрыптау + біріктіру:</p>
+<pre class="l3-pre"><code>T(1) = 0,   T(n) = 2·T(n/2) + n</code></pre>
+<p>Рекурсия ағашымен шешеміз (n = 2ᵏ):</p>
+<ul><li>0-деңгей: 1 есеп, n өлшемді → n жұмыс</li><li>1-деңгей: 2 есеп, n/2 өлшемді → 2·(n/2) = n</li><li>i-деңгей: 2ⁱ есеп, n/2ⁱ өлшемді → n</li><li>деңгейлер саны: k = log₂ n</li></ul>
+<p>Барлығы: <strong>T(n) = n·log₂ n</strong>.</p>
+<p>Тексеру: T(n) = 2·(n/2)·log₂(n/2) + n = n·(log₂ n − 1) + n = n·log₂ n ✓</p>
+<p><strong>Master theorem</strong> бұл түрдегі теңдеулерді жалпы шешеді: T(n) = a·T(n/b) + f(n). Мұнда a = 2, b = 2, f(n) = n = n^(log_b a) → T = Θ(n log n). Екілік іздеу: T(n) = T(n/2) + 1 → Θ(log n).</p>
+<h3>Енді сен</h3>
+<p>Кемінде 10 қадамды қолмен жүр: бөлінген аймақтар қалай кішірейетінін бақыла. Сосын соңына дейін жеткіз.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Merge sort-ты 16 элементте аяқта (кемінде 10 қадамды қолмен)</li></ul><a class="btn secondary" href="../app/index.html#algo-5-merge">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="algo-5-merge:watch:merge"><p class="l3-qt">[1, 3, 5] мен [2, 4, 6] біріктіргенде неше салыстыру болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">5</button><button type="button" class="l3-opt" data-i="1">3</button><button type="button" class="l3-opt" data-i="2">6</button><button type="button" class="l3-opt" data-i="3">9</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 5</p><p>1&lt;2, 3&gt;2, 3&lt;4, 5&gt;4, 5&lt;6: 5 салыстыру, сосын 6 салыстырусыз қосылады. Ең нашар жағдай p + q − 1 = 5.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="algo-5-merge:watch:base"><p class="l3-qt">Merge sort рекурсиясы қашан тоқтайды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Бөлік бір (не нөл) элементтен тұрғанда</button><button type="button" class="l3-opt" data-i="1">Массив сұрыпталғанда</button><button type="button" class="l3-opt" data-i="2">log₂ n қадамнан кейін</button><button type="button" class="l3-opt" data-i="3">Ешқашан: стек толғанша</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Бөлік бір (не нөл) элементтен тұрғанда</p><p>Бір элемент: әрдайым сұрыпталған. Бұл base case болмаса, рекурсия шексіз бөлуге тырысып, stack overflow-ға әкелер еді.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Кез келген деректе бірдей</h2><div class="l3-body"><h3>Идея</h3>
+<p>Merge sort-тың басты артықшылығы: <strong>кепілдік</strong>: кез келген деректе ол O(n log n). Ең нашар жағдай да, ең жақсы жағдай да: бірдей класс.</p>
+<h3>Түйсік</h3>
+<p>Merge sort деректерге «қарамайды»: ол әрдайым бірдей бөледі, бірдей деңгейлермен біріктіреді. Тек біріктірудегі салыстыру саны сәл өзгереді.</p>
+<h3>Есептеп көрейік</h3>
+<p>32 элемент, біздің симуляцияда:</p>
+<ul><li>кері ретті: <strong>80</strong> салыстыру</li><li>сұрыпталған: <strong>80</strong></li><li>кездейсоқ: <strong>123</strong></li><li>жоғарғы шегі: n·log₂ n − n + 1 = 129</li></ul>
+<p>Неге кері ретте аз? Әр біріктіруде бір жартының бәрі екіншісінен кіші: ол бірден «таусылады», қалғаны салыстырусыз көшіріледі. Ал bubble sort-қа кері рет: ең нашар жағдай (496)!</p>
+<h3>Нақты әлемде</h3>
+<p><strong>Сыртқы сұрыптау</strong> (external sort): деректер жадқа сыймайтын болса (мысалы 100 ГБ), оларды бөліктерге бөліп, әрқайсысын сұрыптап дискіге жазып, сосын біріктіреді. Бұл: merge sort-тың тікелей қолданысы. Дерекқорлар мен MapReduce жүйелері осылай жұмыс істейді.</p>
+<blockquote><p>⚠ Жиі қате: merge sort-ты «әрқашан ең жақсы» деп ойлау. Ол O(n) қосымша жад алады және кішкене массивтерде insertion sort-тан баяу.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Кері ретті және кездейсоқ 32 элементке merge sort жүргіз. Салыстыруларды bubble sort-тың 496-сымен салыстыр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Кері ретті 32 элемент</li><li>Кездейсоқ 32 элемент</li></ul><a class="btn secondary" href="../app/index.html#algo-5-merge">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="algo-5-merge:stable:worst"><p class="l3-qt">Merge sort-тың ең нашар жағдайындағы күрделілігі қандай?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">O(n log n)</button><button type="button" class="l3-opt" data-i="1">O(n²)</button><button type="button" class="l3-opt" data-i="2">O(n)</button><button type="button" class="l3-opt" data-i="3">O(log n)</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> O(n log n)</p><p>Бөлу әрдайым тең жартыға → log₂ n деңгей, әр деңгейде ≤ n салыстыру. Деректер оны өзгерте алмайды.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="algo-5-merge:stable:stable"><p class="l3-qt">Оқушылар бағасы бойынша сұрыпталды. Тең бағалылардың бастапқы реті (мысалы, алфавит) сақталуы үшін сұрыптау қандай болуы керек?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Тұрақты (stable)</button><button type="button" class="l3-opt" data-i="1">Адаптивті</button><button type="button" class="l3-opt" data-i="2">Орнында (in-place)</button><button type="button" class="l3-opt" data-i="3">Рекурсивті</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Тұрақты (stable)</p><p>Тұрақты сұрыптау тең кілттердің салыстырмалы ретін өзгертпейді. Merge sort: тұрақты; біздің quicksort: тұрақты емес.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="algo-4-bigo.html">← <span lang="en">Big O</span></a><a href="../index.html#algo">Алгоритмдер</a><a href="algo-6-quick.html"><span lang="en">Quicksort</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

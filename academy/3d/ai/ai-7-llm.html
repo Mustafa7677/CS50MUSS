@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LLM Inference · Жасанды интеллект - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="LLM Inference · Жасанды интеллект - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Тілдік модель келесі токенді қалай таңдайды: ықтималдықтар, temperature, top-k.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/ai/ai-7-llm.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/ai/ai-7-llm.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"LLM Inference · Жасанды интеллект - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/ai/ai-7-llm.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Тілдік модель келесі токенді қалай таңдайды: ықтималдықтар, temperature, top-k.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="ai-7-llm" style="--lc:#7a5cd6">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#ai">Жасанды интеллект</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Жасанды интеллект · 7-сабақ · ≈15 мин · 4 қадам · 8 сұрақ</p>
+        <h1 lang="en">LLM Inference</h1>
+        <p class="l3-lede">Тілдік модель келесі токенді қалай таңдайды: ықтималдықтар, temperature, top-k.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#ai-7-llm">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Келесі токенді болжау</a></li><li><a href="#s2">Генерация</a></li><li><a href="#s3">Temperature</a></li><li><a href="#s4">Top-k және greedy</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Келесі токенді болжау</h2><div class="l3-body"><h3>Идея</h3>
+<p>Барлық үлкен тілдік модельдердің (LLM) жалғыз міндеті:</p>
+<pre class="l3-pre"><code>P(келесі токен | алдыңғы токендер)</code></pre>
+<p>яғни берілген мәтіннен кейін әр мүмкін токеннің ықтималдығын есептеу. Сұраққа «жауап беру», код жазу, аудару: бәрі осы бір әрекеттің қайталануы.</p>
+<h3>Бұл зертханадағы модель</h3>
+<p>Мұнда <strong>триграмма</strong> моделі: соңғы <strong>екі</strong> сөзге қарап келесісін болжайды. Ол корпустағы жиіліктерден есептеледі:</p>
+<pre class="l3-pre"><code>P(w | a b) = count(a b w) / count(a b)</code></pre>
+<p>Сирек тіркестер үшін қысқарақ контекстермен араластырамыз (interpolation): 0.6·P₃ + 0.3·P₂ + 0.1·P₁.</p>
+<h3>Есептеп көрейік</h3>
+<p>Корпуста «компьютер»-ден кейін 2 рет «бағдарламаны», бір рет басқа сөз келсе: шамамен P ≈ 0.67 (интерполяциямен сәл аз).</p>
+<h3>Нақты LLM-нен айырмасы</h3>
+<p>Триграмма тек 2 сөзді «көреді». GPT мыңдаған токенді көреді, ал ықтималдықтарды санау кестесімен емес, <strong>transformer</strong> арқылы есептейді: ол бұрын көрмеген тіркестерге де жалпылай алады. Бірақ шығыс: дәл осындай үлестірім.</p>
+<blockquote><p>💡 Түйін: LLM «ойламайды» және «білмейді» деп айтудың орнына: ол мәтіннің статистикалық жалғасын өте жақсы болжайды.</p></blockquote>
+<h3>Тереңірек: ықтималдықтың тізбек ережесі және perplexity</h3>
+<p>Кез келген мәтіннің ықтималдығы шартты ықтималдықтардың көбейтіндісі:</p>
+<pre class="l3-pre"><code>P(w₁…wₙ) = P(w₁) · P(w₂|w₁) · P(w₃|w₁w₂) · … · P(wₙ|w₁…wₙ₋₁)</code></pre>
+<p>Бұл: жуықтау емес, <strong>дәл</strong> теңдік. LLM тек бір нәрсені үйренеді: келесі токеннің шартты үлестірімін.</p>
+<p><strong>Триграмма</strong> мұны «тек соңғы 2 токен маңызды» деп жеңілдетеді: P(wₙ|wₙ₋₂wₙ₋₁) = count(wₙ₋₂wₙ₋₁wₙ)/count(wₙ₋₂wₙ₋₁). Сирек комбинацияларда 0 шықпауы үшін біз <strong>интерполяция</strong> қолданамыз: λ₃·P₃ + λ₂·P₂ + λ₁·P₁.</p>
+<p><strong>Perplexity</strong>: модель сапасы:</p>
+<pre class="l3-pre"><code>PPL = exp( −(1/n) Σ ln P(wᵢ | алдыңғылар) )</code></pre>
+<p>Түйсігі: модель әр қадамда орта есеппен неше нұсқа арасында «іркіледі». PPL = 1: мінсіз; әр қадамда 50 токенге бірдей сенімді болса, PPL = 50.</p>
+<h3>Енді сен</h3>
+<p>Prompt-ты кемінде 2 рет өзгертіп, ықтималдық бағандарының қалай өзгеретінін бақыла.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Prompt-ты кемінде 2 рет өзгерт</li></ul><a class="btn secondary" href="../app/index.html#ai-7-llm">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-7-llm:next:task"><p class="l3-qt">Тілдік модель әр қадамда не есептейді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Сөйлемнің мағынасын</button><button type="button" class="l3-opt" data-i="1">Келесі токеннің ықтималдық үлестірімін</button><button type="button" class="l3-opt" data-i="2">Грамматикалық қателерді</button><button type="button" class="l3-opt" data-i="3">Сөйлемнің ұзындығын</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Келесі токеннің ықтималдық үлестірімін</p><p>Әр қадамда: сөздіктегі әр токен үшін ықтималдық. Генерация: осы үлестірімнен таңдау.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-7-llm:next:trigram"><p class="l3-qt">Триграмма моделі келесі сөзді болжағанда қанша алдыңғы сөзге қарайды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">1</button><button type="button" class="l3-opt" data-i="1">2</button><button type="button" class="l3-opt" data-i="2">3</button><button type="button" class="l3-opt" data-i="3">Барлығына</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 2</p><p>Триграмма = 3 сөздік тізбек: 2 контекст сөз + болжанатын сөз.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Генерация</h2><div class="l3-body"><h3>Идея</h3>
+<p>Үлестірім бар: енді одан бір токенді <strong>таңдау</strong> керек. Ең қарапайым әдіс: <strong>sampling</strong>: ықтималдыққа пропорционал кездейсоқ таңдау. Таңдалған токенді мәтінге қосамыз да, қайтадан болжаймыз. Бұл: <strong>авторегрессивті генерация</strong>:</p>
+<pre class="l3-pre"><code>loop:
+    p = model(мәтін)
+    t = sample(p)
+    мәтін += t
+    if t == &quot;&lt;/s&gt;&quot;: break</code></pre>
+<h3>Есептеп көрейік</h3>
+<p>P(сүт) = 0.5, P(балық) = 0.3, P(үйде) = 0.2. Кездейсоқ сан r ∈ [0, 1):</p>
+<pre class="l3-pre"><code>r &lt; 0.5          → «сүт»
+0.5 ≤ r &lt; 0.8    → «балық»
+0.8 ≤ r &lt; 1      → «үйде»</code></pre>
+<p>r = 0.63 болса: «балық».</p>
+<h3>Неге әр жолы әртүрлі</h3>
+<p>Кездейсоқтық болғандықтан, бір prompt әртүрлі жалғасулар береді. ChatGPT-ге бір сұрақты екі рет қойғанда басқа жауап алатының сол себепті.</p>
+<blockquote><p>⚠ Жиі қате: «Модель бүкіл сөйлемді бірден ойлап алады». Жоқ: ол әр қадамда тек <strong>бір</strong> токенді таңдайды, болашақты «жоспарламайды».</p></blockquote>
+<h3>Енді сен</h3>
+<p>«Келесі токен» батырмасымен кемінде 5 токен генерацияла. Бір prompt-тан бірнеше рет бастап көр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Кемінде 5 токен генерацияла</li></ul><a class="btn secondary" href="../app/index.html#ai-7-llm">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-7-llm:sample:pick" data-hint="Ықтималдықтарды ретімен жинақта: 0.2, сосын 0.2 + 0.5 = 0.7, ..."><p class="l3-qt">P(А) = 0.2, P(Б) = 0.5, P(В) = 0.3, реті сол. r = 0.65 болса қай токен таңдалады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">А</button><button type="button" class="l3-opt" data-i="1">Б</button><button type="button" class="l3-opt" data-i="2">В</button><button type="button" class="l3-opt" data-i="3">Ешқайсысы</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Б</p><p>А: [0, 0.2), Б: [0.2, 0.7), В: [0.7, 1). 0.65 Б аралығына түседі.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-7-llm:sample:auto"><p class="l3-qt">«Авторегрессивті» генерация дегеніміз не?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Модель өзін өзі үйретеді</button><button type="button" class="l3-opt" data-i="1">Әр жаңа токен алдыңғы генерацияланған токендерге сүйеніп таңдалады</button><button type="button" class="l3-opt" data-i="2">Мәтін оңнан солға жазылады</button><button type="button" class="l3-opt" data-i="3">Барлық токен бірден шығады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Әр жаңа токен алдыңғы генерацияланған токендерге сүйеніп таңдалады</p><p>Әр қадамның шығысы келесі қадамның кірісіне қосылады.</p></details></div></div></section><section class="l3-step" id="s3" aria-labelledby="s3-h"><h2 id="s3-h"><span class="l3-n">3</span>Temperature</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Temperature (T)</strong> үлестірімді sampling-тен бұрын өзгертеді:</p>
+<pre class="l3-pre"><code>pᵢ&#x27; = pᵢ^(1/T) / Σ pⱼ^(1/T)</code></pre>
+<ul><li><strong>T &lt; 1</strong>: үлкен ықтималдықтар одан да үлкейеді → мәтін болжамды, қайталанатын.</li><li><strong>T = 1</strong>: модельдің өз үлестірімі.</li><li><strong>T &gt; 1</strong>: үлестірім тегістеледі → сирек токендер жиі таңдалады, мәтін «шығармашыл», бірақ мағынасыз болуы мүмкін.</li><li><strong>T → 0</strong>: әрдайым ең ықтимал токен (greedy).</li></ul>
+<h3>Есептеп көрейік</h3>
+<p>p = (0.6, 0.4).</p>
+<pre class="l3-pre"><code>T = 0.5: 0.6² = 0.36, 0.4² = 0.16 → (0.69, 0.31)
+T = 2:   √0.6 ≈ 0.775, √0.4 ≈ 0.632 → (0.55, 0.45)</code></pre>
+<p>Төмен T айырманы үлкейтеді, жоғары T: кішірейтеді.</p>
+<h3>Нақты әлемде</h3>
+<p>Код жазу, математика: төмен T (0-0.3). Өлең, идея: 0.8-1.2. «Галлюцинациялар» T-ға тікелей байланысты емес, бірақ жоғары T қате токендердің мүмкіндігін арттырады.</p>
+<h3>Тереңірек: temperature сандармен</h3>
+<pre class="l3-pre"><code>pᵢ = exp(zᵢ/T) / Σⱼ exp(zⱼ/T)</code></pre>
+<p>Logit-тер z = (2, 1, 0):</p>
+<ul><li><strong>T = 1:</strong> e² = 7.39, e¹ = 2.72, e⁰ = 1 → p = (0.665, 0.245, 0.090)</li><li><strong>T = 0.5:</strong> z/T = (4, 2, 0) → 54.6, 7.39, 1 → p = (0.867, 0.117, 0.016)</li><li><strong>T = 2:</strong> z/T = (1, 0.5, 0) → 2.72, 1.65, 1 → p = (0.506, 0.307, 0.186)</li></ul>
+<p>Шектер: T → 0: argmax (әрдайым ең ықтимал токен, детерминді); T → ∞: біркелкі үлестірім (бәрі бірдей, мағынасыз).</p>
+<p><strong>Энтропия</strong> H = −Σ pᵢ·log₂ pᵢ: «таңданыс» өлшемі. T = 0.5 → 0.64 бит, T = 1 → 1.20 бит, T = 2 → 1.47 бит (максимумы log₂3 ≈ 1.58). Temperature: энтропияны басқаратын бұранда.</p>
+<p>Маңызды: T logit-тердің <strong>ретін</strong> өзгертпейді: тек олардың арасындағы айырмашылықты күшейтеді не әлсіретеді.</p>
+<h3>Енді сен</h3>
+<p>T ≤ 0.3 және T ≥ 1.5 мәндерінде кемінде 3 токеннен генерацияла. Нәтижелерді салыстыр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Temperature ≤ 0.3 болғанда 3 токен генерацияла</li><li>Temperature ≥ 1.5 болғанда 3 токен генерацияла</li></ul><a class="btn secondary" href="../app/index.html#ai-7-llm">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-7-llm:temperature:low"><p class="l3-qt">Temperature-ді азайтқанда не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Сирек токендер жиі таңдалады</button><button type="button" class="l3-opt" data-i="1">Ең ықтимал токендердің үлесі өседі, мәтін болжамды болады</button><button type="button" class="l3-opt" data-i="2">Модель жылдам үйренеді</button><button type="button" class="l3-opt" data-i="3">Сөздік кішірейеді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Ең ықтимал токендердің үлесі өседі, мәтін болжамды болады</p><p>p^(1/T) T &lt; 1 болғанда үлкен ықтималдықтарды одан да үлкейтеді.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-7-llm:temperature:calc"><p class="l3-qt">p = (0.5, 0.5). T = 0.5 болғанда жаңа үлестірім қандай?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">(0.75, 0.25)</button><button type="button" class="l3-opt" data-i="1">(0.5, 0.5)</button><button type="button" class="l3-opt" data-i="2">(1, 0)</button><button type="button" class="l3-opt" data-i="3">(0.25, 0.75)</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> (0.5, 0.5)</p><p>0.5² = 0.25 екеуіне де: қалыпталғанда (0.5, 0.5). Тең ықтималдықтарды temperature өзгертпейді.</p></details></div></div></section><section class="l3-step" id="s4" aria-labelledby="s4-h"><h2 id="s4-h"><span class="l3-n">4</span>Top-k және greedy</h2><div class="l3-body"><h3>Идея</h3>
+<p>Temperature барлық токендерге әсер етеді, ал сөздікте ондаған мың өте сирек, мағынасыз токен бар. <strong>Top-k</strong> тек ең ықтимал <strong>k</strong> токенді қалдырып, қалғанын алып тастайды, сосын қайта қалыптайды.</p>
+<ul><li><strong>k = 1</strong>: greedy decoding: әрдайым ең ықтимал токен. Бір prompt → әрдайым бір нәтиже.</li><li><strong>k = 40</strong>: жиі қолданылатын мән.</li></ul>
+<p><strong>Top-p (nucleus)</strong>: жиынтық ықтималдығы p-ға (мысалы 0.9) жеткенше ең ықтимал токендерді алады: «сенімді» жағдайда аз, «екіұдай» жағдайда көп токен қалады.</p>
+<h3>Есептеп көрейік</h3>
+<p>p = (0.5, 0.3, 0.15, 0.05), k = 2:</p>
+<pre class="l3-pre"><code>қалды: (0.5, 0.3) → қалыптау: 0.5/0.8 = 0.625, 0.3/0.8 = 0.375</code></pre>
+<h3>Greedy-дің кемшілігі</h3>
+<p>Әрдайым ең ықтимал токенді таңдау жиі <strong>қайталануға</strong> әкеледі («... және ... және ...»), себебі жергілікті ең жақсы таңдау: бүкіл мәтін үшін ең жақсы емес.</p>
+<blockquote><p>💡 Түйін: чат-боттың «мінезі» тек модельмен емес, декодтау параметрлерімен де анықталады: temperature, top-k, top-p.</p></blockquote>
+<h3>Тереңірек: top-k және nucleus (top-p)</h3>
+<p><strong>Top-k:</strong> ең ықтимал k токенді қалдырып, қалғанын 0 етеміз, сосын қайта нормаламыз:</p>
+<pre class="l3-pre"><code>p&#x27;ᵢ = pᵢ / Σ_{j ∈ top-k} pⱼ</code></pre>
+<p>Мысал: p = (0.5, 0.3, 0.15, 0.05), k = 2 → (0.5, 0.3)/0.8 = (0.625, 0.375).</p>
+<p>Әлсіздігі: k тұрақты. Модель сенімді болғанда (0.97, 0.01, …) k = 40 әлі де қоқыс токендерді қалдырады; сенімсіз болғанда (40 тең нұсқа) k = 5 жақсы нұсқаларды кесіп тастайды.</p>
+<p><strong>Top-p (nucleus):</strong> қосынды ықтималдығы p-ға жеткенше ең ықтималдарды аламыз. Сенімді үлестірімде: 1-2 токен, біркелкіде: көп. Яғни шекара үлестірімге бейімделеді. Нақты жүйелер көбіне temperature + top-p қатар қолданады.</p>
+<h3>Енді сен</h3>
+<p>Top-k = 1 қойып, кемінде 3 токен генерацияла. «Тазалау» басып, қайта бастасаң: нәтиже өзгере ме?</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Top-k = 1 болғанда 3 токен генерацияла</li></ul><a class="btn secondary" href="../app/index.html#ai-7-llm">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-7-llm:topk:k2"><p class="l3-qt">p = (0.4, 0.4, 0.2), k = 2. Қалыптанған жаңа үлестірім қандай?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">(0.4, 0.4)</button><button type="button" class="l3-opt" data-i="1">(0.5, 0.5)</button><button type="button" class="l3-opt" data-i="2">(0.67, 0.33)</button><button type="button" class="l3-opt" data-i="3">(1, 0)</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> (0.5, 0.5)</p><p>Қалғандары (0.4, 0.4), қосындысы 0.8. 0.4/0.8 = 0.5 әрқайсысы.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-7-llm:topk:greedy"><p class="l3-qt">Greedy decoding (k = 1) кезінде бір prompt-тан екі рет генерацияласа не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Әртүрлі нәтиже</button><button type="button" class="l3-opt" data-i="1">Дәл бірдей нәтиже</button><button type="button" class="l3-opt" data-i="2">Қате</button><button type="button" class="l3-opt" data-i="3">Мәтін кері ретпен шығады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Дәл бірдей нәтиже</p><p>Кездейсоқтық жоқ: әр қадамда сол бір ең ықтимал токен таңдалады.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="ai-6-transformers.html">← <span lang="en">Transformers</span></a><a href="../index.html#ai">Жасанды интеллект</a><a href="ai-8-build.html"><span lang="en">Build Your AI</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

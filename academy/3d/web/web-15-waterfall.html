@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Request Waterfalls: await, Promise.all &amp; Batching · Веб-әзірлеу - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Request Waterfalls: await, Promise.all &amp;amp; Batching · Веб-әзірлеу - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Бір бет он сұраныс жібереді. Оларды қалай күткенің беттің жылдамдығын бірнеше есе өзгертеді: тәуелділік, параллельдік, қосылым шегі және пакеттеу.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/web/web-15-waterfall.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/web/web-15-waterfall.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Request Waterfalls: await, Promise.all &amp; Batching · Веб-әзірлеу - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/web/web-15-waterfall.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Бір бет он сұраныс жібереді. Оларды қалай күткенің беттің жылдамдығын бірнеше есе өзгертеді: тәуелділік, параллельдік, қосылым шегі және пакеттеу.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="web-15-waterfall" style="--lc:#1d84a6">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#web">Веб-әзірлеу</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Веб-әзірлеу · 15-сабақ · ≈20 мин · 2 қадам · 4 сұрақ</p>
+        <h1 lang="en">Request Waterfalls: await, Promise.all &amp; Batching</h1>
+        <p class="l3-lede">Бір бет он сұраныс жібереді. Оларды қалай күткенің беттің жылдамдығын бірнеше есе өзгертеді: тәуелділік, параллельдік, қосылым шегі және пакеттеу.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#web-15-waterfall">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Сарқырама</a></li><li><a href="#s2">Бір пакет</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Сарқырама</h2><div class="l3-body"><h3>Идея</h3>
+<p>Беттің жүктелу графигі <strong>сарқырама</strong> (waterfall) деп аталады: әр сұраныс алдыңғысы біткенде басталса, жолақтар баспалдақ болып төмен түседі.</p>
+<p>Кейбір күту <strong>қажет</strong>: посттарды сұрау үшін пайдаланушының id-і керек. Ал кейбірі <strong>қажет емес</strong>: 8 посттың пікірлері бір-біріне тәуелді емес, бірақ <code>for</code> ішіндегі <code>await</code> оларды бәрібір кезекке тұрғызады.</p>
+<pre class="l3-pre"><code>for (const p of posts) comments.push(await load(p.id)); // 8 × 110 мс
+const comments = await Promise.all(posts.map((p) =&gt; load(p.id))); // бірге</code></pre>
+<h3>Түйсік</h3>
+<p>Дүкенге сегіз нәрсе алуға келдің. Біреуін алып, үйге апарып, қайта келсең, күн өтеді. Бәрін бір себетке салсаң, бір рет барасың.</p>
+<h3>Есептеп көрейік</h3>
+<ul><li>Сарқырама: 120 + 150 + 8 × 110 = 1150 мс.</li><li>Promise.all: 120 + 150, сосын пікірлер бірге. Бірақ HTTP/1.1-де браузер бір хостқа ең көбі 6 қосылым ашады: алғашқы 6 сұраныс 270 мс-та, қалған 2-уі 380 мс-та басталады. Барлығы 490 мс.</li></ul>
+<h3>Нақты әлемде</h3>
+<p>DevTools-тың Network қойындысындағы Waterfall бағаны дәл осы суретті көрсетеді. HTTP/2 мен HTTP/3 бір қосылымның ішінде көп ағын жүргізеді, сондықтан 6 қосылым шегі оларда жоқ.</p>
+<h3>Енді сен</h3>
+<p>Сарқырамамен жүкте де, графикке қара. Сосын Promise.all-ға ауыстыр: қай сұраныстар бірге басталды, қайсысы кейін?</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Әр пікірді await-пен бірінен соң бірін жүкте: бет 1150 мс</li><li>Пікірлерді Promise.all-мен бірге сұра: 500 мс-тан тез</li></ul><a class="btn secondary" href="../app/index.html#web-15-waterfall">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="0" data-qid="web-15-waterfall:serial:predict"><p class="l3-qt">Пайдаланушы (120 мс), оның посттары (150 мс), сосын 8 посттың әрқайсысының пікірлері (110 мс). Әр сұраныс алдыңғысын await-пен күтсе, бет қашан дайын болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">1150 мс: барлық уақыттар қосылады</button><button type="button" class="l3-opt" data-i="1">380 мс: браузер өзі параллельдейді</button><button type="button" class="l3-opt" data-i="2">270 мс</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 1150 мс: барлық уақыттар қосылады</p><p>await келесі жолды алдыңғы жауап келгенше тоқтатады. Бірін-бірі күтпеуге болатын 8 сұраныс та кезекке тұрып, уақыттары қосылады: 120 + 150 + 8 × 110 = 1150.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="web-15-waterfall:serial:dep"><p class="l3-qt">Неге посттарды пайдаланушымен бірге параллель сұрай алмаймыз?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Посттарды сұрау үшін пайдаланушының id-і керек: бұл нақты тәуелділік</button><button type="button" class="l3-opt" data-i="1">Браузер оған рұқсат бермейді</button><button type="button" class="l3-opt" data-i="2">Сервер екі сұранысты бірден өңдей алмайды</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Посттарды сұрау үшін пайдаланушының id-і керек: бұл нақты тәуелділік</p><p>Параллельдеуге тек бір-біріне тәуелсіз сұраныстар жарайды. Тәуелділікті жою үшін API-ді өзгерту керек (мысалы, «менің посттарым» эндпоинті).</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="web-15-waterfall:serial:limit"><p class="l3-qt">Promise.all-мен 8 сұраныс жібергенде неге екі толқын болды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">HTTP/1.1-де браузер бір хостқа 6-дан көп қосылым ашпайды</button><button type="button" class="l3-opt" data-i="1">Promise.all тек 6 уәдені күтеді</button><button type="button" class="l3-opt" data-i="2">Сервер 6 сұраныстан кейін тоқтайды</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> HTTP/1.1-де браузер бір хостқа 6-дан көп қосылым ашпайды</p><p>Жетінші және сегізінші сұраныс бос қосылым шыққанша күтті. HTTP/2-де бұл шек жоқ.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Бір пакет</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Пакеттеу</strong> (batching): көп кішкене сұраныстың орнына бір сұраныс. <code>GET /comments?posts=1,2,...,8</code> бір ғана желілік сапар, бір ғана тақырыптар жиынтығы, серверде бір ғана SQL.</p>
+<p>Бұл тәсілдің атақты мысалы: <strong>N+1 проблемасы</strong>. Тізімді бір сұраныспен алып, сосын әр элемент үшін бөлек сұрасаң, N+1 сұраныс шығады. Шешімі бір сұраныс: SQL-да JOIN не IN, API-де пакеттік эндпоинт, GraphQL-да DataLoader.</p>
+<h3>Түйсік</h3>
+<p>Сегіз хатты сегіз конвертпен жіберудің орнына бір конвертке салу. Пошта бір рет жүреді, ал конверт сәл ауырырақ.</p>
+<h3>Есептеп көрейік</h3>
+<ul><li>Promise.all: 10 сұраныс, 490 мс.</li><li>Пакет: 3 сұраныс, 270 + 160 = 430 мс.</li></ul>
+<p>Жылдамдықтағы ұтыс шағын, бірақ сервердің жүктемесі айтарлықтай азаяды: 1000 пайдаланушы 10 000 емес, 3000 сұраныс жібереді.</p>
+<h3>Нақты әлемде</h3>
+<p>GraphQL дәл осы мәселені шешу үшін жасалды: клиент бір сұраныспен қажет деректердің бүкіл ағашын сұрайды. Бірақ пакеттің де бағасы бар: оны кэштеу қиынырақ және бір баяу бөлігі бүкіл жауапты кешіктіреді.</p>
+<h3>Енді сен</h3>
+<p>Пакеттік сұранысты ойнат та, графиктегі жолақтар санын Promise.all-мен салыстыр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Барлық пікірді бір сұраныспен ал: бар болғаны 3 сұраныс</li></ul><a class="btn secondary" href="../app/index.html#web-15-waterfall">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="0" data-qid="web-15-waterfall:batch:predict"><p class="l3-qt">Сервер барлық 8 посттың пікірлерін бір сұраныспен береді (160 мс). Бет Promise.all-мен салыстырғанда қалай болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Сәл тезірек (430 мс) және сұраныс 10 емес, 3</button><button type="button" class="l3-opt" data-i="1">Баяуырақ: бір үлкен сұраныс ұзақ</button><button type="button" class="l3-opt" data-i="2">Дәл сондай, бірақ сұраныс аз</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Сәл тезірек (430 мс) және сұраныс 10 емес, 3</p><p>Бір пакет екі толқынды жояды: 270 + 160 = 430 мс. Сонымен қатар серверге 8 бөлек сұраныс емес, біреуі келеді.</p></details></div></div><div class="l3-box l3-self"><h3>Өз сөзіңмен түсіндір</h3><p>Неге сарқырама 1150 мс алды, Promise.all 490 мс, ал пакет 430 мс? Қай күту міндетті болды?</p><details class="l3-ans"><summary>Жақсы түсіндірмеде болатын ойлар</summary><ul><li>await тәуелсіз сұраныстарды да кезекке қояды</li><li>посттар пайдаланушының id-іне тәуелді</li><li>6 қосылым шегі екі толқын жасады</li><li>пакет бір сұранысқа біріктіреді</li></ul></details></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="web-15-waterfall:batch:n1"><p class="l3-qt">N+1 проблемасы деген не?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Тізімді алған соң әр элемент үшін бөлек сұраныс жіберу</button><button type="button" class="l3-opt" data-i="1">Серверде N+1 процессор болуы</button><button type="button" class="l3-opt" data-i="2">Сұраныс N+1 рет қайталануы</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Тізімді алған соң әр элемент үшін бөлек сұраныс жіберу</p><p>1 сұраныс тізім үшін, N сұраныс әр элемент үшін. Бір пакет не JOIN мұны 2 сұранысқа, тіпті біреуге түсіреді.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="web-15-waterfall:batch:cost"><p class="l3-qt">Пакеттеудің кемшілігі қандай?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Пакетті кэштеу қиын және ең баяу бөлігі бүкіл жауапты кешіктіреді</button><button type="button" class="l3-opt" data-i="1">Ол әрқашан баяуырақ</button><button type="button" class="l3-opt" data-i="2">Браузер пакетті оқи алмайды</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Пакетті кэштеу қиын және ең баяу бөлігі бүкіл жауапты кешіктіреді</p><p>Әр нәрсенің бағасы бар: пакет желілік сапарларды азайтады, бірақ икемділікті төмендетеді.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="web-14-ratelimit.html">← <span lang="en">Rate Limiting: 429 &amp; Retry-After</span></a><a href="../index.html#web">Веб-әзірлеу</a><span></span></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

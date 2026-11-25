@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sensor Fusion · Робототехника және IoT - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Sensor Fusion · Робототехника және IoT - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Одометрия дрейфтейді, GPS шулы. Калман сүзгісі екеуінен де дәлірек баға береді.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/iot/iot-7-kalman.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/iot/iot-7-kalman.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Sensor Fusion · Робототехника және IoT - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/iot/iot-7-kalman.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Одометрия дрейфтейді, GPS шулы. Калман сүзгісі екеуінен де дәлірек баға береді.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="iot-7-kalman" style="--lc:#2e6b4f">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#iot">Робототехника және IoT</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Робототехника және IoT · 7-сабақ · ≈25 мин · 2 қадам · 4 сұрақ</p>
+        <h1 lang="en">Sensor Fusion</h1>
+        <p class="l3-lede">Одометрия дрейфтейді, GPS шулы. Калман сүзгісі екеуінен де дәлірек баға береді.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#iot-7-kalman">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Кімге сенеміз?</a></li><li><a href="#s2">Біріктіру</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Кімге сенеміз?</h2><div class="l3-body"><h3>Идея</h3>
+<p>Робот түзу бойымен әр қадамда 1 м жүреді. Оның орнын білудің екі көзі бар:</p>
+<ul><li><strong>Одометрия</strong> (дөңгелек энкодерлері): шуы аз, бірақ дөңгелектер тозған: әр қадамды <strong>4%</strong> артық есептейді. Қате <strong>жинақталады</strong>: 100 қадамнан кейін 3.9 м.</li><li><strong>GPS</strong>: қатесі жинақталмайды, бірақ әр өлшем <strong>±3 м</strong> шулы.</li></ul>
+<p><strong>Калман сүзгісі</strong> екеуін біріктіреді. Ол <strong>бағаның дисперсиясын</strong> (p) да бақылайды:</p>
+<pre class="l3-pre"><code>болжау:  x ← x + одометрия;   p ← p + q
+түзету:  K = p / (p + r);   x ← x + K · (gps − x);   p ← (1 − K) · p</code></pre>
+<p>q: одометрияның бір қадамдағы белгісіздігі, r: GPS-тің дисперсиясы.</p>
+<h3>Түйсік</h3>
+<p>Қараңғыда бөлмеде жүрсің: қадамдарыңды санайсың (одометрия), бірақ кейде терезеден көше шамын көресің (GPS). Санауға сенесің, бірақ шамды көргенде орныңды аздап түзетесің.</p>
+<h3>Есептеп көрейік</h3>
+<p>100 қадам, RMSE (орташа квадраттық қате):</p>
+<ul><li>одометрия: <strong>2.29 м</strong> (дрейф)</li><li>GPS: <strong>2.77 м</strong> (шу)</li><li>r = 1000 (GPS-ке сенбе): <strong>1.99 м</strong>: одометрияға жақын</li><li>q = 100 (одометрияға сенбе): <strong>2.56 м</strong>: GPS-ке жақын</li></ul>
+<h3>Нақты әлемде</h3>
+<p>1960 жылы Рудольф Калман жариялаған бұл алгоритм «Аполлон» бағдарламасында Айға ұшудың навигациясын есептеді. Бүгін ол телефоныңдағы GPS-тен бастап өздігінен жүретін көліктерге дейін бар.</p>
+<blockquote><p>💡 Түйін: K: «GPS-ке қанша сенеміз». q үлкен → K → 1 (тек GPS). r үлкен → K → 0 (тек одометрия).</p></blockquote>
+<h3>Енді сен</h3>
+<p>Екі шеткі жағдайды байқап көр: тек одометрияға (r ≥ 100) және тек GPS-ке (q ≥ 10) сен.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Тек одометрияға сен (r ≥ 100)</li><li>Тек GPS-ке сен (q ≥ 10)</li></ul><a class="btn secondary" href="../app/index.html#iot-7-kalman">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="iot-7-kalman:extremes:gain"><p class="l3-qt">p = 1, r = 9. Калман күшейткіші K қанша?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">0.1</button><button type="button" class="l3-opt" data-i="1">0.9</button><button type="button" class="l3-opt" data-i="2">9</button><button type="button" class="l3-opt" data-i="3">1</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 0.1</p><p>K = p / (p + r) = 1 / 10 = 0.1. GPS бағаны тек 10%-ға тартады.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="iot-7-kalman:extremes:drift"><p class="l3-qt">Неге одометрияның қатесі уақыт өткен сайын өседі, ал GPS-тікі: жоқ?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Одометрия өзгерістерді қосады: әр қадамның қатесі жинақталады; GPS әр жолы орынды тәуелсіз өлшейді</button><button type="button" class="l3-opt" data-i="1">GPS дәлірек құрылғы</button><button type="button" class="l3-opt" data-i="2">Одометрия баяу жұмыс істейді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Одометрия өзгерістерді қосады: әр қадамның қатесі жинақталады; GPS әр жолы орынды тәуелсіз өлшейді</p><p>Интегралдау (қосу) қателерді де қосады. Тәуелсіз өлшемдердің қателері жинақталмайды: бірақ олар шулы.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Біріктіру</h2><div class="l3-body"><h3>Идея</h3>
+<p>Дұрыс q мен r берілсе, Калман сүзгісі: <strong>оңтайлы</strong> бағалағыш (сызықты жүйе мен гаусстық шу үшін): ешбір басқа сызықты әдіс одан аз орташа квадраттық қате бермейді.</p>
+<p>Ең маңыздысы: біріккен баға <strong>екі көздің әрқайсысынан да</strong> дәлірек. Одометрия GPS-тің шуын тегістейді, ал GPS одометрияның дрейфін түзетеді.</p>
+<h3>Түйсік</h3>
+<p>Екі куәгер: біреуі есте сақтау қабілеті жақсы, бірақ уақыт өте шатасады; екіншісі әр жолы аздап қателеседі, бірақ шатаспайды. Екеуін бірге тыңдасаң: шындыққа жақынсың.</p>
+<h3>Есептеп көрейік</h3>
+<p>r = 9 (GPS σ = 3 → σ² = 9):</p>
+<div class="table-wrap"><table class="l3-table"><thead><tr><th>q</th><th>RMSE</th><th>соңғы K</th></tr></thead><tbody><tr><td>0.003</td><td>0.89 м</td><td>0.019</td></tr><tr><td>0.05</td><td><strong>0.50 м</strong></td><td>0.072</td></tr><tr><td>1</td><td>1.08 м</td><td>0.28</td></tr></tbody></table></div>
+<p>0.50 м: одометриядан <strong>4.6 есе</strong>, GPS-тен <strong>5.5 есе</strong> дәл! Бірақ q-ны тым кіші қойсаң, сүзгі «одометрия өте дәл» деп ойлайды және дрейфті кеш байқайды.</p>
+<h3>Нақты әлемде</h3>
+<p>Шын жүйелер сызықты емес (робот бұрылады, GPS сфералық координатта): <strong>кеңейтілген</strong> (EKF) не <strong>иісіз</strong> (UKF) Калман сүзгілері қолданылады. SLAM алгоритмдері сол идеямен роботтың орнын және <strong>картаны</strong> бір мезгілде бағалайды.</p>
+<blockquote><p>⚠ Жиі қате: r-ді «шамамен» қою. Сүзгі өлшеудің шуын дұрыс білмесе, ол не шуды көшіреді, не нақты өзгерістерді елемейді. r мен q-ды деректерден өлшеу: инженердің жұмысы.</p></blockquote>
+<h3>Тереңірек: K = p / (p + r) қайдан шығады</h3>
+<p>Бізде екі тәуелсіз баға бар: болжам x̂ (дисперсиясы p) және өлшем z (дисперсиясы r). Оларды салмақпен біріктіреміз:</p>
+<pre class="l3-pre"><code>x = (1 − K) · x̂ + K · z</code></pre>
+<p>Тәуелсіз шамалардың дисперсиясы:</p>
+<pre class="l3-pre"><code>Var(x) = (1 − K)² · p + K² · r</code></pre>
+<p>Оны K бойынша минимумдаймыз: туындыны нөлге теңестіреміз:</p>
+<pre class="l3-pre"><code>−2(1 − K) · p + 2K · r = 0   →   K = p / (p + r)</code></pre>
+<p>Сонда жаңа дисперсия: Var(x) = p·r / (p + r) = (1 − K) · p: ол p-дан да, r-ден де <strong>кіші</strong>. Яғни 1/Var = 1/p + 1/r: ақпарат «қосылады».</p>
+<p>Көп өлшемді Калман сүзгісі: дәл сол формула, тек сандардың орнына матрицалар: K = P Hᵀ (H P Hᵀ + R)⁻¹. Ал «болжау» қадамы физиканың моделі: x ← F x + B u, P ← F P Fᵀ + Q.</p>
+<h3>Енді сен</h3>
+<p>q мен r-ді баптап, біріккен RMSE ≤ 1.0 м-ге жет.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Біріккен бағаның қатесі (RMSE) ≤ 1.0 м: екі сенсордан да 2 есе дәл</li></ul><a class="btn secondary" href="../app/index.html#iot-7-kalman">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="iot-7-kalman:fuse:better"><p class="l3-qt">Біріккен баға неге екі көздің әрқайсысынан дәлірек?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Олардың қателері әр түрлі сипатта (дрейф пен шу) және тәуелсіз: біреуі екіншісін түзетеді</button><button type="button" class="l3-opt" data-i="1">Себебі сүзгі көбірек есептейді</button><button type="button" class="l3-opt" data-i="2">Себебі GPS-тің шуы жойылады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Олардың қателері әр түрлі сипатта (дрейф пен шу) және тәуелсіз: біреуі екіншісін түзетеді</p><p>Тәуелсіз ақпарат көздерін біріктіргенде белгісіздік азаяды: 1/p = 1/p₁ + 1/p₂: дисперсиялардың «параллель қосылуы».</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="iot-7-kalman:fuse:q"><p class="l3-qt">q өте кіші (0.001) болса не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Сүзгі одометрияға тым қатты сенеді: K → 0, дрейф түзетілмейді</button><button type="button" class="l3-opt" data-i="1">Сүзгі тек GPS-ті қайталайды</button><button type="button" class="l3-opt" data-i="2">Сүзгі тұрақсыз болып, шексіздікке кетеді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Сүзгі одометрияға тым қатты сенеді: K → 0, дрейф түзетілмейді</p><p>p әр қадамда аз өседі → K кішкене → GPS түзетулері әлсіз. Модельдің қатесін (4% дрейф) ескермеген сүзгі баяу «оянады».</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="iot-6-arm.html">← <span lang="en">Robot Arm Kinematics</span></a><a href="../index.html#iot">Робототехника және IoT</a><a href="iot-8-mqtt.html"><span lang="en">MQTT &amp; Power</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

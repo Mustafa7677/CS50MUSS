@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Block Cipher Modes: ECB vs CBC · Киберқауіпсіздік - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Block Cipher Modes: ECB vs CBC · Киберқауіпсіздік - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Мықты шифр да дұрыс емес режимде суретті жасыра алмайды: ECB, CBC және IV.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/sec/sec-10-modes.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/sec/sec-10-modes.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Block Cipher Modes: ECB vs CBC · Киберқауіпсіздік - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/sec/sec-10-modes.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Мықты шифр да дұрыс емес режимде суретті жасыра алмайды: ECB, CBC және IV.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="sec-10-modes" style="--lc:#2b3a5c">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#sec">Киберқауіпсіздік</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Киберқауіпсіздік · 10-сабақ · ≈25 мин · 2 қадам · 6 сұрақ</p>
+        <h1 lang="en">Block Cipher Modes: ECB vs CBC</h1>
+        <p class="l3-lede">Мықты шифр да дұрыс емес режимде суретті жасыра алмайды: ECB, CBC және IV.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#sec-10-modes">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Пингвин әсері</a></li><li><a href="#s2">Бір IV екі рет</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Пингвин әсері</h2><div class="l3-body"><h3>Идея</h3>
+<p>AES сияқты <strong>блоктық шифр</strong> тек бір блокты шифрлайды (AES-те 16 байт, біздің модельде 4 байт). Ұзын хабарды шифрлау үшін блоктарды қалай байланыстыратынымызды <strong>режим</strong> (mode of operation) анықтайды.</p>
+<h3>ECB: әр блок бөлек</h3>
+<p><strong>ECB</strong> (Electronic Codebook): әр блок бір кілтпен бөлек шифрланады. Қарапайым, бірақ қауіпті: бірдей ашық блок → бірдей шифр блогы. Біздің суретте 64 блок бар, бірақ олардың тек <strong>10-ы әр түрлі</strong> (32-сі бос фон). ECB шифрында да дәл 10 түрлі блок: өрнек көрініп тұр.</p>
+<h3>CBC: тізбек</h3>
+<p><strong>CBC</strong> (Cipher Block Chaining): әр ашық блок алдымен алдыңғы шифр блогымен XOR етіледі, сосын шифрланады. Бірінші блок үшін <strong>IV</strong> (initialization vector) қолданылады:</p>
+<pre class="l3-pre"><code>C₀ = E(P₀ ⊕ IV)
+Cᵢ = E(Pᵢ ⊕ Cᵢ₋₁)</code></pre>
+<p>Бірдей фон блоктары енді әр түрлі шифрланады: 64 блоктың <strong>64-і де әр түрлі</strong>.</p>
+<h3>Нақты әлемде</h3>
+<p>Мұны «ECB пингвині» дейді: Linux пингвинінің суретін ECB-мен шифрласаң, пингвин анық көрінеді. Бүгінгі TLS 1.3 тек <strong>AEAD</strong> режимдерін (AES-GCM, ChaCha20-Poly1305) қолданады: олар шифрлаумен бірге тұтастықты да тексереді.</p>
+<blockquote><p>⚠ Кітапханада әдепкі режим ECB болуы мүмкін (мысалы, Java-да <code>Cipher.getInstance(&quot;AES&quot;)</code>). Режимді әрқашан өзің нақты таңда.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Суретті ECB-мен, сосын CBC-мен шифрла да, екі нәтижені салыстыр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Суретті ECB режимінде шифрла: өрнек көрініп тұр</li><li>Енді CBC режимінде: 64 блоктың бәрі әр түрлі</li></ul><a class="btn secondary" href="../app/index.html#sec-10-modes">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="1" data-qid="sec-10-modes:ecb:predict"><p class="l3-qt">Суретті мықты шифрмен шифрладық, бірақ әр 4 пиксельді блок бір кілтпен бөлек шифрланады (ECB). Шифрланған суретте не көрінеді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Кездейсоқ шу: ештеңе көрінбейді</button><button type="button" class="l3-opt" data-i="1">Суреттің өрнегі: бірдей блоктар бірдей шифрланады</button><button type="button" class="l3-opt" data-i="2">Сурет өзгеріссіз қалады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Суреттің өрнегі: бірдей блоктар бірдей шифрланады</p><p>ECB-де бірдей ашық блок әрқашан бірдей шифр блогына айналады. Фон бір түсті болса, оның шифры да бір түсті: өрнектің шекарасы толық көрінеді.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="sec-10-modes:ecb:ecb"><p class="l3-qt">Неге ECB суреттің өрнегін жасырмайды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Кілт тым қысқа</button><button type="button" class="l3-opt" data-i="1">Бірдей ашық блоктар бірдей шифр блоктарына айналады</button><button type="button" class="l3-opt" data-i="2">ECB шифрламайды, тек кодтайды</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Бірдей ашық блоктар бірдей шифр блоктарына айналады</p><p>Шифрдың өзі мықты болуы мүмкін, бірақ ECB қайталануды сақтайды. Ал қайталанудың өзі ақпарат.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="sec-10-modes:ecb:cbc"><p class="l3-qt">CBC-де бірдей фон блоктары неге әр түрлі шифрланады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Әр блокқа бөлек кілт беріледі</button><button type="button" class="l3-opt" data-i="1">Әр блок алдыңғы шифр блогымен XOR етіледі</button><button type="button" class="l3-opt" data-i="2">CBC блоктарды араластырады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Әр блок алдыңғы шифр блогымен XOR етіледі</p><p>Cᵢ = E(Pᵢ ⊕ Cᵢ₋₁): алдыңғы блок өзгеше болғандықтан, шифрлауға кіретін мән де өзгеше.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="sec-10-modes:ecb:count"><p class="l3-qt">Модельде 64 блоктың 10-ы әр түрлі. ECB шифрында неше түрлі блок болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">64</button><button type="button" class="l3-opt" data-i="1">10</button><button type="button" class="l3-opt" data-i="2">1</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 10</p><p>ECB: бір кілт, бір блок, бір нәтиже. Әр түрлі ашық блок саны өзгермейді.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Бір IV екі рет</h2><div class="l3-body"><h3>Идея</h3>
+<p>CBC-дің қорғанысы <strong>IV-ге</strong> байланысты. IV құпия емес (оны шифрмәтінмен бірге ашық жібереді), бірақ ол әр хабар үшін <strong>жаңа әрі болжанбайтын</strong> болуы керек.</p>
+<h3>IV қайталанса не болады?</h3>
+<p>Бір кілт пен бір IV бірдей хабарға бірдей шифрмәтін береді. Шабуылшы мәтінді оқымаса да, <strong>теңдікті</strong> көреді: «бүгінгі бұйрық кешегімен бірдей», «екі пайдаланушының құпия жауабы бірдей». Тіпті хабардың басы ғана бірдей болса, шифрмәтіннің басы да бірдей.</p>
+<h3>Болжанатын IV</h3>
+<p>IV болжанатын болса (мысалы, алдыңғы хабардың соңғы блогы), шабуылшы өз мәтінін шифрлатып, құпия блокты тексеріп көре алады. 2011 жылғы <strong>BEAST</strong> шабуылы TLS 1.0-дегі дәл осы әлсіздікті пайдаланды.</p>
+<h3>Нақты әлемде</h3>
+<ul><li>AES-CBC үшін IV: 16 кездейсоқ байт, әр хабарға жаңа.</li><li>AES-GCM-де IV орнына <strong>nonce</strong>: ол кездейсоқ болмаса да болады, бірақ бір кілтпен <strong>ешқашан қайталанбауы</strong> керек. GCM-де nonce қайталанса, шабуылшы тұтастық кілтін есептеп, жалған хабар жасай алады. Сондықтан көбіне есептегіш (counter) қолданады.</li></ul>
+<blockquote><p>Ереже: бір кілт + бір IV/nonce = бір хабар.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Тұрақты IV-мен екі рет шифрла (бірдей), сосын «әр жолы жаңа IV» таңдап, тағы екі рет (әр түрлі).</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Тұрақты IV-мен сол суретті екі рет шифрла: шифрмәтін бірдей</li><li>Әр жолы жаңа IV-мен екі рет: шифрмәтін әр түрлі</li></ul><a class="btn secondary" href="../app/index.html#sec-10-modes">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="2" data-qid="sec-10-modes:iv:predict"><p class="l3-qt">CBC режимі, бірақ IV әрқашан бірдей. Бір суретті екі рет шифрласақ, шифрмәтіндер қандай болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Әр түрлі: CBC әрқашан кездейсоқ</button><button type="button" class="l3-opt" data-i="1">Әр түрлі, бірақ ұзындығы бірдей</button><button type="button" class="l3-opt" data-i="2">Дәл бірдей</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Дәл бірдей</p><p>Кілт, IV және ашық мәтін бірдей болса, CBC-дің бүкіл тізбегі де бірдей. Бақылаушы «бұл сол хабар» дегенді біледі.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="sec-10-modes:iv:secret"><p class="l3-qt">CBC-дегі IV құпия ма?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Иә, кілт сияқты сақталады</button><button type="button" class="l3-opt" data-i="1">Жоқ, ашық жіберіледі, бірақ әр хабарға жаңа әрі болжанбайтын болуы керек</button><button type="button" class="l3-opt" data-i="2">IV керек емес</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Жоқ, ашық жіберіледі, бірақ әр хабарға жаңа әрі болжанбайтын болуы керек</p><p>IV-ді қабылдаушы шифрды ашу үшін біледі. Оның қауіпсіздігі құпиялықта емес, жаңалығы мен болжанбауында.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="sec-10-modes:iv:leak"><p class="l3-qt">IV қайталанса, шабуылшы не біледі?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Кілтті</button><button type="button" class="l3-opt" data-i="1">Екі хабардың бірдей екенін (не басы бірдей екенін)</button><button type="button" class="l3-opt" data-i="2">Ештеңе</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Екі хабардың бірдей екенін (не басы бірдей екенін)</p><p>Ол мәтінді оқымайды, бірақ теңдікті көреді. Бұл да ақпараттың ағуы.</p></details></div><div class="l3-q l3-quiz" data-answer="2" data-qid="sec-10-modes:iv:gcm"><p class="l3-qt">AES-GCM-де бір кілтпен nonce қайталанса не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Ештеңе, GCM қорғалған</button><button type="button" class="l3-opt" data-i="1">Шифрлау баяулайды</button><button type="button" class="l3-opt" data-i="2">Құпиялық та, тұтастық та бұзылады: шабуылшы жалған хабар жасай алады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Құпиялық та, тұтастық та бұзылады: шабуылшы жалған хабар жасай алады</p><p>GCM-де nonce қайталану: ең қауіпті қателердің бірі. Сондықтан nonce-ты есептегішпен береді.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="sec-9-pset.html">← <span lang="en">Problem Set: шабуылшының көзімен</span></a><a href="../index.html#sec">Киберқауіпсіздік</a><a href="sec-11-hmac.html"><span lang="en">Integrity: Hash vs HMAC</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

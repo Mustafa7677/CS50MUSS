@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Convolution: How a CNN Sees Edges · Жасанды интеллект - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Convolution: How a CNN Sees Edges · Жасанды интеллект - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: 3×3 ядро суреттің үстімен жылжиды: бұлыңғырлау, шекараларды табу және өз сүзгіңді құру.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/ai/ai-12-convolution.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/ai/ai-12-convolution.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Convolution: How a CNN Sees Edges · Жасанды интеллект - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/ai/ai-12-convolution.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: 3×3 ядро суреттің үстімен жылжиды: бұлыңғырлау, шекараларды табу және өз сүзгіңді құру.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="ai-12-convolution" style="--lc:#7a5cd6">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#ai">Жасанды интеллект</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Жасанды интеллект · 12-сабақ · ≈25 мин · 2 қадам · 6 сұрақ</p>
+        <h1 lang="en">Convolution: How a CNN Sees Edges</h1>
+        <p class="l3-lede">3×3 ядро суреттің үстімен жылжиды: бұлыңғырлау, шекараларды табу және өз сүзгіңді құру.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#ai-12-convolution">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Дайын ядролар</a></li><li><a href="#s2">Өз сүзгің</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Дайын ядролар</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Свёртка</strong> (convolution): кішкентай салмақтар терезесі (<strong>ядро</strong>, kernel) суреттің әр нүктесіне қойылып, астындағы пиксельдерді салмақтап қосады.</p>
+<pre class="l3-pre"><code>out[y][x] = Σ img[y+j][x+i] · k[j][i]</code></pre>
+<p>8×8 сурет пен 3×3 ядро 6×6 нәтиже береді (шетін толтырмасақ).</p>
+<h3>Ядролар</h3>
+<ul><li><strong>Identity</strong>: ортасында 1. Ештеңе өзгермейді.</li><li><strong>Blur</strong>: барлығы 1/9. Әр нүкте көршілерінің орташасы: суреттің бұлыңғыр нұсқасы. Салмақтар қосындысы 1, жалпы жарықтық сақталады.</li><li><strong>Sobel-x</strong>: солдан оңға айырма. Тік шекаралар жанады (+4 не −4), тегіс аймақ 0.</li><li><strong>Sobel-y</strong>: жоғарыдан төменге. Көлденең шекаралар.</li></ul>
+<h3>Неге бұл ML?</h3>
+<p>Свёрткалық желіде (CNN) ядроның 9 саны: <strong>үйретілетін параметрлер</strong>. Бірінші қабат өзі Sobel-ге ұқсас шекара сүзгілерін үйренеді, келесі қабаттар шекаралардан бұрыштар, пішіндер, тіпті беттер құрайды. Бір ядро суреттің бәріне қолданылады: аз параметр, ал нысан қайда тұрса да, ол бәрібір танылады.</p>
+<h3>Нақты әлемде</h3>
+<p>LeNet (1998) пошта индекстерін оқыды, AlexNet (2012) ImageNet-те бәрін таң қалдырды. Медицинадағы рентген талдауы, жүргізушісіз көліктің камерасы: бәрі свёрткадан басталады.</p>
+<blockquote><p>Терең оқытудағы «свёртка» математикалық тұрғыда cross-correlation: ядро аударылмайды.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Blur мен Sobel-x ядроларын қолданып, нәтижені салыстыр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Бұлыңғырлау ядросын қолдан</li><li>Sobel-x: тек тік шекаралар жанады</li></ul><a class="btn secondary" href="../app/index.html#ai-12-convolution">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="1" data-qid="ai-12-convolution:kernels:predict"><p class="l3-qt">3×3 ядро [−1 0 1; −2 0 2; −1 0 1] (Sobel-x) суреттің үстімен жылжиды. Ортасында ақ шаршы. Нәтижеде не жанады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Шаршының бүкіл ішкі бөлігі</button><button type="button" class="l3-opt" data-i="1">Шаршының сол және оң жақ шекаралары ғана</button><button type="button" class="l3-opt" data-i="2">Жоғарғы және төменгі шекаралары ғана</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Шаршының сол және оң жақ шекаралары ғана</p><p>Ядро оң жақтағы мен сол жақтағы пиксельдердің айырмасын есептейді. Тегіс аймақта айырма 0, тек тік шекарада жарықтық солдан оңға өзгереді.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-12-convolution:kernels:size"><p class="l3-qt">8×8 суретке 3×3 ядроны шетін толтырмай қолдансақ, нәтиже өлшемі?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">8×8</button><button type="button" class="l3-opt" data-i="1">6×6</button><button type="button" class="l3-opt" data-i="2">3×3</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 6×6</p><p>Ядро толық сыятын орындар: 8 − 3 + 1 = 6 әр бағытта.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="ai-12-convolution:kernels:flat"><p class="l3-qt">Sobel-x неге тегіс аймаққа 0 береді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Оның салмақтарының қосындысы 0: бірдей пиксельдерде оң мен теріс бөліктер бірін-бірі жояды</button><button type="button" class="l3-opt" data-i="1">Ол тек шекараны көреді, себебі жоқ</button><button type="button" class="l3-opt" data-i="2">Тегіс аймақ қара</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Оның салмақтарының қосындысы 0: бірдей пиксельдерде оң мен теріс бөліктер бірін-бірі жояды</p><p>−1 − 2 − 1 + 1 + 2 + 1 = 0. Барлық пиксель бірдей болса, нәтиже 0.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-12-convolution:kernels:learn"><p class="l3-qt">CNN-де ядроның сандарын кім таңдайды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Бағдарламашы қолмен</button><button type="button" class="l3-opt" data-i="1">Желі оларды үйрету кезінде градиентпен өзі табады</button><button type="button" class="l3-opt" data-i="2">Олар кездейсоқ қалады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Желі оларды үйрету кезінде градиентпен өзі табады</p><p>Ядро салмақтары: желінің параметрлері. Бірінші қабаттарда олар көбіне шекара сүзгілеріне ұқсап кетеді.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Өз сүзгің</h2><div class="l3-body"><h3>Идея</h3>
+<p>Енді сен желінің орнындасың: 9 салмақты өзің таңда. Мақсат: <strong>көлденең</strong> шекараны тапсын, ал тік шекара мен тегіс аймаққа 0 берсін.</p>
+<h3>Жоспар</h3>
+<ol><li><strong>Тегіс аймаққа 0</strong>: салмақтар қосындысы 0.</li><li><strong>Тік шекарада 0</strong>: әр <strong>жолдың</strong> ішінде сол жақ пен оң жақ симметриялы болсын (мысалы, жол бойы бірдей сандар). Сонда солдан оңға өзгеріс ештеңе бермейді.</li><li><strong>Көлденең шекарада үлкен</strong>: жоғарғы жол мен төменгі жолдың белгісі қарама-қарсы болсын.</li></ol>
+<p>Мысалы, жоғарғы жол −1 −1 −1, ортасы 0 0 0, төменгісі 1 1 1 (бұл <strong>Prewitt</strong> ядросы). Sobel-y сол идея, тек ортаңғы бағанға 2 салмақ береді.</p>
+<h3>Тексеру</h3>
+<p>Модель ядроңды үш үлгімен сынайды: таза тік шекара, таза көлденең шекара, тегіс аймақ. Көлденеңге кемінде 2, қалған екеуіне дәл 0 керек.</p>
+<h3>Нақты әлемде</h3>
+<p>CNN-нің бірінші қабатындағы үйренген сүзгілерді суретке салса, олар дәл осындай: түрлі бағыттағы шекаралар мен түс дақтары. Желі оларды ешкім үйретпей-ақ өзі тапты, тек «мысықты иттен ажырат» деген мақсаттан.</p>
+<h3>Енді сен</h3>
+<p>Ядроның ұяшықтарын басып, мәндерін өзгерт (−4-тен 4-ке дейін), сосын қолданып, тексер.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Өз ядроңды құр: көлденең шекараны табады, тік шекара мен тегіс аймақты елемейді</li></ul><a class="btn secondary" href="../app/index.html#ai-12-convolution">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="1" data-qid="ai-12-convolution:design:predict"><p class="l3-qt">Көлденең шекараны (жоғарыда қара, төменде ақ) табатын ядро керек. Оның салмақтарының қосындысы қандай болуы керек, тегіс аймақ 0 берсін десек?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">1</button><button type="button" class="l3-opt" data-i="1">0</button><button type="button" class="l3-opt" data-i="2">9</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 0</p><p>Тегіс аймақта барлық пиксель бірдей, нәтиже = пиксель × салмақтар қосындысы. Ол 0 болу үшін қосынды 0 болуы керек.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="ai-12-convolution:design:sum"><p class="l3-qt">Тегіс аймақта 0 беретін ядроның салмақтар қосындысы қандай?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">0</button><button type="button" class="l3-opt" data-i="1">1</button><button type="button" class="l3-opt" data-i="2">Кез келген</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 0</p><p>Тегіс аймақта нәтиже = жарықтық × қосынды.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="ai-12-convolution:design:prewitt"><p class="l3-qt">[−1 −1 −1; 0 0 0; 1 1 1] ядросы не табады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Тік шекараларды</button><button type="button" class="l3-opt" data-i="1">Көлденең шекараларды</button><button type="button" class="l3-opt" data-i="2">Бұлыңғырлайды</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Көлденең шекараларды</p><p>Жоғарғы жол мен төменгі жолды салыстырады: жарықтық жоғарыдан төменге өзгергенде жанады.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="ai-12-convolution:design:vertical"><p class="l3-qt">Сол ядро неге тік шекараға 0 береді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Әр жол ішінде салмақтар бірдей: солдан оңға өзгеріс жойылады</button><button type="button" class="l3-opt" data-i="1">Ол тік шекараны көрмейді, себебі жоқ</button><button type="button" class="l3-opt" data-i="2">Ортаңғы жол 0</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Әр жол ішінде салмақтар бірдей: солдан оңға өзгеріс жойылады</p><p>Тік шекарада әр жолдың пиксельдері әр түрлі, бірақ жоғарғы мен төменгі жолдар бірдей. Олар −1 мен +1 салмақпен бірін-бірі жояды.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="ai-11-metrics.html">← <span lang="en">Metrics: Precision, Recall &amp; the Accuracy Trap</span></a><a href="../index.html#ai">Жасанды интеллект</a><a href="ai-13-drift.html"><span lang="en">Data Drift: When the World Moves</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

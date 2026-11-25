@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Problem Set: биттен бағдарламаға · Компьютер архитектурасы - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Problem Set: биттен бағдарламаға · Компьютер архитектурасы - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Теріс сан, тек NAND-тан схема, көбейту бағдарламасы және кэш бюджеті.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/arch/arch-9-pset.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/arch/arch-9-pset.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Problem Set: биттен бағдарламаға · Компьютер архитектурасы - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/arch/arch-9-pset.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Теріс сан, тек NAND-тан схема, көбейту бағдарламасы және кэш бюджеті.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="arch-9-pset" style="--lc:#b3262e">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#arch">Компьютер архитектурасы</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Компьютер архитектурасы · 9-сабақ · ≈45 мин · 4 қадам · 8 сұрақ</p>
+        <h1 lang="en">Problem Set: биттен бағдарламаға</h1>
+        <p class="l3-lede">Теріс сан, тек NAND-тан схема, көбейту бағдарламасы және кэш бюджеті.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#arch-9-pset">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">1-есеп: −42</a></li><li><a href="#s2">2-есеп: тек NAND</a></li><li><a href="#s3">3-есеп: көбейту</a></li><li><a href="#s4">4-есеп: кэш бюджеті</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>1-есеп: −42</h2><div class="l3-body"><h3>Спецификация</h3>
+<p>8 биттік two&#x27;s complement түрінде <strong>−42</strong> санын жаса.</p>
+<h3>Әдіс (қағазда)</h3>
+<ol><li>+42-нің екілік жазуын тап.</li><li>Барлық битті инвертте.</li><li>1 қос.</li></ol>
+<p>Тексеру: нәтиже мен 42-нің қосындысы 8 битте 0 болуы керек (тасымал 9-шы битке кетеді).</p>
+<h3>Нақты әлемде</h3>
+<p>Процессорда азайту жеке схема емес: a − b = a + (¬b + 1). Сондықтан бір қосындылағыш әрі қосады, әрі азайтады.</p>
+<h3>Ойлан</h3>
+<ul><li>Оң 42 мен −42-нің ең жоғарғы биттері қандай? (Таңба биті.)</li><li>−42-ні таңбасыз оқысаң, қандай сан шығады? (256 − 42.)</li><li>Нәтижеге +42 қоссаң, 8 битте не қалады?</li></ul>
+<h3>Автотексеруші</h3>
+<ul><li>таңбалы көріністе −42 мәні болды</li></ul>
+<h3>Енді сен</h3>
+<p>Биттерді басып, −42-ні жаса.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Таңбалы көріністе −42 жаса</li></ul><a class="btn secondary" href="../app/index.html#arch-9-pset">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="arch-9-pset:negative:bits"><p class="l3-qt">−42 саны 8 битте қалай жазылады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">11010110</button><button type="button" class="l3-opt" data-i="1">10101010</button><button type="button" class="l3-opt" data-i="2">00101010</button><button type="button" class="l3-opt" data-i="3">11010101</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 11010110</p><p>42 = 00101010. Инверт: 11010101. +1: 11010110 (= 214 = 256 − 42).</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="arch-9-pset:negative:why"><p class="l3-qt">Неге компьютерлер теріс сандарды «таңба бит + шама» түрінде емес, two&#x27;s complement түрінде сақтайды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Қосу схемасы таңбаға қарамай бірдей жұмыс істейді, ал нөл тек біреу</button><button type="button" class="l3-opt" data-i="1">Ол аз бит алады</button><button type="button" class="l3-opt" data-i="2">Ол оқуға оңай</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Қосу схемасы таңбаға қарамай бірдей жұмыс істейді, ал нөл тек біреу</p><p>«Таңба + шама» жүйесінде +0 және −0 бар және қосу үшін таңбаларды бөлек өңдеу керек. Two&#x27;s complement-те 5 + (−3) кәдімгі екілік қосумен шығады.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>2-есеп: тек NAND</h2><div class="l3-body"><h3>Спецификация</h3>
+<p>Төрт элементтен тұратын схема берілген. Олардың <strong>бәрі NAND</strong> болуы керек, ал схеманың шығысы: <strong>A XOR B</strong>.</p>
+<h3>Неге бұл маңызды</h3>
+<p>NAND: <strong>әмбебап</strong> элемент: кез келген логикалық функцияны тек NAND-тан құруға болады. Чип зауыттары үшін бұл өте пайдалы: бір ғана элементті миллиардтаған рет жасау арзан.</p>
+<ul><li>NOT A = NAND(A, A)</li><li>A AND B = NOT(NAND(A, B))</li><li>A OR B = NAND(NOT A, NOT B)</li></ul>
+<h3>Ойлан</h3>
+<p>Схемадағы n1 = NAND(A, B): «A мен B бір мезгілде 1 емес». n2 мен n3 оны әр кіріспен біріктіреді, ал соңғы элемент нәтижелерді жинайды. A = B = 1 болғанда не болатынын қағазда есепте.</p>
+<h3>Автотексеруші</h3>
+<ul><li>4 элементтің бәрі NAND</li><li>ақиқат кестесінің 4 жолы да XOR-ға сай</li></ul>
+<h3>Енді сен</h3>
+<p>Элементтерді таңда да, кіріс комбинацияларын ауыстырып тексер.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Тек NAND-тан XOR</li></ul><a class="btn secondary" href="../app/index.html#arch-9-pset">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="arch-9-pset:nand:not"><p class="l3-qt">NAND(A, A) қандай функция?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">NOT A</button><button type="button" class="l3-opt" data-i="1">A</button><button type="button" class="l3-opt" data-i="2">Әрдайым 1</button><button type="button" class="l3-opt" data-i="3">Әрдайым 0</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> NOT A</p><p>NAND(A, A) = NOT(A AND A) = NOT A. Бір элементті инвертор ретінде қолдандық.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="arch-9-pset:nand:count"><p class="l3-qt">Біздің XOR схемасында неше NAND элементі бар?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">4</button><button type="button" class="l3-opt" data-i="1">2</button><button type="button" class="l3-opt" data-i="2">6</button><button type="button" class="l3-opt" data-i="3">8</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 4</p><p>n1 = NAND(A,B), n2 = NAND(A,n1), n3 = NAND(B,n1), Y = NAND(n2,n3): төрт. Бұл: XOR-дың классикалық минималды NAND құрылымы.</p></details></div></div></section><section class="l3-step" id="s3" aria-labelledby="s3-h"><h2 id="s3-h"><span class="l3-n">3</span>3-есеп: көбейту</h2><div class="l3-body"><h3>Спецификация</h3>
+<p>mem[0] × mem[1] көбейтіндісін <strong>OUT</strong> арқылы шығар, сосын <strong>HALT</strong>.</p>
+<p>Біздің процессорда MUL нұсқауы жоқ. Көбейту = қайталап қосу: 6 × 7 = 7 + 7 + 7 + 7 + 7 + 7.</p>
+<h3>Автотексеруші (жасырын тесттер)</h3>
+<p>Бағдарламаң <strong>6 жасырын тестпен</strong> іске қосылады: тек сен көріп отырған 6 × 7 емес. Онда шеткі жағдайлар да бар. Барлық тест өтуі керек, әрі <strong>әр тест ≤ 100 нұсқаумен</strong> (тиімділік те: талап).</p>
+<h3>Ойлан</h3>
+<ul><li>Санауыш нөлден басталса, DEC оны не етеді? (8 битте 0 − 1 = 255.)</li><li>Циклға кірмес бұрын нені тексеру керек?</li><li>Нәтиже 255-тен асса не болады? (Тесттерде мұндай жағдай жоқ.)</li></ul>
+<blockquote><p>⚠ Жиі қате: тек көрінетін мысалға арналған бағдарлама жазу. «Менде жұмыс істейді»: дәлел емес; шеткі жағдайлар: дәлел.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Бағдарламаны жаз, «Соңына дейін» бас, сосын басқа сандармен өзің де тексер (жадты өзгертіп).</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Барлық 6 жасырын тест өтті (әрқайсысы ≤ 100 нұсқау)</li></ul><a class="btn secondary" href="../app/index.html#arch-9-pset">Симуляцияны ашу</a></div><details class="l3-hint"><summary>Кеңес</summary><ul><li>Цикл алдында: LOAD R1, [0] → DEC етпес бұрын «R1 нөл ме?» деп тексер. Нөлді тексеру: LI R3, 0 / CMP R1, R3 / JZ done.</li></ul></details><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="arch-9-pset:multiply:zero"><p class="l3-qt">Санауыш R1 = 0 болғанда «loop: ADD … / DEC R1 / JNZ loop» циклы неше рет қайталанады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">256 рет</button><button type="button" class="l3-opt" data-i="1">0 рет</button><button type="button" class="l3-opt" data-i="2">1 рет</button><button type="button" class="l3-opt" data-i="3">Шексіз</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 256 рет</p><p>Цикл денесі бір рет орындалады, DEC 0-ді 255 етеді, сосын тағы 255 рет: барлығы 256. Қызығы: 256·b mod 256 = 0, сондықтан 8 биттік жауап кездейсоқ дұрыс шығады! Бірақ 770-тен астам нұсқау жұмсалады: тексерушінің тиімділік шегі осыны ұстайды.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="arch-9-pset:multiply:cost"><p class="l3-qt">a × b-ны қайталап қосу шамамен неше нұсқау алады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">≈ 3·b (b-ға пропорционал)</button><button type="button" class="l3-opt" data-i="1">≈ 3 (тұрақты)</button><button type="button" class="l3-opt" data-i="2">≈ log₂ b</button><button type="button" class="l3-opt" data-i="3">≈ b²</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> ≈ 3·b (b-ға пропорционал)</p><p>Әр қайталау: ADD, DEC, JNZ. Нақты процессорлар «ығысу және қосу» әдісімен ≈ 8 қадамда көбейтеді (биттер саны бойынша): немесе аппараттық көбейткішпен 1-3 циклда.</p></details></div></div></section><section class="l3-step" id="s4" aria-labelledby="s4-h"><h2 id="s4-h"><span class="l3-n">4</span>4-есеп: кэш бюджеті</h2><div class="l3-body"><h3>Спецификация</h3>
+<p>8 × 8 матрицаның барлық 64 элементін оқу керек (кез келген ретпен). <strong>Шектеу:</strong> кэш көлемі (жол саны × жол өлшемі) ≤ <strong>64 байт</strong>. <strong>Талап:</strong> жалпы уақыт ≤ <strong>1000</strong> цикл (hit = 1 цикл, miss = 100 цикл).</p>
+<p>Қазіргі баптау (баған бойымен, 4 × 16): 64 miss → 6400 цикл.</p>
+<h3>Ойлан</h3>
+<ul><li>Қай рет кеңістіктік локальдықты (spatial locality) пайдаланады?</li><li>64 байттың ішінде: көп кішкене жол ма, әлде аз үлкен жол ма?</li><li>Miss саны неше болса, 1000 циклға сыямыз? (64 − m hit + 100·m miss ≤ 1000.)</li></ul>
+<h3>Автотексеруші</h3>
+<ul><li>кэш ≤ 64 байт</li><li>оқу соңына дейін жүргізілді, уақыт ≤ 1000 цикл</li></ul>
+<h3>Енді сен</h3>
+<p>Ретті және кэш пішінін таңда, соңына дейін жүргіз.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>≤ 64 байт кэшпен ≤ 1000 цикл</li></ul><a class="btn secondary" href="../app/index.html#arch-9-pset">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="arch-9-pset:cache:misses"><p class="l3-qt">Жол бойымен оқу, жол өлшемі 32 байт (8 int). Неше miss болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">8</button><button type="button" class="l3-opt" data-i="1">16</button><button type="button" class="l3-opt" data-i="2">64</button><button type="button" class="l3-opt" data-i="3">0</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 8</p><p>Әр 32 байттық блокта бір матрица жолы бар. Әр блоктың бірінші элементі: miss, қалған 7-еуі: hit. 64 / 8 = 8 miss → 56 + 800 = 856 цикл.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="arch-9-pset:cache:max"><p class="l3-qt">≤ 1000 цикл үшін ең көбі неше miss болуы мүмкін?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">9</button><button type="button" class="l3-opt" data-i="1">10</button><button type="button" class="l3-opt" data-i="2">16</button><button type="button" class="l3-opt" data-i="3">1</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 9</p><p>m miss: (64 − m) + 100·m = 64 + 99m ≤ 1000 → m ≤ 9.45 → ең көбі 9.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="arch-8-cache.html">← <span lang="en">Caches &amp; Locality</span></a><a href="../index.html#arch">Компьютер архитектурасы</a><a href="arch-10-pipeline.html"><span lang="en">Pipelining &amp; Hazards</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

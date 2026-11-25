@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Меншікті мәндер мен меншікті векторлар · Математика - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Меншікті мәндер мен меншікті векторлар · Математика - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Матрица көп векторды бұрады, бірақ кейбір ерекше бағыттарды тек созады. Сол бағыттарды өз көзіңмен табу: Av = λv.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/math/la-8-eigen.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/math/la-8-eigen.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Меншікті мәндер мен меншікті векторлар · Математика - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/math/la-8-eigen.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Матрица көп векторды бұрады, бірақ кейбір ерекше бағыттарды тек созады. Сол бағыттарды өз көзіңмен табу: Av = λv.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="la-8-eigen" style="--lc:#6b4fb3">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#math">Математика</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Математика · 8-сабақ · ≈30 мин · 2 қадам · 4 сұрақ</p>
+        <h1 lang="en">Меншікті мәндер мен меншікті векторлар</h1>
+        <p class="l3-lede">Матрица көп векторды бұрады, бірақ кейбір ерекше бағыттарды тек созады. Сол бағыттарды өз көзіңмен табу: Av = λv.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#la-8-eigen">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Бұрылмайтын бағыттар</a></li><li><a href="#s2">Ығысу мен бұрылыс</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Бұрылмайтын бағыттар</h2><div class="l3-body"><h3>Идея</h3>
+<p>Матрица көп векторды <strong>бұрады</strong>. Бірақ кейбір ерекше бағыттарды тек <strong>созады</strong> не <strong>қысады</strong>: олар өз түзуінде қалады. Олар <strong>меншікті векторлар</strong>, ал созылу еселігі <strong>меншікті мән</strong> λ:</p>
+<pre class="l3-pre"><code>A·v = λ·v</code></pre>
+<p>2×2 матрицаның меншікті мәндерін табу: det(A − λI) = 0 теңдеуі (сипаттамалық теңдеу).</p>
+<h3>Түйсік</h3>
+<p>Глобусты айналдыр: барлық нүкте қозғалады, бірақ ось бойындағы нүктелер орнында қалады. Айналу осі осы түрлендірудің меншікті векторы (λ = 1).</p>
+<h3>Есептеп көрейік</h3>
+<p>A = [[2, 1], [1, 2]]: det(A − λI) = (2 − λ)² − 1 = 0, яғни λ = 3 не λ = 1.</p>
+<ul><li>λ = 3: (A − 3I)v = 0, v = (1, 1): 45° бағыты.</li><li>λ = 1: v = (1, −1): 135° бағыты.</li></ul>
+<p>Сахнада барлық бағыттың бейнелерін көресің: тек осы екеуі өз түзуінде қалады.</p>
+<h3>Нақты әлемде</h3>
+<p>Google-дың алғашқы PageRank алгоритмі: интернет беттері сілтемелерінің матрицасының меншікті векторы. Тербеліс жүйелерінде (көпір, ғимарат) меншікті мәндер резонанс жиіліктерін береді. Деректерді талдауда (PCA) деректердің ең көп өзгеретін бағыттары ковариация матрицасының меншікті векторлары.</p>
+<h3>Енді сен</h3>
+<p>Бағыт сырғытпасын бұра отырып, бейнесі өз түзуінде қалатын бағыттарды тап: біреуі 3 есе созылады, екіншісі ұзындығын өзгертпейді.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>A = [[2, 1], [1, 2]]: 3 есе созылатын бағытты тап</li><li>Ұзындығы мүлде өзгермейтін екінші бағытты тап (λ = 1)</li></ul><a class="btn secondary" href="../app/index.html#la-8-eigen">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="0" data-qid="la-8-eigen:find:predict"><p class="l3-qt">A = [[2, 1], [1, 2]]. (1, 1) бағытындағы векторды A қалай өзгертеді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Бұрмайды, тек 3 есе созады</button><button type="button" class="l3-opt" data-i="1">90° бұрады</button><button type="button" class="l3-opt" data-i="2">Нөлге айналдырады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Бұрмайды, тек 3 есе созады</p><p>2·1 + 1·1 = 3, 1·1 + 2·1 = 3. Нәтиже (1, 1)-дің 3 еселігі: бағыт өзгерген жоқ.</p></details></div></div><div class="l3-box l3-worked"><h3>Шешілген мысал</h3><p>A = [[4, 1], [2, 3]] матрицасының меншікті мәндерін тап.</p><ol><li><code>det(A − λI) = (4 − λ)(3 − λ) − 1·2</code><span>Диагональдан λ-ны алып, анықтауышты есептейміз.</span></li><li><code>= λ² − 7λ + 12 − 2 = λ² − 7λ + 10</code><span>Жақшаны ашамыз.</span></li><li><code>λ² − 7λ + 10 = 0, яғни (λ − 5)(λ − 2) = 0</code><span>Түбірлердің көбейтіндісі 10, қосындысы 7.</span></li><li><code>λ₁ = 5, λ₂ = 2</code><span>Тексеру: 5 + 2 = 7 = 4 + 3 (диагональдың қосындысы), 5·2 = 10 = det A.</span></li></ol></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="la-8-eigen:find:def"><p class="l3-qt">v меншікті вектор болу үшін не орындалуы керек?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">A·v = λ·v, мұнда v ≠ 0</button><button type="button" class="l3-opt" data-i="1">A·v = 0</button><button type="button" class="l3-opt" data-i="2">|A·v| = |v|</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> A·v = λ·v, мұнда v ≠ 0</p><p>Бейнесі v-ның еселігі болуы керек: бағыты сақталады (не кері бұрылады, егер λ &lt; 0).</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="la-8-eigen:find:char"><p class="l3-qt">Меншікті мәндер қай теңдеуден табылады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">det(A − λI) = 0</button><button type="button" class="l3-opt" data-i="1">A·λ = I</button><button type="button" class="l3-opt" data-i="2">det A = λ</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> det(A − λI) = 0</p><p>(A − λI)v = 0 теңдеуінің нөлден өзге шешімі болуы үшін A − λI ерекше болуы керек, яғни анықтауышы нөл.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Ығысу мен бұрылыс</h2><div class="l3-body"><h3>Идея</h3>
+<p>Меншікті векторлардың саны матрицаға байланысты:</p>
+<ul><li><strong>Симметриялық</strong> матрицаның (A = Aᵀ) нақты меншікті векторлары әрқашан бар, әрі олар бір-біріне <strong>перпендикуляр</strong> (45° және 135°: тік бұрыш).</li><li><strong>Ығысудың</strong> [[1, 1], [0, 1]] тек <strong>бір</strong> меншікті бағыты бар: x осі (λ = 1). Басқа барлық бағыт қисаяды.</li><li><strong>Бұрылыстың</strong> нақты меншікті бағыты <strong>мүлде жоқ</strong>. Оның меншікті мәндері комплекс сандар (2-курста кездесесің).</li></ul>
+<h3>Түйсік</h3>
+<p>Желдеткіштің қалақшалары: айналғанда ешбір қалақ өз бағытында қалмайды. Ал қағаз парағын бір шетінен ығыстырсаң, тек төменгі жиегі орнында қалады.</p>
+<h3>Есептеп көрейік</h3>
+<p>Ығысу: det(A − λI) = (1 − λ)² = 0, λ = 1 (қайталанған). (A − I)v = 0: v = (1, 0). Тек бір бағыт. Бұрылыс: det(A − λI) = λ² + 1 = 0: нақты шешім жоқ.</p>
+<h3>Нақты әлемде</h3>
+<p>Дифференциалдық теңдеулер жүйесінде (2-курс) меншікті мәндер жүйенің тағдырын айтады: нақты әрі оң болса, шешім өседі; теріс болса, сөнеді; комплекс болса, тербеледі. Маятниктің тербелісі бұрылыс матрицасының комплекс меншікті мәндерінен шығады.</p>
+<h3>Енді сен</h3>
+<p>Ығысудың жалғыз меншікті бағытын тап. Сосын бұрылысты таңдап, бірнеше бағытты байқап көр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Ығысудың жалғыз меншікті бағытын тап</li><li>90° бұрылыста кемінде 4 бағытты байқап көр: бірде-бірі өз түзуінде қалмайды</li></ul><a class="btn secondary" href="../app/index.html#la-8-eigen">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="0" data-qid="la-8-eigen:others:predict"><p class="l3-qt">90° бұрылыс матрицасының нақты меншікті векторы бар ма?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Жоқ</button><button type="button" class="l3-opt" data-i="1">Бар, (1, 0) бағыты</button><button type="button" class="l3-opt" data-i="2">Бар, барлық бағыт</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Жоқ</p><p>Жазықтықта 90° бұрылғанда ешбір вектор өз түзуінде қалмайды. Сипаттамалық теңдеу λ² + 1 = 0: нақты түбірі жоқ.</p></details></div></div><div class="l3-box l3-hunt"><h3>Қатені тап</h3><p>A = [[3, 0], [0, 3]] матрицасының меншікті векторларын тап.</p><ol class="l3-lines"><li><code>det(A − λI) = (3 − λ)² = 0</code></li><li><code>λ = 3 (екі рет)</code></li><li><code>A − 3I нөлдік матрица, сондықтан (A − 3I)v = 0 кез келген v үшін орындалады</code></li><li><code>Демек меншікті вектор тек (1, 0)</code></li></ol><details class="l3-ans"><summary>Жауабы</summary><p><b>4-жол қате.</b> A барлық бағытты бірдей 3 есе созады, ешқайсысын бұрмайды. Сондықтан кез келген нөлдік емес вектор меншікті.</p><p><b>Дұрысы:</b> <code>Демек кез келген нөлдік емес вектор меншікті вектор</code></p></details></div><div class="l3-box l3-self"><h3>Өз сөзіңмен түсіндір</h3><p>Меншікті вектор деген не, A = [[2, 1], [1, 2]] үшін оларды қайдан таптың, және неге бұрылыстың нақты меншікті векторы жоқ?</p><details class="l3-ans"><summary>Жақсы түсіндірмеде болатын ойлар</summary><ul><li>A·v = λ·v: бағыт сақталады, тек созылады</li><li>45° бағытта λ = 3, 135° бағытта λ = 1</li><li>бұрылыс барлық бағытты бұрады</li></ul></details></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="la-8-eigen:others:sym"><p class="l3-qt">Симметриялық матрицаның меншікті векторлары туралы не белгілі?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Олар нақты және бір-біріне перпендикуляр</button><button type="button" class="l3-opt" data-i="1">Олар әрқашан комплекс</button><button type="button" class="l3-opt" data-i="2">Олар әрқашан параллель</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Олар нақты және бір-біріне перпендикуляр</p><p>Бұл спектрлік теорема: симметриялық матрица перпендикуляр осьтер бойымен тек созады.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="la-8-eigen:others:rot"><p class="l3-qt">Неге 90° бұрылыстың нақты меншікті векторы жоқ?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Ол барлық бағытты бұрады</button><button type="button" class="l3-opt" data-i="1">Оның анықтауышы нөл</button><button type="button" class="l3-opt" data-i="2">Ол тек бір бағытты созады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Ол барлық бағытты бұрады</p><p>Бұрылыс анықтауышы 1, ерекше емес. Бірақ ешбір нақты бағытты өз түзуінде қалдырмайды.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="la-7-basis.html">← <span lang="en">Векторлық кеңістік, базис және сызықтық бейнелеу</span></a><a href="../index.html#math">Математика</a><a href="ag-3-ellipse.html"><span lang="en">Шеңбер және эллипс</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>
