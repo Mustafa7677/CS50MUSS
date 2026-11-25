@@ -27,6 +27,8 @@ import ppseudo as PS  # noqa: E402
 import pbits as BI  # noqa: E402
 import tracks as TR  # noqa: E402
 import cine as CN  # noqa: E402
+import comic as CX  # noqa: E402
+import comic_eps as CXE  # noqa: E402
 sys.path.insert(0, str(ROOT / "assets" / "py"))
 import ao_judge as JG  # noqa: E402
 import math  # noqa: E402,F401  (number.check өрнектері үшін)
@@ -402,6 +404,10 @@ def validate(lessons, run_code=True):
         if not f.get("honors") or not f.get("research"):
             errs.append(f"{lid}: further.honors және further.research керек")
         try:
+            errs += CX.validate(CX.trap(L), f"{lid} комикс-тұзақ")
+        except (KeyError, IndexError, TypeError) as e:
+            errs.append(f"{lid} комикс-тұзақ: құрылмады: {e!r}")
+        try:
             errs += CN.validate(lid, CN.for_lesson(L))
         except (KeyError, IndexError, TypeError) as e:
             errs.append(f"{lid} cine: сценарий құрылмады: {e!r}")
@@ -443,6 +449,35 @@ def validate(lessons, run_code=True):
     concepts = [re.sub(r"<[^>]+>", "", L.get("concept", ""))[:120] for L in lessons]
     if len(set(concepts)) != len(concepts):
         errs.append("concept мәтіні қайталанатын сабақтар бар")
+    return errs
+
+
+def validate_comics(lessons, run_code=True):
+    """«Айша мен Бота» эпизодтары: сабақ бар ма, кадрлар дұрыс па, код кадрларының шығысы нағыз Python/gcc шығысымен сәйкес пе."""
+    errs, ids = [], {L["id"] for L in lessons}
+    for n, ep in enumerate(CXE.EPISODES, 1):
+        where = f"комикс {n}-эпизод ({ep['lesson']})"
+        if ep["lesson"] not in ids:
+            errs.append(f"{where}: мұндай сабақ жоқ")
+        if len(ep["panels"]) < 4:
+            errs.append(f"{where}: кемінде 4 кадр керек")
+        errs += CX.validate(ep, where) + CX.layout_errors(ep, where)
+        if not run_code:
+            continue
+        for i, lang, src, want in CX.code_specs(ep):
+            if lang == "py":
+                rc, out, err = run_example(src)
+                got = out.split("\n") if out else []
+                if rc != 0:
+                    got.append((err.strip().splitlines() or [""])[-1])
+            else:
+                rc, out, err = run_c(src)
+                if rc == "cc":
+                    errs.append(f"{where} {i + 1}-кадр: C компиляция қатесі: {err.strip()[:300]}")
+                    continue
+                got = out.split("\n") if out else []
+            if not CX.out_matches(got, want):
+                errs.append(f"{where} {i + 1}-кадр: кодтың шығысы сәйкес емес\n  кадрда: {want!r}\n  нақты:  {got!r}")
     return errs
 
 
@@ -497,6 +532,7 @@ def page(rel, title, desc, body, scripts=(), body_cls="ao-acad", intro=""):
   <link rel="stylesheet" href="{pre}assets/css/academy.css">
   <link rel="stylesheet" href="{pre}assets/css/ao-viz.css">
   <link rel="stylesheet" href="{pre}assets/css/ao-labs.css">
+  <link rel="stylesheet" href="{pre}assets/css/comic.css">
   <script src="{pre}assets/js/main.js"></script>
   <script src="{pre}assets/js/academy-logic.js" defer></script>
   <script src="{pre}assets/js/academy-arith.js" defer></script>
@@ -555,7 +591,17 @@ def lesson_html(L, plan_by_id, prev_l, next_l):
     film_html = (f'<section class="ac-cine" id="s-film" data-cine data-title="{E(L["title"])}" data-img="../../assets/img/" aria-label="Кино-түсіндіру: {E(L["title"])}">'
                  f'<p class="ac-note">Кино-түсіндіру: сабақтың өзегі бір минуттық мультфильмде. Мәтіні төменде.</p></section>'
                  f'<details class="cn-tr"><summary>Фильмнің мәтіні ({"авторлық сценарий" if film["kind"] == "авторлық" else "сабақ қадамдарынан құрастырылған"})</summary><ol>{film_tr}</ol></details>')
-    toc = '<li><a href="#s-film">▶ Кино-түсіндіру</a></li>' + "".join(f'<li><a href="#s-{k}">{E(t)}</a></li>' for k, t in SECTIONS)
+    comic_html, ep = "", CXE.BY_LESSON.get(L["id"])
+    if ep:
+        n_ep, e = ep
+        prv, nxt = (CXE.EPISODES[n_ep - 1] if n_ep else None), (CXE.EPISODES[n_ep + 1] if n_ep + 1 < len(CXE.EPISODES) else None)
+        hrefs = lambda x: "../" + x["lesson"].split(".")[1] + "/" + x["lesson"].split(".")[2] + ".html#s-comic"  # noqa: E731
+        head = (f'<div class="cx-head"><div><p class="cx-k">Комикс · «Айша мен Бота», {n_ep + 1}-эпизод</p>'
+                f'<h2 class="cx-t" id="cx-h">{E(e["title"])}</h2></div><a href="../comics.html">Барлық эпизодтар</a></div>')
+        foot = ('<p class="cx-foot">' + (f'<a href="{hrefs(prv)}">← {E(prv["title"])}</a>' if prv else '<span></span>')
+                + (f'<a href="{hrefs(nxt)}">{E(nxt["title"])} →</a>' if nxt else '<span></span>') + '</p>')
+        comic_html = f'<section class="ac-comic" id="s-comic" aria-labelledby="cx-h">{CX.strip(e, CX.uid_of(L["id"]), head, foot)}</section>'
+    toc = '<li><a href="#s-film">▶ Кино-түсіндіру</a></li>' + ('<li><a href="#s-comic">Комикс</a></li>' if comic_html else '') + "".join(f'<li><a href="#s-{k}">{E(t)}</a></li>' for k, t in SECTIONS)
     nav = (f'<nav class="ac-pager">' + (f'<a href="{prev_l["slug"]}.html">← {E(prev_l["title"])}</a>' if prev_l else '<span></span>')
            + f'<a href="../index.html#{L["moduleId"]}">Модуль картасы</a>' + (f'<a href="{next_l["slug"]}.html">{E(next_l["title"])} →</a>' if next_l else '<span></span>') + "</nav>")
     sec = lambda k, inner: f'<section class="ac-sec" id="s-{k}"><h2><span class="ac-n">{k.upper()}</span>{dict(SECTIONS)[k]}</h2>{inner}</section>'  # noqa: E731
@@ -574,6 +620,7 @@ def lesson_html(L, plan_by_id, prev_l, next_l):
         {EM.svg(L['moduleId'])}
       </header>
       {film_html}
+      {comic_html}
       {sec('a', '<ul class="ac-obj">' + ''.join(f'<li>{E(o)}</li>' for o in L['objectives']) + '</ul>')}
       {sec('b', f'<ul>{pre_links}</ul>')}
       {sec('c', L['concept'])}
@@ -584,7 +631,7 @@ def lesson_html(L, plan_by_id, prev_l, next_l):
       {sec('h', f'<p class="ac-task">{E(L["experiment"]["task"])}</p><div class="ac-lab" data-lab="experiment"></div>')}
       {sec('i', '<div class="ac-exs" data-set="exercises"></div>')}
       {sec('j', L['reasoning'])}
-      {sec('k', f'<ul class="ac-mist">{mistakes}</ul>')}
+      {sec('k', CX.trap_html(L) + f'<ul class="ac-mist">{mistakes}</ul>')}
       {sec('l', '<p class="ac-note">Барлық сұраққа дұрыс жауап берсеңіз, сабақ «меңгерілді» деп белгіленеді. Тексеру браузерде өтеді: бұл оқу тексерісі, емтихан емес.</p><div class="ac-exs" data-set="assessment"></div>')}
       {sec('m', '<div data-ac-reflect></div>')}
       {sec('n', '<h3>Honors</h3><ul>' + ''.join(f'<li>{E(x)}</li>' for x in L['further']['honors']) + '</ul><h3>Research</h3><ul>' + ''.join(f'<li>{E(x)}</li>' for x in L['further']['research']) + '</ul>')}
@@ -599,6 +646,33 @@ def lesson_html(L, plan_by_id, prev_l, next_l):
 
 
 DONE = set()
+
+
+def comics_html(lessons):
+    """«Айша мен Бота» хабы: барлық эпизодтар (мұқаба - бірінші кадр) және «Тұзақ» комикстері туралы."""
+    by_id = {L["id"]: L for L in lessons}
+    cards = []
+    for n, e in enumerate(CXE.EPISODES, 1):
+        L = by_id.get(e["lesson"])
+        if not L:
+            continue
+        href = f'{L["moduleId"]}/{L["slug"]}.html#s-comic'
+        cards.append(f'<li><a class="cxh-card" href="{href}">{CX.cover_svg(e, CX.uid_of("cv" + e["lesson"]))}<div class="cxh-tx">'
+                     f'<p class="cxh-ep">{n}-эпизод · {E(L["title"])}</p><h3>{E(e["title"])}</h3><p>{E(e["teaser"])}</p></div></a></li>')
+    sample = next(L for L in lessons if L["moduleId"] == "m07" and L["slug"] == "l01")
+    body = f"""  <div class="layout single">
+    <article class="content" id="main">
+      <header class="lecture-head" style="--lc:#b3262e"><div class="num">CS Universe</div><h1>Комикс: Айша мен Бота</h1>
+        <p>Айша - сұрақ қоятын, қателесетін және түсінетін оқушы. Бота - AO17-нің ботақаны, ол түсіндіреді. Level I-дің әр модулі бір эпизодпен ашылады: күнделікті өмірден алынған мысал, қате және оның себебі. Комикстегі әр код кадрының шығысы сайтты құрастыру кезінде нағыз Python не gcc арқылы тексерілген.</p></header>
+      <h2>Level I: {len(cards)} эпизод</h2>
+      <ul class="cxh-grid">{"".join(cards)}</ul>
+      <h2>«Тұзақ» комикстері: әр сабақта</h2>
+      <p>Әр сабақтың «Жиі қателер» бөлімінде төрт кадрлық комикс бар: Айша жиі кездесетін қатені жасайды, Бота тоқтатады, себебін түсіндіреді және ережені айтады. Мәтін сабақтың тексерілген деректерінен алынады, сондықтан {len(lessons)} сабақтың әрқайсысында өз тұзағы бар. Мысал - «{E(sample["title"])}» сабағы:</p>
+      {CX.trap_html(sample)}
+      <p><a href="index.html">CS Universe картасына оралу</a></p>
+    </article>
+  </div>"""
+    return "academy/comics.html", page("academy/comics.html", "Комикс: Айша мен Бота", "AO17 комиксі: Айша мен Бота бағдарламалау, логика және компьютер негіздерін күнделікті өмір мысалдарымен түсіндіреді. Әр сабақта жиі қате туралы комикс.", body)
 
 
 def study_html(lessons):
@@ -653,7 +727,7 @@ def index_html(lessons, st):
       <h1>Негізден Senior деңгейіне дейін, қазақ тілінде</h1>
       <p>Курс таңдамайсыз - бағыт таңдайсыз. Әр бағыт төрт сатыдан тұрады: Негіз, Junior, Middle, Senior. Әр сатыда не үйренетініңіз, қай модульді оқитыныңыз және портфолиоға қандай жоба жасайтыныңыз алдын ала жазылған. Мазмұн AO17 үшін жаңадан жазылады, әр тапсырма автоматты тексеріледі.</p>
       <p class="ac-honest">Қазір дайын: <b>{st["complete_lessons"]}</b> толық сабақ, <b>{st["auto_checked_tasks"]}</b> автоматты тексерілетін тапсырма, <b>{st["python_examples"]}</b> тексерілген Python мысалы. Қалғаны - жоспар, ол бөлек белгіленген.</p>
-      <p class="ac-cta"><a class="btn gold" href="#tracks">Бағыт таңдау</a> <a class="btn secondary" href="m01/l01.html">Бірінші сабақтан бастау</a> <a class="btn secondary" href="lab.html">Логика зертханасы</a> <a class="btn secondary" href="labs/index.html">CS зертханалары</a> <a class="btn secondary" href="ielts/index.html">IELTS</a> <a class="btn secondary" href="sat/index.html">Digital SAT</a> <a class="btn secondary" href="models.html">Интерактивті модельдер</a> <a class="btn secondary" href="study.html">Менің оқуым</a> <a class="btn secondary" href="map.html">Білім картасы</a></p>
+      <p class="ac-cta"><a class="btn gold" href="#tracks">Бағыт таңдау</a> <a class="btn secondary" href="m01/l01.html">Бірінші сабақтан бастау</a> <a class="btn secondary" href="comics.html">Комикс: Айша мен Бота</a> <a class="btn secondary" href="lab.html">Логика зертханасы</a> <a class="btn secondary" href="labs/index.html">CS зертханалары</a> <a class="btn secondary" href="ielts/index.html">IELTS</a> <a class="btn secondary" href="sat/index.html">Digital SAT</a> <a class="btn secondary" href="models.html">Интерактивті модельдер</a> <a class="btn secondary" href="study.html">Менің оқуым</a> <a class="btn secondary" href="map.html">Білім картасы</a></p>
       <p><a class="ac-film" href="../film/cs/">Фильм: «Даладан жұлдызға», 36 секунд</a></p>
     </header>
     <section class="ac-sec tl-sec" id="tracks"><h2>Бес бағыт, төрт саты</h2>
@@ -830,7 +904,7 @@ def map_html(lessons):
 
 def build(write=True):
     lessons = load_lessons()
-    errs = validate(lessons)
+    errs = validate(lessons) + validate_comics(lessons)
     if errs:
         print("academy: ТЕКСЕРУДЕН ӨТПЕДІ:", *errs, sep="\n  ")
         sys.exit(1)
@@ -846,7 +920,7 @@ def build(write=True):
         print(f"academy check: OK ({st['complete_lessons']} сабақ, {st['auto_checked_tasks']} тапсырма, {st['python_examples']} мысал)")
         return
     plan_by_id = {p["id"]: p for p in C.plan()}
-    pages = [index_html(lessons, st), lab_html(), map_html(lessons), models_html(), study_html(lessons)] + [track_html(t) for t in TR.TRACKS]
+    pages = [index_html(lessons, st), lab_html(), map_html(lessons), models_html(), study_html(lessons), comics_html(lessons)] + [track_html(t) for t in TR.TRACKS]
     by_mod = {}
     for L in lessons:
         by_mod.setdefault(L["moduleId"], []).append(L)
