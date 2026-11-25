@@ -30,6 +30,7 @@ import cine as CN  # noqa: E402
 import comic as CX  # noqa: E402
 import comic_eps as CXE  # noqa: E402
 import course as CRS  # noqa: E402
+import lab3d as L3  # noqa: E402
 sys.path.insert(0, str(ROOT / "assets" / "py"))
 import ao_judge as JG  # noqa: E402
 import math  # noqa: E402,F401  (number.check өрнектері үшін)
@@ -695,7 +696,7 @@ def course_html(lessons, st):
         pj = next((x for x in ls if x.get("project")), None)
         ep = eps.get(mid)
         n3d.update(h for h, _ in labs)
-        lab_links = ", ".join(f'<a href="{CRS.INSIDE}#{h}" target="_blank" rel="noopener">{E(t)}</a>' for h, t in labs)
+        lab_links = ", ".join(f'<a href="{L3.href(h, "")}">{E(t)}</a>' for h, t in labs)
         items = (f'<li class="crs-comic"><span>Комикс</span><a href="{mid}/l01.html#s-comic">{E(ep["title"])}</a></li>' if ep else "") \
             + f'<li class="crs-3d"><span>3D зертхана</span><p>{lab_links}</p></li>' \
             + (f'<li class="crs-pj"><span>Жоба</span><a href="{mid}/{pj["slug"]}.html#project">{E(pj["project"]["title"])}</a></li>' if pj else "")
@@ -717,7 +718,7 @@ def course_html(lessons, st):
         <p class="crs-lede">Он екі апта: логикадан жүйеге дейін. Қазақ тілінде, тегін, браузерде. Әр апта ұғымды түсіндіруден басталып, 3D зертханамен жалғасады да, өзің жазатын кодпен бітеді.</p>
         <ul class="crs-stats"><li><b>12</b><span>апта</span></li><li><b>{tot_l}</b><span>сабақ</span></li><li><b>{tot_t}</b><span>тапсырма</span></li>
           <li><b>{len(CXE.EPISODES)}</b><span>комикс эпизоды</span></li><li><b>{len(n3d)}</b><span>3D зертхана</span></li><li><b>≈{round(tot_min / 60)}</b><span>сағат</span></li></ul>
-        <p class="crs-cta"><a class="btn gold" href="m01/l01.html">1-аптадан бастау</a> <a class="btn secondary" href="comics.html">Комикстер</a> <a class="btn secondary" href="{CRS.INSIDE}" target="_blank" rel="noopener">INSIDE TECH 3D зертханалары</a></p>
+        <p class="crs-cta"><a class="btn gold" href="m01/l01.html">1-аптадан бастау</a> <a class="btn secondary" href="comics.html">Комикстер</a> <a class="btn secondary" href="3d/index.html">3D зертхана: {sum(len(v) for v in L3.data()[1].values())} сабақ</a></p>
       </header>
       <h2>Әр апта үш қадаммен жүреді</h2>
       <ol class="crs-pillars">{pillars}</ol>
@@ -729,7 +730,7 @@ def course_html(lessons, st):
       <section class="crs-faq"><h2>Жиі қойылатын сұрақтар</h2>
         <details><summary>Курс кімге арналған?</summary><p>Бағдарламалауды нөлден бастағысы келетін оқушы мен студентке. Алдын ала білім керек емес: бірінші апта логикадан, «иә» мен «жоқтан» басталады.</p></details>
         <details><summary>Ақылы ма?</summary><p>Жоқ. Курс тегін, тіркеусіз ашылады. Прогресс осы құрылғыда сақталады, оны кабинеттен басқа құрылғыға көшіруге болады.</p></details>
-        <details><summary>3D зертханалар қайда ашылады?</summary><p>INSIDE TECH-те: бұл AO17 командасының 3D оқу платформасы. Нұрай мен Мустафа сонда да бар. Екі платформа бір мекенжайда тұрғандықтан, INSIDE TECH-тегі оқу күндері «Менің шаңырағым» бетіндегі серияға да қосылады.</p></details>
+        <details><summary>3D зертхана деген не?</summary><p>AO17-нің ішіндегі бөлім: {len(L3.data()[0])} зертхананың {sum(len(v) for v in L3.data()[1].values())} сабағы, әрқайсысында толық дәріс, тест, шешілген мысал және 3D симуляция бар. Материалдар AO17 командасының INSIDE TECH 3D платформасынан алынған. 3D зертханадағы оқу күндері «Менің шаңырағым» бетіндегі серияға да қосылады.</p></details>
         <details><summary>Тапсырмалар қалай тексеріледі?</summary><p>Браузерде, бірден: Python коды AO17 Judge-де нағыз тестпен тексеріледі, C мысалдарының шығысы сайтты құрастыру кезінде gcc арқылы алынған. Модуль жобасын мұғалім рубрикамен бағалайды.</p></details>
       </section>
       <p><a href="index.html">CS Universe картасына оралу</a> · <a href="../yurt.html">Менің шаңырағым</a></p>
@@ -793,7 +794,7 @@ def index_html(lessons, st):
       <h1>Негізден Senior деңгейіне дейін, қазақ тілінде</h1>
       <p>Курс таңдамайсыз - бағыт таңдайсыз. Әр бағыт төрт сатыдан тұрады: Негіз, Junior, Middle, Senior. Әр сатыда не үйренетініңіз, қай модульді оқитыныңыз және портфолиоға қандай жоба жасайтыныңыз алдын ала жазылған. Мазмұн AO17 үшін жаңадан жазылады, әр тапсырма автоматты тексеріледі.</p>
       <p class="ac-honest">Қазір дайын: <b>{st["complete_lessons"]}</b> толық сабақ, <b>{st["auto_checked_tasks"]}</b> автоматты тексерілетін тапсырма, <b>{st["python_examples"]}</b> тексерілген Python мысалы. Қалғаны - жоспар, ол бөлек белгіленген.</p>
-      <p class="ac-cta"><a class="btn gold" href="course.html">AO17 CS курсы: 12 апта</a> <a class="btn secondary" href="#tracks">Бағыт таңдау</a> <a class="btn secondary" href="m01/l01.html">Бірінші сабақтан бастау</a> <a class="btn secondary" href="comics.html">Комикс: Нұрай, Мустафа және Бота</a> <a class="btn secondary" href="lab.html">Логика зертханасы</a> <a class="btn secondary" href="labs/index.html">CS зертханалары</a> <a class="btn secondary" href="ielts/index.html">IELTS</a> <a class="btn secondary" href="sat/index.html">Digital SAT</a> <a class="btn secondary" href="models.html">Интерактивті модельдер</a> <a class="btn secondary" href="study.html">Менің оқуым</a> <a class="btn secondary" href="map.html">Білім картасы</a></p>
+      <p class="ac-cta"><a class="btn gold" href="course.html">AO17 CS курсы: 12 апта</a> <a class="btn secondary" href="#tracks">Бағыт таңдау</a> <a class="btn secondary" href="m01/l01.html">Бірінші сабақтан бастау</a> <a class="btn secondary" href="3d/index.html">3D зертхана</a> <a class="btn secondary" href="comics.html">Комикс: Нұрай, Мустафа және Бота</a> <a class="btn secondary" href="lab.html">Логика зертханасы</a> <a class="btn secondary" href="labs/index.html">CS зертханалары</a> <a class="btn secondary" href="ielts/index.html">IELTS</a> <a class="btn secondary" href="sat/index.html">Digital SAT</a> <a class="btn secondary" href="models.html">Интерактивті модельдер</a> <a class="btn secondary" href="study.html">Менің оқуым</a> <a class="btn secondary" href="map.html">Білім картасы</a></p>
       <p><a class="ac-film" href="../film/cs/">Фильм: «Даладан жұлдызға», 36 секунд</a></p>
     </header>
     <section class="ac-sec tl-sec" id="tracks"><h2>Бес бағыт, төрт саты</h2>
@@ -970,7 +971,7 @@ def map_html(lessons):
 
 def build(write=True):
     lessons = load_lessons()
-    errs = validate(lessons) + validate_comics(lessons)
+    errs = validate(lessons) + validate_comics(lessons) + L3.validate()
     if errs:
         print("academy: ТЕКСЕРУДЕН ӨТПЕДІ:", *errs, sep="\n  ")
         sys.exit(1)
@@ -986,7 +987,7 @@ def build(write=True):
         print(f"academy check: OK ({st['complete_lessons']} сабақ, {st['auto_checked_tasks']} тапсырма, {st['python_examples']} мысал)")
         return
     plan_by_id = {p["id"]: p for p in C.plan()}
-    pages = [index_html(lessons, st), lab_html(), map_html(lessons), models_html(), study_html(lessons), comics_html(lessons), course_html(lessons, st)] + [track_html(t) for t in TR.TRACKS]
+    pages = [index_html(lessons, st), lab_html(), map_html(lessons), models_html(), study_html(lessons), comics_html(lessons), course_html(lessons, st)] + L3.pages(page) + [track_html(t) for t in TR.TRACKS]
     by_mod = {}
     for L in lessons:
         by_mod.setdefault(L["moduleId"], []).append(L)

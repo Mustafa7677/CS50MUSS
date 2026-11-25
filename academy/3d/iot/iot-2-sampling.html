@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sampling &amp; Aliasing · Робототехника және IoT - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Sampling &amp;amp; Aliasing · Робототехника және IoT - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Сигналды сирек өлшесең, ол басқа жиілікке «бүркенеді». Найквист шегі.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/iot/iot-2-sampling.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/iot/iot-2-sampling.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Sampling &amp; Aliasing · Робототехника және IoT - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/iot/iot-2-sampling.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Сигналды сирек өлшесең, ол басқа жиілікке «бүркенеді». Найквист шегі.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="iot-2-sampling" style="--lc:#2e6b4f">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#iot">Робототехника және IoT</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Робототехника және IoT · 2-сабақ · ≈15 мин · 2 қадам · 4 сұрақ</p>
+        <h1 lang="en">Sampling &amp; Aliasing</h1>
+        <p class="l3-lede">Сигналды сирек өлшесең, ол басқа жиілікке «бүркенеді». Найквист шегі.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#iot-2-sampling">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Алиасинг</a></li><li><a href="#s2">Найквист</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Алиасинг</h2><div class="l3-body"><h3>Идея</h3>
+<p>АЦП кернеуді үздіксіз емес, <strong>уақыттың нүктелерінде</strong> өлшейді: секундына f_s рет (<strong>дискреттеу жиілігі</strong>). Нүктелер арасында не болғанын микроконтроллер білмейді.</p>
+<p>Сигнал жылдам өзгерсе, ал сен сирек өлшесең: нүктелер <strong>басқа, баяу</strong> синусоидаға сәйкес келеді. Бұл: <strong>алиасинг</strong> (бүркену): жоғары жиілік төмен жиілік болып «киінеді».</p>
+<h3>Түйсік</h3>
+<p>Кинодағы вагон дөңгелегі кері айналып көрінеді: камера секундына 24 кадр түсіреді, ал спицалар кадрлар арасында бір спица қашықтығынан сәл аз бұрылады: көзге олар кері жылжиды.</p>
+<h3>Есептеп көрейік</h3>
+<p>Көрінетін жиілік: f_a = |f − k · f_s|, мұндағы k: f/f_s-ке ең жақын бүтін сан.</p>
+<ul><li>f = 50 Гц, f_s = 60 Гц: k = 1 → |50 − 60| = <strong>10 Гц</strong></li><li>f_s = 90 Гц: |50 − 90| = <strong>40 Гц</strong></li><li>f_s = 45 Гц: |50 − 45| = <strong>5 Гц</strong></li></ul>
+<p>Алиасинг болғаннан кейін оны <strong>түзету мүмкін емес</strong>: 10 Гц-тік «шын» сигнал мен 50 Гц-тің бүркенген нұсқасы бірдей нүктелер береді.</p>
+<h3>Нақты әлемде</h3>
+<p>50 Гц: Қазақстан мен Еуропадағы электр желісінің жиілігі. Ол кабельдерден барлық сенсорларға «сіңеді». Дұрыс таңдалмаған дискреттеу жиілігімен ол графикте баяу «толқын» болып көрінеді: инженерлер оны нақты физикалық процесс деп қателеседі.</p>
+<blockquote><p>💡 Түйін: 3D-де сұр сызық: шын сигнал, сары нүктелер: өлшемдер, қызыл: нүктелерден «көрінетін» синусоида.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Дискреттеу жиілігін азайтып, 50 Гц-тің басқа жиілікке бүркенгенін көр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>50 Гц сигналды тым сирек өлшеп, жалған жиілікті көр</li></ul><a class="btn secondary" href="../app/index.html#iot-2-sampling">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="iot-2-sampling:alias:fa"><p class="l3-qt">f = 50 Гц сигнал f_s = 70 Гц-пен өлшенеді. Қандай жиілік көрінеді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">20 Гц</button><button type="button" class="l3-opt" data-i="1">50 Гц</button><button type="button" class="l3-opt" data-i="2">120 Гц</button><button type="button" class="l3-opt" data-i="3">70 Гц</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 20 Гц</p><p>k = round(50/70) = 1 → |50 − 70| = 20 Гц.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="iot-2-sampling:alias:fix"><p class="l3-qt">Деректер алиасингпен жазылып қойылды. Оны кейін сүзгімен түзетуге бола ма?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Жоқ: ақпарат жоғалды, бүркенген және шын сигнал бірдей нүктелер береді</button><button type="button" class="l3-opt" data-i="1">Иә, Фурье түрлендіруімен</button><button type="button" class="l3-opt" data-i="2">Иә, орташалаумен</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Жоқ: ақпарат жоғалды, бүркенген және шын сигнал бірдей нүктелер береді</p><p>Алиасингті тек дискреттеуге <strong>дейін</strong> болдырмауға болады: аналогтық сүзгімен не жеткілікті f_s-пен.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Найквист</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Найквист-Шеннон теоремасы</strong>: f жиілікті сигналды дұрыс қалпына келтіру үшін:</p>
+<pre class="l3-pre"><code>f_s &gt; 2 · f</code></pre>
+<p>2f: <strong>Найквист жиілігі</strong>. Әр кезеңге кемінде <strong>екі</strong> нүктеден көп керек: біреуі «тауда», біреуі «ойпатта».</p>
+<h3>Түйсік</h3>
+<p>Тербелісті тану үшін оның жоғары және төмен нүктелерін көруің керек. Бір кезеңде бір рет қарасаң: тербелісті мүлдем көрмейсің (әрдайым бір фазада).</p>
+<h3>Есептеп көрейік</h3>
+<p>f = 50 Гц → f_s &gt; 100 Гц.</p>
+<ul><li>f_s = 120: k = round(50/120) = 0 → f_a = |50 − 0| = <strong>50</strong> ✓</li><li>f_s = 100 (дәл 2f): шекаралық жағдай: синусты нөлдік фазада өлшесең, барлық нүктелер нөл!</li></ul>
+<p>Бірақ тым жиі өлшеу де: шығын: әр өлшем: энергия, жад, есептеу. Сондықтан инженерлер f_s ≈ 2.5-10 · f таңдайды.</p>
+<h3>Нақты әлемде</h3>
+<p>CD аудио: адам 20 кГц-ке дейін естиді → f_s = <strong>44.1 кГц</strong> (2.2 есе). АЦП алдында әрдайым <strong>антиалиасинг сүзгісі</strong> тұрады: 20 кГц-тен жоғарыны өшіреді, өйткені оларды дискреттеу «естілетін» жалған дыбыстарға айналдырар еді.</p>
+<blockquote><p>⚠ Жиі қате: тек пайдалы сигналдың жиілігін ескеру. Шудың (50 Гц желі, қозғалтқыш PWM-і) жиілігі де Найквист шегінен асса: ол сенің деректеріңе бүркеніп кіреді.</p></blockquote>
+<h3>Тереңірек: неге дәл 2f, және нүктелерден сигналды қалай қалпына келтіреді</h3>
+<p>Кез келген сигнал: синусоидалардың қосындысы (Фурье). f_s жиілікпен дискреттегенде спектр f_s сайын <strong>қайталанады</strong>: f жиілігі f_s − f, f_s + f, 2f_s − f… жерлерде көшірмелер береді.</p>
+<p>Егер f &lt; f_s/2 болса, түпнұсқа мен көшірмелер қабаттаспайды: төмен жиілікті сүзгімен түпнұсқаны «кесіп алуға» болады. f &gt; f_s/2 болса, көшірме f_s − f &lt; f_s/2 аймағына түседі: бұл алиасинг.</p>
+<p>Идеал қалпына келтіру: <strong>Уиттекер-Шеннон</strong> интерполяциясы:</p>
+<pre class="l3-pre"><code>x(t) = Σₙ x[n] · sinc((t − nT) / T),    sinc(u) = sin(πu) / (πu),   T = 1/f_s</code></pre>
+<p>Әр нүкте өз «sinc толқынын» шығарады; олардың қосындысы нүктелер арасындағы сигналды <strong>дәл</strong> қалпына келтіреді: егер f &lt; f_s/2 болса. Нақты ЦАП-тарда sinc-тің орнына қарапайым «баспалдақ» пен аналогтық сүзгі қолданылады.</p>
+<h3>Енді сен</h3>
+<p>50 Гц-ті дұрыс көретін, бірақ 150 Гц-тен аспайтын дискреттеу жиілігін таңда.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>50 Гц-ті дұрыс көретін, бірақ 150 Гц-тен аспайтын жиілікпен өлше</li></ul><a class="btn secondary" href="../app/index.html#iot-2-sampling">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="iot-2-sampling:nyquist:min"><p class="l3-qt">Діріл датчигі 400 Гц-ке дейінгі тербелістерді өлшеуі керек. Ең аз дискреттеу жиілігі?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">800 Гц-тен жоғары</button><button type="button" class="l3-opt" data-i="1">400 Гц</button><button type="button" class="l3-opt" data-i="2">200 Гц</button><button type="button" class="l3-opt" data-i="3">40 Гц</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 800 Гц-тен жоғары</p><p>f_s &gt; 2 · 400 = 800 Гц. Іс жүзінде 1-2 кГц таңдалады.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="iot-2-sampling:nyquist:aa"><p class="l3-qt">Антиалиасинг сүзгісі қай жерде тұруы керек?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">АЦП-ға дейін, аналогтық тізбекте</button><button type="button" class="l3-opt" data-i="1">Бағдарламада, АЦП-дан кейін</button><button type="button" class="l3-opt" data-i="2">Бұлтта</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> АЦП-ға дейін, аналогтық тізбекте</p><p>Дискреттеуден кейін жоғары жиілік төменге бүркеніп қойған: оны бағдарламада ажырату мүмкін емес.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="iot-1-adc.html">← <span lang="en">Sensors &amp; ADC</span></a><a href="../index.html#iot">Робототехника және IoT</a><a href="iot-3-filter.html"><span lang="en">Noise &amp; Filtering</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

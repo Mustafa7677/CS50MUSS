@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Robot Arm Kinematics · Робототехника және IoT - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Robot Arm Kinematics · Робототехника және IoT - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Тура кинематика: бұрыштардан нүктеге. Кері кинематика: нүктеден бұрыштарға: және оның екі шешімі.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/iot/iot-6-arm.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/iot/iot-6-arm.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Robot Arm Kinematics · Робототехника және IoT - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/iot/iot-6-arm.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Тура кинематика: бұрыштардан нүктеге. Кері кинематика: нүктеден бұрыштарға: және оның екі шешімі.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="iot-6-arm" style="--lc:#2e6b4f">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#iot">Робототехника және IoT</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Робототехника және IoT · 6-сабақ · ≈20 мин · 2 қадам · 4 сұрақ</p>
+        <h1 lang="en">Robot Arm Kinematics</h1>
+        <p class="l3-lede">Тура кинематика: бұрыштардан нүктеге. Кері кинематика: нүктеден бұрыштарға: және оның екі шешімі.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#iot-6-arm">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Тура кинематика</a></li><li><a href="#s2">Кері кинематика</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Тура кинематика</h2><div class="l3-body"><h3>Идея</h3>
+<p>Екі буынды робот қолы: иық (θ₁) және шынтақ (θ₂). Буындардың ұзындығы L₁ = 2, L₂ = 1.5.</p>
+<p><strong>Тура кинематика</strong> (forward kinematics): бұрыштар белгілі: ұш қайда?</p>
+<pre class="l3-pre"><code>шынтақ: (L₁ cos θ₁,  L₁ sin θ₁)
+ұш:     шынтақ + (L₂ cos(θ₁ + θ₂),  L₂ sin(θ₁ + θ₂))</code></pre>
+<p>Назар аудар: екінші буынның бұрышы <strong>θ₁ + θ₂</strong>: ол бірінші буынға қатысты өлшенеді.</p>
+<h3>Түйсік</h3>
+<p>Қолыңды иықтан бұрасаң, шынтақ пен саусақ бірге қозғалады. Шынтақты бұрасаң: тек білек.</p>
+<h3>Есептеп көрейік</h3>
+<p>θ₁ = 30°, θ₂ = 60°:</p>
+<ul><li>шынтақ: (2 · 0.866, 2 · 0.5) = (1.73, 1.00)</li><li>ұш: (1.73 + 1.5 · cos 90°, 1.00 + 1.5 · sin 90°) = <strong>(1.73, 2.50)</strong></li></ul>
+<p>Жету аймағы: сақина: L₁ − L₂ = 0.5-тен L₁ + L₂ = 3.5-ке дейін.</p>
+<h3>Нақты әлемде</h3>
+<p>Өнеркәсіптік роботтарда 6 буын бар, ал тура кинематика 4×4 матрицалардың көбейтіндісі (Денавит-Хартенберг параметрлері, 1955). Әр буындағы энкодер бұрышты өлшейді, ал контроллер секундына мыңдаған рет ұштың орнын есептейді.</p>
+<blockquote><p>💡 Түйін: 3D-де сары шар: нысана; жасыл шеңбер: 0.1 қашықтық. Ұш шеңберге кірсе: жеттің.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Буындарды бұрап, қолды (2.5; 1.5) нүктесіне 0.1-ден жақын жеткіз.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Буындарды бұрап, қолды нысанаға (2.5; 1.5) 0.1-ден жақын жеткіз</li></ul><a class="btn secondary" href="../app/index.html#iot-6-arm">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="iot-6-arm:fk:fk"><p class="l3-qt">θ₁ = 0°, θ₂ = 90°, L₁ = 2, L₂ = 1.5. Ұш қайда?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">(2, 1.5)</button><button type="button" class="l3-opt" data-i="1">(3.5, 0)</button><button type="button" class="l3-opt" data-i="2">(0, 3.5)</button><button type="button" class="l3-opt" data-i="3">(1.5, 2)</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> (2, 1.5)</p><p>Шынтақ (2, 0); екінші буын θ₁ + θ₂ = 90° бағытында: (0, 1.5) қосылады → (2, 1.5).</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="iot-6-arm:fk:ring"><p class="l3-qt">Қол координат басынан қандай қашықтықтағы нүктелерге жете алады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">0.5-тен 3.5-ке дейін</button><button type="button" class="l3-opt" data-i="1">0-ден 3.5-ке дейін</button><button type="button" class="l3-opt" data-i="2">Тек дәл 3.5</button><button type="button" class="l3-opt" data-i="3">2-ден 3.5-ке дейін</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 0.5-тен 3.5-ке дейін</p><p>Толық созылғанда L₁ + L₂ = 3.5; толық бүгілгенде L₁ − L₂ = 0.5. Ішкі шеңбер: «өлі аймақ».</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Кері кинематика</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Кері кинематика</strong> (inverse kinematics): ұш <strong>қайда болуы керек</strong> белгілі: бұрыштар қандай? Бұл: роботқа «стақанды ал» деп айтқанда шешілетін есеп.</p>
+<p>Екі буын үшін: <strong>косинустар теоремасы</strong>: иық, шынтақ және ұш үшбұрыш құрайды.</p>
+<pre class="l3-pre"><code>d² = x² + y²
+cos θ₂ = (d² − L₁² − L₂²) / (2 L₁ L₂)
+θ₁ = atan2(y, x) − atan2(L₂ sin θ₂, L₁ + L₂ cos θ₂)</code></pre>
+<h3>Түйсік</h3>
+<p>Қолыңды үстелдегі нүктеге қой: шынтағыңды жоғары да, төмен де ұстай аласың. Бір нүкте: <strong>екі</strong> шешім.</p>
+<h3>Есептеп көрейік</h3>
+<p>Нысана (−1; 2.5): d² = 1 + 6.25 = 7.25. cos θ₂ = (7.25 − 4 − 2.25) / 6 = 0.167 → θ₂ = <strong>±80.4°</strong>.</p>
+<ul><li>шынтақ жоғары: θ₁ = 145.1°, θ₂ = −80.4°</li><li>шынтақ төмен: θ₁ = 78.5°, θ₂ = +80.4°</li></ul>
+<p>(4; 2) нүктесі: d = 4.47 &gt; 3.5 → |cos θ₂| &gt; 1 → <strong>шешім жоқ</strong>.</p>
+<h3>Нақты әлемде</h3>
+<p>6 буынды роботтарда кері кинематиканың 8-ге дейін шешімі болады, ал 7 буынды (адам қолы сияқты) роботтарда: <strong>шексіз</strong> көп: «артық» еркіндік дәрежесі кедергілерді айналып өтуге мүмкіндік береді. Мұндай жағдайда сандық әдістер (Якобиан, градиенттік түсу) қолданылады.</p>
+<blockquote><p>⚠ Жиі қате: atan(y/x) қолдану. Ол тек −90°…90° береді және x = 0-де құлайды. <strong>atan2(y, x)</strong> төрт ширектің бәрінде дұрыс жұмыс істейді.</p></blockquote>
+<h3>Енді сен</h3>
+<p>(−1; 2.5) нүктесіне екі шешіммен жет, сосын (4; 2) нүктесіне жетуге тырысып көр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>(−1; 2.5) нүктесіне екі түрлі шешіммен (шынтақ жоғары/төмен) жет</li><li>(4; 2) нүктесіне жетуге тырысып көр</li></ul><a class="btn secondary" href="../app/index.html#iot-6-arm">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="iot-6-arm:ik:two"><p class="l3-qt">Неге екі буынды қолдың кері кинематикасының жалпы жағдайда екі шешімі бар?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">cos θ₂ бірдей, ал θ₂ = ±arccos(...): шынтақ жоғары не төмен</button><button type="button" class="l3-opt" data-i="1">Себебі қолдың екі буыны бар</button><button type="button" class="l3-opt" data-i="2">Себебі atan2 екі мән қайтарады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> cos θ₂ бірдей, ал θ₂ = ±arccos(...): шынтақ жоғары не төмен</p><p>Үшбұрыштың пішіні бірдей, бірақ оны иық-ұш сызығына қатысты екі жаққа «бүктеуге» болады.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="iot-6-arm:ik:atan2"><p class="l3-qt">atan2(1, −1) неге тең?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">135°</button><button type="button" class="l3-opt" data-i="1">−45°</button><button type="button" class="l3-opt" data-i="2">45°</button><button type="button" class="l3-opt" data-i="3">225°</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 135°</p><p>Нүкте (−1, 1) екінші ширекте: 135°. atan(1/−1) = atan(−1) = −45°: қате ширек.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="iot-5-pid.html">← <span lang="en">PID Control</span></a><a href="../index.html#iot">Робототехника және IoT</a><a href="iot-7-kalman.html"><span lang="en">Sensor Fusion</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

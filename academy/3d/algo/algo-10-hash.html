@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hash Tables · Алгоритмдер - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Hash Tables · Алгоритмдер - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Кілтті бір қадаммен табу: хэш функция, коллизия, жүктеме коэффициенті және кестенің кеңеюі.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/algo/algo-10-hash.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/algo/algo-10-hash.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Hash Tables · Алгоритмдер - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/algo/algo-10-hash.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Кілтті бір қадаммен табу: хэш функция, коллизия, жүктеме коэффициенті және кестенің кеңеюі.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="algo-10-hash" style="--lc:#a37a00">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#algo">Алгоритмдер</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Алгоритмдер · 10-сабақ · ≈25 мин · 2 қадам · 4 сұрақ</p>
+        <h1 lang="en">Hash Tables</h1>
+        <p class="l3-lede">Кілтті бір қадаммен табу: хэш функция, коллизия, жүктеме коэффициенті және кестенің кеңеюі.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#algo-10-hash">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Коллизия</a></li><li><a href="#s2">Жүктеме коэффициенті</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Коллизия</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Хэш-кесте</strong> кілтті (мысалы, сөзді) <strong>бір қадамда</strong> табуға тырысады. Хэш функция кілтті санға айналдырады, ал сол санды шелек саныма бөлгендегі қалдық кілттің шелегін көрсетеді:</p>
+<pre class="l3-pre"><code>шелек = hash(кілт) mod шелек_саны</code></pre>
+<p>Екі түрлі кілт бір шелекке түссе, бұл <strong>коллизия</strong>. Мұндайда олар шелекте тізбек болып тұрады, ал іздегенде тізбекті бір-бірлеп салыстыруға тура келеді.</p>
+<h3>Түйсік</h3>
+<p>Кітапхана сөрелері: кітапты авторының бірінші әрпі бойынша қоясың. Барлық автордың аты «А»-дан басталса, бір сөре толып кетеді де, қалғандары бос тұрады. Хэш функцияның жақсы болуы деген кілттерді сөрелерге <strong>тең</strong> тарату.</p>
+<h3>Есептеп көрейік</h3>
+<p>Нашар хэш: әріп кодтарының <strong>қосындысы</strong>. Анаграммалардың («мысық», «сымық», «қысым», «қымыс») әріптері бірдей, сондықтан қосындысы да бірдей. Олардың бәрі бір шелекке түседі.</p>
+<p>17 шелекті кестеге 12 анаграмма қосқанда:</p>
+<ul><li>қосынды хэш: ең ұзын тізбек <strong>4</strong>, бір кілтті табуға орта есеппен <strong>2.08</strong> салыстыру;</li><li>полиномдық хэш <code>h = h · 31 + код</code> (әріптің орны да есепке кіреді): ең ұзын тізбек <strong>2</strong>, орта есеппен <strong>1.08</strong> салыстыру.</li></ul>
+<h3>Нақты әлемде</h3>
+<p>Python-ның dict, JavaScript-тің Map, дерекқорлардағы хэш-индекстер және кэштер осылай жұмыс істейді. Кесте өлшемі ретінде жиі <strong>жай сан</strong> алынады (мұнда 17): ол кілттердегі заңдылықтың шелектерге «жабысып» қалуына кедергі жасайды.</p>
+<blockquote><p>⚠ Хэш функцияны «тез болсын» деп әлсіретсең, шабуылшы бір шелекке түсетін мыңдаған кілт жіберіп, сервердің жұмысын тоқтата алады (hash flooding).</p></blockquote>
+<h3>Енді сен</h3>
+<p>Анаграммаларды қосынды хэшпен қос та, ұзын тізбекті көр. Сосын полиномдық хэшке ауыстыр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Анаграммаларды «қосынды» хэшпен кестеге қос: ұзындығы 4 тізбекті көр</li><li>Полиномдық хэшке ауыстыр: ең ұзын тізбек 2-ге дейін қысқарады</li></ul><a class="btn secondary" href="../app/index.html#algo-10-hash">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="algo-10-hash:collide:anagram"><p class="l3-qt">Неге «мысық» пен «сымық» қосынды хэште әрдайым бір шелекке түседі?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Әріптері бірдей, ал қосу әріптің орнын ескермейді</button><button type="button" class="l3-opt" data-i="1">Екеуінің ұзындығы бірдей</button><button type="button" class="l3-opt" data-i="2">Олар бір кездейсоқ санды алады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Әріптері бірдей, ал қосу әріптің орнын ескермейді</p><p>a + b = b + a. Полиномдық хэште әр әріп өз орнына қарай 31-дің дәрежесіне көбейеді, сондықтан әріптердің реті нәтижені өзгертеді.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="algo-10-hash:collide:worst"><p class="l3-qt">Барлық кілт бір шелекке түссе, іздеу қаншалықты баяулайды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">O(n): тізбектің бәрін қарау керек</button><button type="button" class="l3-opt" data-i="1">O(1) болып қалады</button><button type="button" class="l3-opt" data-i="2">O(log n)</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> O(n): тізбектің бәрін қарау керек</p><p>Хэш-кестенің O(1)-і орташа жағдай ғана. Ең нашар жағдайда ол кәдімгі тізім болып шығады.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Жүктеме коэффициенті</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Жүктеме коэффициенті</strong> α = кілт саны / шелек саны. Ол бір шелекте орта есеппен неше кілт жатқанын көрсетеді. α өскен сайын тізбектер ұзарып, іздеу баяулайды.</p>
+<p>Сондықтан кесте <strong>кеңейеді</strong>: α шекті асса (көбіне 0.75), шелек саны екі есе өседі де, барлық кілт жаңа орнына көшіріледі (rehash).</p>
+<h3>Түйсік</h3>
+<p>Қонақүй толғанда әр бөлмеге үш адамнан орналастырмайды, жаңа қабат салады. Құрылыс бір рет қымбатқа түседі, бірақ кейін әр қонақ бірден бос бөлме табады.</p>
+<h3>Есептеп көрейік</h3>
+<p>24 қаланы 8 шелекті кестеге кеңейтусіз қоссақ: α = 24 / 8 = <strong>3</strong>.</p>
+<p>Кеңеюді қоссақ: 7-қаладан кейін кесте 16 шелекке, 13-қаладан кейін 32 шелекке өседі. Сонда α = 24 / 32 = <strong>0.75</strong>, ал кесте <strong>2 рет</strong> кеңейеді. Бұл шекте тұрады, бірақ одан аспайды.</p>
+<p><strong>Амортизация.</strong> Кеңею кезінде барлық кілт көшіріледі, бұл O(n) жұмыс. Бірақ ол сирек болады: өлшем әр жолы екі есе өседі. Сондықтан n кілт қосуға жалпы алғанда O(n) уақыт кетеді, яғни бір қосу орта есеппен <strong>O(1)</strong>.</p>
+<h3>Нақты әлемде</h3>
+<p>Java-ның HashMap-і α = 0.75 болғанда екі есе кеңейеді. Python-ның dict-і де ұқсас ереже қолданады. Кеңею кезінде бір қосу байқалатындай ұзаққа созылуы мүмкін: нақты уақыттағы жүйелерде (ойындар, биржа) мұны алдын ала кеңейтіп қою арқылы шешеді.</p>
+<h3>Енді сен</h3>
+<p>24 қаланы кеңейтусіз қос та, коэффициентті көр. Сосын кеңеюді қос.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>24 қаланы 8 шелекті кестеге кеңейтусіз қос: коэффициент 3-ке жетеді</li><li>Кеңеюді қос: кесте өсіп, коэффициент 0.75-тен аспайды</li></ul><a class="btn secondary" href="../app/index.html#algo-10-hash">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="algo-10-hash:load:alpha"><p class="l3-qt">α = 3 нені білдіреді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Бір шелекте орта есеппен 3 кілт бар</button><button type="button" class="l3-opt" data-i="1">Кесте 3 есе үлкен</button><button type="button" class="l3-opt" data-i="2">3 коллизия болды</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Бір шелекте орта есеппен 3 кілт бар</p><p>α: кілт саны бөлінген шелек саны. α = 3 болса, сәтті іздеу орта есеппен шамамен 1 + α/2 салыстыру алады.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="algo-10-hash:load:amortized"><p class="l3-qt">Кеңею O(n) болса, неге бір қосу орта есеппен O(1) деп саналады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Өлшем екі есе өскендіктен кеңею сирек болады, ал оның бағасы көптеген қосуға бөлінеді</button><button type="button" class="l3-opt" data-i="1">Кеңею іс жүзінде O(1)</button><button type="button" class="l3-opt" data-i="2">Кілттер көшірілмейді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Өлшем екі есе өскендіктен кеңею сирек болады, ал оның бағасы көптеген қосуға бөлінеді</p><p>1 + 2 + 4 + ... + n &lt; 2n. Барлық кеңеюдің жалпы бағасы n-ге пропорционал, сондықтан бір қосуға тұрақты бөлігі ғана тиеді.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="algo-9-pset.html">← <span lang="en">Problem Set: дұрыс алгоритмді таңда</span></a><a href="../index.html#algo">Алгоритмдер</a><a href="algo-11-heap.html"><span lang="en">Heaps &amp; Priority Queues</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

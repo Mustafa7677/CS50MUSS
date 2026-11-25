@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Health Checks: Readiness &amp; Liveness · Бұлт және DevOps - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Health Checks: Readiness &amp;amp; Liveness · Бұлт және DevOps - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Процесс тірі, бірақ дайын емес; процесс тірі, бірақ қатып қалған. Екі түрлі тексеріс, екі түрлі әрекет.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/cloud/cloud-10-probes.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/cloud/cloud-10-probes.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Health Checks: Readiness &amp; Liveness · Бұлт және DevOps - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/cloud/cloud-10-probes.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Процесс тірі, бірақ дайын емес; процесс тірі, бірақ қатып қалған. Екі түрлі тексеріс, екі түрлі әрекет.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="cloud-10-probes" style="--lc:#3a72c4">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#cloud">Бұлт және DevOps</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Бұлт және DevOps · 10-сабақ · ≈25 мин · 2 қадам · 6 сұрақ</p>
+        <h1 lang="en">Health Checks: Readiness &amp; Liveness</h1>
+        <p class="l3-lede">Процесс тірі, бірақ дайын емес; процесс тірі, бірақ қатып қалған. Екі түрлі тексеріс, екі түрлі әрекет.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#cloud-10-probes">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Жылынып жатқан под</a></li><li><a href="#s2">Қатып қалған под</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Жылынып жатқан под</h2><div class="l3-body"><h3>Идея</h3>
+<p>Kubernetes подтың күйін екі сұрақпен тексереді:</p>
+<ul><li><strong>Readiness</strong>: «Сұраныс қабылдауға дайынсың ба?» Жоқ болса, под жүктеме теңестіргіштің тізімінен <strong>уақытша алынады</strong>. Өлтірілмейді.</li><li><strong>Liveness</strong>: «Сен тірісің бе?» Бірнеше рет қатарынан жоқ болса, под <strong>қайта іске қосылады</strong>.</li></ul>
+<h3>Rolling update</h3>
+<p>Модельде 3 под, секундына 100 сұраныс. Подтар кезекпен жаңарады: ескісі тоқтайды, 2 секундтан кейін жаңасы іске қосылады, тағы 20 секунд жылынады. Readiness тексерісі әр 5 секунд сайын.</p>
+<ul><li><strong>Readiness-сіз</strong>: жылынып жатқан под бірден тізімде, оған тиген сұраныстардың бәрі қате. Нәтиже: <strong>1980 қате</strong>.</li><li><strong>Readiness-пен</strong>: под тексерістен өткенше тізімде жоқ. Қалған екеуі жүктемені көтереді: <strong>0 қате</strong>.</li></ul>
+<h3>Нақты әлемде</h3>
+<pre class="l3-pre"><code>readinessProbe:
+  httpGet: { path: /ready, port: 8080 }
+  periodSeconds: 5</code></pre>
+<p><code>/ready</code> эндпоинті шынымен тексеруі керек: базаға қосылым бар ма, кэш жүктелді ме. Әрдайым «200 OK» қайтаратын тексеріс: тексеріссіздікпен бірдей.</p>
+<blockquote><p>Баяу іске қосылатын қолданбаға <strong>startupProbe</strong> бар: ол өткенше басқа тексерістер қосылмайды.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Жаңартуды readiness-сіз, сосын readiness-пен іске қос. Уақыт сызығында қызыл: тізімде тұрған, бірақ дайын емес под.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Rolling update-ті readiness-сіз іске қос: қателерді сана</li><li>Readiness қос: жаңарту бірде-бір қатесіз өтеді</li></ul><a class="btn secondary" href="../app/index.html#cloud-10-probes">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="1" data-qid="cloud-10-probes:readiness:predict"><p class="l3-qt">Жаңа нұсқа іске қосылды, бірақ ол кэшін жылытып, базаға қосылғанша 20 секунд кетеді. Readiness тексерісі жоқ. Жүктеме теңестіргіш оған трафикті қашан жібере бастайды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">20 секунд күтеді</button><button type="button" class="l3-opt" data-i="1">Процесс іске қосылған бойда: дайын болмаса да</button><button type="button" class="l3-opt" data-i="2">Әкімші қолмен қосқанда</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Процесс іске қосылған бойда: дайын болмаса да</p><p>Тексеріс жоқ кезде «процесс бар» деген «дайын» деп саналады. Жылынып жатқан подқа келген сұраныстар қатеге айналады.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="cloud-10-probes:readiness:diff"><p class="l3-qt">Readiness тексерісі өтпесе, Kubernetes не істейді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Подты өлтіріп, жаңасын жасайды</button><button type="button" class="l3-opt" data-i="1">Подты трафик тізімінен уақытша алып тастайды</button><button type="button" class="l3-opt" data-i="2">Ештеңе</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Подты трафик тізімінен уақытша алып тастайды</p><p>Readiness: «әзірге маған жіберме». Под тірі қалады және дайын болғанда тізімге қайтады.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="cloud-10-probes:readiness:errors"><p class="l3-qt">Модельде readiness-сіз жаңарту неше қате берді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">0</button><button type="button" class="l3-opt" data-i="1">1980</button><button type="button" class="l3-opt" data-i="2">99</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 1980</p><p>Әр жылынып жатқан под 20 секунд бойы трафиктің өз үлесін (шамамен үштен бірін) қатеге айналдырады.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="cloud-10-probes:readiness:fake"><p class="l3-qt"><code>/ready</code> эндпоинті әрқашан 200 қайтарады. Бұл неге жаман?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Ол баяу</button><button type="button" class="l3-opt" data-i="1">Ол дайындықты тексермейді: тексеріссіз жағдайдан айырмасы жоқ</button><button type="button" class="l3-opt" data-i="2">Kubernetes оны қабылдамайды</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Ол дайындықты тексермейді: тексеріссіз жағдайдан айырмасы жоқ</p><p>Тексеріс тәуелділіктерді (база, кэш) шынымен тексергенде ғана пайдалы.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Қатып қалған под</h2><div class="l3-body"><h3>Идея</h3>
+<p>Deadlock, шексіз цикл, таусылған қосылымдар пулы: процесс тірі, порт ашық, бірақ ешкімге жауап бермейді. Мұндай подты тек қайта іске қосу құтқарады.</p>
+<h3>Модель</h3>
+<p>B поды 22-секундта қатады. Тексерістер әр 5 секунд.</p>
+<ul><li><strong>Тексерістер жоқ</strong>: B соңына дейін трафиктің үштен бірін жұтады. <strong>2244 қате</strong>.</li><li><strong>Тек readiness</strong>: 25-секундтағы тексеріс B-ны тізімнен алады. Тек 3 секундтық қате: <strong>99</strong>. Бірақ B <strong>соңына дейін өлі</strong>: сервис екі подпен қалды, келесі ақауда бір подпен қалуы мүмкін.</li><li><strong>Тек liveness</strong>: үш рет қатарынан сәтсіз тексеріс (15 с), сосын қайта іске қосу, тағы 20 с жылыну. Бұл уақытта трафик B-ға бара береді: <strong>1089 қате</strong>.</li><li><strong>Екеуі де</strong>: <strong>99 қате</strong> және B қайта сау.</li></ul>
+<h3>Абай бол</h3>
+<p>Liveness тексерісі тым қатаң болса, ол қауіпті: баяу жылынатын не уақытша жүктелген подты өлтіре береді, ал қайта іске қосу жүктемені тағы көбейтеді. Liveness ішінде база сияқты <strong>сыртқы</strong> тәуелділікті тексерме: база құласа, барлық подтарың бірге қайта іске қосыла бастайды.</p>
+<h3>Нақты әлемде</h3>
+<p>Kubernetes әдепкі мәндері: periodSeconds 10, failureThreshold 3. Readiness терең тексереді (тәуелділіктер), liveness таяз (процесс жауап бере ме).</p>
+<h3>Енді сен</h3>
+<p>Тек readiness-пен іске қос, соңғы секундтағы B-ға қара. Сосын liveness-ті қос.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Тек readiness-пен: қате аз, бірақ под соңына дейін қатып тұр</li><li>Liveness қос: под қайта іске қосылып, сауығады</li></ul><a class="btn secondary" href="../app/index.html#cloud-10-probes">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="1" data-qid="cloud-10-probes:liveness:predict"><p class="l3-qt">B поды 22-секундта қатып қалды (deadlock): процесс бар, бірақ жауап бермейді. Тек readiness қосулы. Соңында не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Kubernetes B-ны қайта іске қосады</button><button type="button" class="l3-opt" data-i="1">B тізімнен алынады, бірақ соңына дейін қатып тұрады: бір под жоқ сияқты</button><button type="button" class="l3-opt" data-i="2">Барлық сұраныстар қате болады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> B тізімнен алынады, бірақ соңына дейін қатып тұрады: бір под жоқ сияқты</p><p>Readiness тек трафикті бұрады, емдемейді. Подты қайта іске қосатын: liveness.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="cloud-10-probes:liveness:heal"><p class="l3-qt">Қатып қалған подты қайта іске қосатын қай тексеріс?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Readiness</button><button type="button" class="l3-opt" data-i="1">Liveness</button><button type="button" class="l3-opt" data-i="2">Екеуі де</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Liveness</p><p>Readiness трафикті ғана бұрады. Қайта іске қосу: liveness-тің жұмысы.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="cloud-10-probes:liveness:both"><p class="l3-qt">Неге екі тексерісті бірге қолдану керек?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Kubernetes солай талап етеді</button><button type="button" class="l3-opt" data-i="1">Readiness қатені тез тоқтатады, liveness подты емдейді</button><button type="button" class="l3-opt" data-i="2">Бірі екіншісін тексереді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Readiness қатені тез тоқтатады, liveness подты емдейді</p><p>Модельде екеуі бірге: 99 қате және B қайта сау. Біреуі ғана: не көп қате, не өлі под.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="cloud-10-probes:liveness:deps"><p class="l3-qt">Liveness ішінде базаға қосылымды тексеру неге қауіпті?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Ол баяу</button><button type="button" class="l3-opt" data-i="1">База құласа, барлық подтар бірге қайта іске қосылып, жағдайды нашарлатады</button><button type="button" class="l3-opt" data-i="2">База оны көрмейді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> База құласа, барлық подтар бірге қайта іске қосылып, жағдайды нашарлатады</p><p>Подты қайта іске қосу базаны жөндемейді. Тәуелділіктер readiness-ке жатады.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="cloud-9-pset.html">← <span lang="en">Problem Set: SRE кезекшілігі</span></a><a href="../index.html#cloud">Бұлт және DevOps</a><a href="cloud-11-queues.html"><span lang="en">Queues &amp; Backpressure</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

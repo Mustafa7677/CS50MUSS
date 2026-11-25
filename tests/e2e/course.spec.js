@@ -1,16 +1,15 @@
 // © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md.
 // AO17 CS курсы (academy/course.html): 12 апта, әр аптада сабақтар, комикс эпизоды, INSIDE TECH 3D зертханасы, жоба.
-// Тексереміз: апталар саны мен сілтемелері (сабақ беті бар, комикс бөлімі бар), INSIDE TECH сілтемелерінің пішіні,
+// Тексереміз: апталар саны мен сілтемелері (сабақ беті бар, комикс бөлімі бар), 3D зертхана сілтемелері AO17-нің ішінде,
 // Course JSON-LD, басты беттің негізгі батырмасы, телефонда көлденең жылжу жоқ, axe таза.
 const { test, expect } = require("@playwright/test");
 const fs = require("fs");
 const { blockFonts, collectErrors } = require("../support/helpers");
 const AXE = fs.readFileSync(require.resolve("axe-core/axe.min.js"), "utf8");
-const INSIDE = "https://mustafa7677.github.io/3D-learning-/#";
-// INSIDE TECH standalone router-і танитын маршруттар: сабақ id-лері (lab-*/src/lessons.ts) және арнайы беттер
-const KNOWN = /^(arch|algo|db|net|cloud|sec|web|game|iot|ai|la)-\d+-[a-z0-9-]+$|^(blackbox|parsons|journey)$/;
+// 3D зертхана AO17-нің ішінде: сабақ - 3d/<зертхана>/<id>.html, ойын беттері - 3d/app/index.html#<маршрут>
+const INTERNAL = /^3d\/([a-z]+\/[a-z0-9-]+\.html|app\/index\.html#(blackbox|parsons|journey))$/;
 
-test("12 апта: әрқайсысында сабақ, комикс, INSIDE TECH сілтемесі; сілтемелер нақты беттерге апарады", async ({ page }) => {
+test("12 апта: әрқайсысында сабақ, комикс, 3D зертхана сабағы; сілтемелер нақты беттерге апарады", async ({ page }) => {
   const errors = collectErrors(page);
   await page.goto("academy/course.html");
   const weeks = page.locator(".crs-w");
@@ -21,11 +20,7 @@ test("12 апта: әрқайсысында сабақ, комикс, INSIDE TEC
     await expect(w.locator(".crs-comic a")).toHaveAttribute("href", `m${String(i + 1).padStart(2, "0")}/l01.html#s-comic`);
     const labs = await w.locator(".crs-3d a").evaluateAll((as) => as.map((a) => [a.getAttribute("href"), a.getAttribute("target"), a.getAttribute("rel")]));
     expect(labs.length).toBeGreaterThan(0);
-    for (const [href, target, rel] of labs) {
-      expect(href.startsWith(INSIDE), href).toBe(true);
-      expect(href.slice(INSIDE.length), href).toMatch(KNOWN);
-      expect([target, rel]).toEqual(["_blank", "noopener"]);
-    }
+    for (const [href] of labs) expect(href, href).toMatch(INTERNAL);
   }
   // 1-аптаның сабағы мен комиксі шынымен бар
   await page.goto("academy/m01/l01.html?nofilm");

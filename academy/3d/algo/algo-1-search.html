@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Searching · Алгоритмдер - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Searching · Алгоритмдер - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Сызықтық және екілік іздеу: n қадам мен log₂n қадамның айырмашылығы.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/algo/algo-1-search.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/algo/algo-1-search.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Searching · Алгоритмдер - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/algo/algo-1-search.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Сызықтық және екілік іздеу: n қадам мен log₂n қадамның айырмашылығы.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="algo-1-search" style="--lc:#a37a00">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#algo">Алгоритмдер</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Алгоритмдер · 1-сабақ · ≈20 мин · 3 қадам · 6 сұрақ</p>
+        <h1 lang="en">Searching</h1>
+        <p class="l3-lede">Сызықтық және екілік іздеу: n қадам мен log₂n қадамның айырмашылығы.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#algo-1-search">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Сызықтық іздеу</a></li><li><a href="#s2">Екілік іздеу</a></li><li><a href="#s3">Екілік іздеудің шарты</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Сызықтық іздеу</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Алгоритм</strong>: есепті шешетін нақты, шектеулі қадамдар тізбегі. Ең қарапайым есеп: тізімде сан бар ма?</p>
+<p><strong>Сызықтық іздеу</strong> (linear search): бірінші элементтен бастап кезекпен қара. Тапсаң: тоқта. Соңына жетсең: жоқ.</p>
+<pre class="l3-pre"><code>for i from 0 to n−1:
+    if a[i] == target: return i
+return −1</code></pre>
+<h3>Түйсік</h3>
+<p>Кітап сөресінде белгілі бір кітапты іздеп тұрсың, кітаптар ретсіз. Басқа амалың жоқ: бірінен соң бірін қарайсың.</p>
+<h3>Есептеп көрейік</h3>
+<p>Массив: 3, 5, 7, …, 65 (32 сан). 47: 23-ші орында (индексі 22), сондықтан <strong>23 қадам</strong>. 48 жоқ: оны «жоқ» деп айту үшін <strong>32-сінің бәрін</strong> қарау керек.</p>
+<p>Ең жақсы жағдай: 1 қадам (бірінші элемент). Ең нашары: n қадам. Орташа (бар сан үшін): ≈ n/2.</p>
+<h3>Нақты әлемде</h3>
+<p>Сызықтық іздеу ретсіз деректерде жалғыз мүмкін тәсіл: <code>Ctrl+F</code> бетте, <code>grep</code> файлда, <code>Array.indexOf</code> JavaScript-те дәл осылай жұмыс істейді.</p>
+<blockquote><p>⚠ Жиі қате: «табылмады» деп ерте шешу. Соңғы элементті тексермей шығып кету: классикалық «бірге қате» (off-by-one) қатесі.</p></blockquote>
+<h3>Енді сен</h3>
+<p>«Іздеу» бөлімінде мақсат 47 тұр. «Қадам» батырмасымен жүріп, 3D-де қаралған элементтерді бақыла. Сосын жоқ санды (мысалы 48) ізде.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Сызықтық іздеумен 47-ні тап</li><li>Жоқ санды ізде (мысалы 48): неше қадам кетеді?</li></ul><a class="btn secondary" href="../app/index.html#algo-1-search">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="algo-1-search:linear:worst"><p class="l3-qt">1 000 000 элементтегі сызықтық іздеу. Жоқ санды іздегенде неше элементті қарайды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">1 000 000</button><button type="button" class="l3-opt" data-i="1">500 000</button><button type="button" class="l3-opt" data-i="2">20</button><button type="button" class="l3-opt" data-i="3">1</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 1 000 000</p><p>«Жоқ» деп сенімді айту үшін әр элементті тексеру керек: n қадам. Бұл: ең нашар жағдай.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="algo-1-search:linear:avg"><p class="l3-qt">Бар санды іздегенде орта есеппен неше қадам кетеді (сан кез келген орында бірдей ықтималдықпен тұрса)?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">≈ n/2</button><button type="button" class="l3-opt" data-i="1">≈ log₂ n</button><button type="button" class="l3-opt" data-i="2">Әрдайым n</button><button type="button" class="l3-opt" data-i="3">Әрдайым 1</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> ≈ n/2</p><p>Сан 1-ші, 2-ші, …, n-ші орында бірдей ықтималдықпен тұрса, орташа қадам (1 + 2 + … + n)/n = (n + 1)/2 ≈ n/2.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Екілік іздеу</h2><div class="l3-body"><h3>Идея</h3>
+<p>Массив <strong>сұрыпталған</strong> болса, әлдеқайда жақсырақ тәсіл бар. Ортаңғы элементке қара:</p>
+<ul><li>ол іздегенге тең: табылды;</li><li>іздеген саннан кіші: жауап <strong>оң</strong> жақта, сол жартысын лақтыр;</li><li>үлкен: жауап <strong>сол</strong> жақта.</li></ul>
+<p>Әр қадам іздеу аймағын <strong>екі есе</strong> қысқартады.</p>
+<pre class="l3-pre"><code>lo = 0, hi = n − 1
+while lo ≤ hi:
+    mid = lo + (hi − lo) / 2
+    if a[mid] == target: return mid
+    if a[mid] &lt; target: lo = mid + 1
+    else:               hi = mid − 1
+return −1</code></pre>
+<h3>Түйсік</h3>
+<p>Телефон кітабынан «Мұрат» есімін іздейсің. Ортасынан ашасың: «Қ». «М» одан кейін, сол жартысын жыртып тастайсың. Тағы ортасынан… Екілік іздеудің ең атақты мысалы осы.</p>
+<h3>Есептеп көрейік</h3>
+<p>3, 5, …, 65 массивінде 47-ні іздейміз:</p>
+<ol><li>lo = 0, hi = 31 → mid = 15, a[15] = 33 &lt; 47 → lo = 16</li><li>mid = 23, a[23] = 49 &gt; 47 → hi = 22</li><li>mid = 19, a[19] = 41 &lt; 47 → lo = 20</li><li>mid = 21, a[21] = 45 &lt; 47 → lo = 22</li><li>mid = 22, a[22] = 47: <strong>табылды, 5 қадам</strong> (сызықтықта: 23).</li></ol>
+<p>n = 32 үшін ең көп дегенде ⌊log₂ 32⌋ + 1 = <strong>6</strong> қадам. n = 128: 8 қадам. Миллион: 20 қадам. Миллиард: 30.</p>
+<h3>Нақты әлемде</h3>
+<p>Дерекқор индекстері (B-tree), <code>git bisect</code> (қай коммит қатені енгізді?), сұрыпталған тізімнен іздеу: бәрі осы идея.</p>
+<blockquote><p>💡 Түйін: log₂ n: «n-ді неше рет екіге бөлгенде 1 қалады». Миллионды 20 рет бөлесің.</p></blockquote>
+<h3>Тереңірек: екілік іздеудің дұрыстығы: инвариант арқылы</h3>
+<p>Алгоритмнің дұрыстығын «тесттер өтті» деп емес, <strong>инвариантпен</strong> дәлелдейміз: циклдің әр айналымында ақиқат болып қалатын тұжырым:</p>
+<pre class="l3-pre"><code>Инвариант: target массивте болса, ол a[lo..hi] ішінде.</code></pre>
+<ol><li><strong>Басында</strong>: lo = 0, hi = n − 1: бүкіл массив. Ақиқат.</li><li><strong>Сақталады</strong>: a[mid] &lt; target болса, массив сұрыпталғандықтан a[0..mid] бәрі &lt; target, яғни target солардың ішінде емес → lo = mid + 1 инвариантты бұзбайды. Екінші жағдай симметриялы.</li><li><strong>Аяқталады</strong>: әр айналымда hi − lo кемиді, сондықтан цикл тоқтайды. lo &gt; hi болса, аймақ бос: инвариант бойынша target жоқ.</li></ol>
+<p>Қадам саны: аймақ ұзындығы L = hi − lo + 1. Бір қадамнан кейін ол ≤ ⌊L/2⌋. k қадамнан кейін ≤ n/2ᵏ. Аймақ бос болуы үшін n/2ᵏ &lt; 1, яғни k &gt; log₂ n → ең көбі ⌊log₂ n⌋ + 1 қадам.</p>
+<p>Сұрыпталғандық 2-қадамда қолданылды: сондықтан ол алғышарт.</p>
+<h3>Енді сен</h3>
+<p>Алдымен 47-ні екілік іздеумен тап. Сосын n = 128 қойып, кез келген санды ізде: қадам саны 8-ден аспайтынын тексер.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Екілік іздеумен 47-ні тап</li><li>128 элементте екілік іздеу жүргіз (≤ 8 қадам)</li></ul><a class="btn secondary" href="../app/index.html#algo-1-search">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="algo-1-search:binary:million"><p class="l3-qt">Сұрыпталған 1 000 000 элемент. Екілік іздеу ең көп дегенде неше қадам жасайды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">20</button><button type="button" class="l3-opt" data-i="1">1 000</button><button type="button" class="l3-opt" data-i="2">500 000</button><button type="button" class="l3-opt" data-i="3">1 000 000</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 20</p><p>2²⁰ = 1 048 576 &gt; 1 000 000. Әр қадам аймақты екі есе қысқартады, сондықтан ⌊log₂ 10⁶⌋ + 1 = 20.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="algo-1-search:binary:mid"><p class="l3-qt">Неге mid = (lo + hi) / 2 орнына mid = lo + (hi − lo) / 2 жазады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Белгіленген өлшемді бүтін сандарда lo + hi асып кетуі (overflow) мүмкін</button><button type="button" class="l3-opt" data-i="1">Ол жылдамырақ есептеледі</button><button type="button" class="l3-opt" data-i="2">Нәтижесі басқа сан болады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Белгіленген өлшемді бүтін сандарда lo + hi асып кетуі (overflow) мүмкін</p><p>Математикада екеуі тең. Бірақ 32 биттік int-те lo + hi &gt; 2³¹ − 1 болса, ол теріс санға айналады. Бұл қате Java стандартты кітапханасында 9 жыл бойы байқалмай келген (2006).</p></details></div></div></section><section class="l3-step" id="s3" aria-labelledby="s3-h"><h2 id="s3-h"><span class="l3-n">3</span>Екілік іздеудің шарты</h2><div class="l3-body"><h3>Идея</h3>
+<p>Екілік іздеудің бір <strong>алғышарты</strong> бар: массив сұрыпталған болуы керек. Алғышарт бұзылса, алгоритм қате жауап береді: және ол туралы ешқандай ескерту бермейді.</p>
+<h3>Түйсік</h3>
+<p>Сөздікте сөздер алфавит бойынша тұрғандықтан ғана «ортасынан ашу» жұмыс істейді. Беттері араласып кеткен сөздікте «М» әрпі «Қ»-дан кейін тұр деп сенуге болмайды.</p>
+<h3>Есептеп көрейік</h3>
+<p>Массив араластырылған, 13 онда <strong>бар</strong>. Екілік іздеу ортаға қарайды, мысалы 41-ді көреді. 13 &lt; 41 → «сол жақта» деп шешеді де, оң жақты лақтырады. Бірақ 13 оң жақта болуы мүмкін! Нәтиже: «жоқ».</p>
+<p>Біздің 32 элементтік араласқан массивте екілік іздеу 32 санның <strong>26-сын</strong> таба алмайды.</p>
+<h3>Нақты әлемде</h3>
+<p>Алғышарттарды тексеру: инженерияның өзегі: функцияның құжаттамасындағы «input must be sorted» деген жол жай сөз емес, ол: келісімшарт. Сондықтан көп жүйе алдымен бір рет сұрыптайды (O(n log n)), сосын миллиондаған рет екілік іздейді (әрқайсысы O(log n)).</p>
+<blockquote><p>⚠ Жиі қате: «тест өтті, демек дұрыс». Кездейсоқ сәтті жағдай алгоритм дұрыс дегенді білдірмейді: 32 санның 6-сы бәрібір табылады.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Араластырылған массивте 13-ті екілік іздеумен ізде. Ол бар, бірақ алгоритм оны таба ма?</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Араластырылған массивте бар санды екілік іздеу таппай қалғанын көр</li></ul><a class="btn secondary" href="../app/index.html#algo-1-search">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="algo-1-search:unsorted:pre"><p class="l3-qt">Ретсіз 1000 элементте бір рет іздеу керек. Не тиімді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Сызықтық іздеу: ≤ 1000 қадам</button><button type="button" class="l3-opt" data-i="1">Алдымен сұрыптап, сосын екілік іздеу</button><button type="button" class="l3-opt" data-i="2">Екілік іздеу бірден</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Сызықтық іздеу: ≤ 1000 қадам</p><p>Сұрыптаудың өзі ≈ n log₂ n ≈ 10 000 салыстыру. Бір рет іздеу үшін ол тиімсіз. Ал мыңдаған іздеу болса: сұрыптау өтеледі.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="algo-1-search:unsorted:many"><p class="l3-qt">Сол 1000 элементте 10 000 рет іздеу керек. Шамамен неше салыстыру үнемдейміз, алдымен сұрыптасақ?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Миллиондаған (≈ 5·10⁶ орнына ≈ 1.1·10⁵)</button><button type="button" class="l3-opt" data-i="1">Ешқандай</button><button type="button" class="l3-opt" data-i="2">Тек 2 есе</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Миллиондаған (≈ 5·10⁶ орнына ≈ 1.1·10⁵)</p><p>Сызықтық: 10 000 × ~500 = 5 000 000. Сұрыптау ~10 000 + 10 000 × 10 = 110 000. Шамамен 45 есе аз.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><span></span><a href="../index.html#algo">Алгоритмдер</a><a href="algo-2-bubble.html"><span lang="en">Bubble Sort</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

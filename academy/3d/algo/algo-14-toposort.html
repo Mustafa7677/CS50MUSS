@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Topological Sort: Order from Dependencies · Алгоритмдер - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Topological Sort: Order from Dependencies · Алгоритмдер - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Курстардың алғышарттары, тапсырмалардың тәуелділіктері, пакеттер: қай ретпен орындаймыз және цикл болса не болады.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/algo/algo-14-toposort.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/algo/algo-14-toposort.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Topological Sort: Order from Dependencies · Алгоритмдер - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/algo/algo-14-toposort.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Курстардың алғышарттары, тапсырмалардың тәуелділіктері, пакеттер: қай ретпен орындаймыз және цикл болса не болады.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="algo-14-toposort" style="--lc:#a37a00">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#algo">Алгоритмдер</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Алгоритмдер · 14-сабақ · ≈20 мин · 2 қадам · 6 сұрақ</p>
+        <h1 lang="en">Topological Sort: Order from Dependencies</h1>
+        <p class="l3-lede">Курстардың алғышарттары, тапсырмалардың тәуелділіктері, пакеттер: қай ретпен орындаймыз және цикл болса не болады.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#algo-14-toposort">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Оқу жоспары</a></li><li><a href="#s2">Тұйық шеңбер</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Оқу жоспары</h2><div class="l3-body"><h3>Идея</h3>
+<p>Тәуелділіктер <strong>бағытталған граф</strong> құрайды: «A → B» = «B-ға дейін A керек». <strong>Топологиялық сұрыптау</strong>: барлық төбелерді әр қабырға алға қарайтындай етіп ретке қою.</p>
+<h3>Kahn алгоритмі</h3>
+<ol><li>Әр төбеге қанша кіретін қабырға бар екенін сана (алғышарттар саны).</li><li>Алғышарты жоқтарды «дайын» кезегіне сал.</li><li>Кезектен біреуін ал, ретке жаз, оның артындағыларының санағышын 1-ге азайт. Нөлге жеткен: дайын.</li><li>Кезек босағанша қайтала.</li></ol>
+<p>Уақыты O(V + E): әр төбе мен қабырға бір рет.</p>
+<h3>Есептеп көрейік</h3>
+<p>7 курс, 8 алғышарт:</p>
+<ul><li>рет: Бағдарламалау, Құрылымдар, Алгоритмдер, Дерекқор, Желілер, Веб, Бұлт;</li><li>семестрлер: <strong>4</strong> (ең ұзын тізбектің ұзындығы). Дерекқор мен Желілерді 2-семестрде қатар алуға болады.</li></ul>
+<h3>Нақты әлемде</h3>
+<ul><li><code>npm install</code>, <code>make</code>, <code>cargo build</code>: тәуелділіктерді алдымен орнату не құрастыру.</li><li>Кесте жоспарлау: құрылыс, жоба тапсырмалары (critical path).</li><li>Дерекқор миграциялары, Excel формулаларын қайта есептеу реті.</li></ul>
+<h3>Енді сен</h3>
+<p>Оқу жоспарын құр: курстардың реті мен семестрлеріне қара.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Барлық 7 курсты ретке қой: ең аз дегенде 4 семестр</li></ul><a class="btn secondary" href="../app/index.html#algo-14-toposort">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="1" data-qid="algo-14-toposort:order:predict"><p class="l3-qt">Курстар: «Бағдарламалау» → «Құрылымдар» → «Алгоритмдер» → «Бұлт», ал «Бағдарламалау» → «Дерекқор» / «Желілер» → «Веб» → «Бұлт». Бір семестрде алғышарттары дайын курстардың бәрін алуға болады. Ең аз неше семестр керек?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">7: әр семестрде бір курс</button><button type="button" class="l3-opt" data-i="1">4: ең ұзын алғышарттар тізбегінің ұзындығы</button><button type="button" class="l3-opt" data-i="2">2</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 4: ең ұзын алғышарттар тізбегінің ұзындығы</p><p>Бір мезгілде тәуелсіз курстарды қатар оқуға болады. Шектейтін: ең ұзын тізбек, Бағдарламалау → Құрылымдар → Алгоритмдер → Бұлт: 4 буын.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="algo-14-toposort:order:kahn"><p class="l3-qt">Kahn алгоритмінде қай төбені бірінші алуға болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Кіретін қабырғасы (алғышарты) жоқ төбені</button><button type="button" class="l3-opt" data-i="1">Ең көп қабырғасы бар төбені</button><button type="button" class="l3-opt" data-i="2">Кез келгенін</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Кіретін қабырғасы (алғышарты) жоқ төбені</p><p>Алғышарты жоқ курс бірден «дайын».</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="algo-14-toposort:order:sem"><p class="l3-qt">Ең аз семестр санын не анықтайды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Алғышарттардың ең ұзын тізбегі</button><button type="button" class="l3-opt" data-i="1">Курстар саны</button><button type="button" class="l3-opt" data-i="2">Қабырғалар саны</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Алғышарттардың ең ұзын тізбегі</p><p>Тізбектегі курстарды қатар оқуға болмайды, ал басқаларын тізбекпен қатар алуға болады.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="algo-14-toposort:order:time"><p class="l3-qt">Kahn алгоритмінің уақыты қандай?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">O(V + E)</button><button type="button" class="l3-opt" data-i="1">O(V²)</button><button type="button" class="l3-opt" data-i="2">O(E log V)</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> O(V + E)</p><p>Әр төбе кезекке бір рет түседі, әр қабырға бір рет азайтылады.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Тұйық шеңбер</h2><div class="l3-body"><h3>Цикл</h3>
+<p>Тәуелділіктерде <strong>цикл</strong> болса, топологиялық рет <strong>жоқ</strong>: A B-ны, B C-ны, C A-ны күтеді, ешқайсысы бірінші бола алмайды.</p>
+<p>Kahn алгоритмі мұны өзі табады: кезек босағанда, ретке түспеген төбелер қалса, олар циклде (не циклдің артында). Модельде: <strong>Құрылымдар, Алгоритмдер, Бұлт</strong> бұғатталды, ал Бағдарламалау, Дерекқор, Желілер, Веб бәрібір реттелді.</p>
+<h3>Нақты әлемде</h3>
+<ul><li>Пакет менеджерлері «circular dependency» қатесін береді.</li><li>Excel: «циклдік сілтеме» ескертуі.</li><li>Дерекқордағы deadlock: «транзакция A B-ны, B A-ны күтеді» дәл осы цикл, тек құлыптардың графында (Databases зертханасы).</li><li>Модульдер бірін-бірі import етсе, бағдарлама іске қосылғанда жартылай дайын модульмен жұмыс істеуі мүмкін.</li></ul>
+<h3>Шешімі</h3>
+<p>Циклді <strong>бұзу</strong>: бір тәуелділікті алып тастау не екі модульдің ортақ бөлігін үшінші модульге шығару. Алгоритм қай төбелер циклде екенін көрсетеді, ал қай қабырғаны алу: адамның шешімі.</p>
+<h3>Енді сен</h3>
+<p>Цикл жасайтын ережені қос, бұғатталған курстарды көр. Сосын ережені алып тастап, жоспарды қалпына келтір.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>«Құрылымдар» енді «Бұлтты» талап етсін: үш курс ешқашан ашылмайды</li><li>Ережені алып тастап, жоспарды қалпына келтір</li></ul><a class="btn secondary" href="../app/index.html#algo-14-toposort">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="1" data-qid="algo-14-toposort:cycle:predict"><p class="l3-qt">Жаңа ереже: «Құрылымдар» үшін енді «Бұлт» керек. Бірақ «Бұлтқа» жету үшін «Алгоритмдер», ал оған «Құрылымдар» керек. Не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Алгоритм кез келген ретті таба береді</button><button type="button" class="l3-opt" data-i="1">Үш курс ешқашан «дайын» болмайды: олар бірін-бірі күтеді</button><button type="button" class="l3-opt" data-i="2">Барлық курс бұғатталады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Үш курс ешқашан «дайын» болмайды: олар бірін-бірі күтеді</p><p>Цикл: Құрылымдар → Алгоритмдер → Бұлт → Құрылымдар. Олардың санағышы ешқашан нөлге түспейді. Ал циклден тыс курстар (Дерекқор, Желілер, Веб) бәрібір реттеледі.</p></details></div></div><div class="l3-box l3-self"><h3>Өз сөзіңмен түсіндір</h3><p>Неге циклі бар графта топологиялық рет мүлде болмайды және Кан алгоритмі мұны қалай байқайды?</p><details class="l3-ans"><summary>Жақсы түсіндірмеде болатын ойлар</summary><ul><li>циклде әр төбе басқасынан кейін тұруы керек: бастау жоқ</li><li>кіріс дәрежесі нөл төбе таусылады</li><li>шыққан төбелер саны барлығынан аз</li></ul></details></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="algo-14-toposort:cycle:detect"><p class="l3-qt">Kahn алгоритмі циклді қалай табады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Кезек босағанда ретке түспеген төбелер қалады</button><button type="button" class="l3-opt" data-i="1">Ол циклді таба алмайды</button><button type="button" class="l3-opt" data-i="2">Шексіз циклге түседі</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Кезек босағанда ретке түспеген төбелер қалады</p><p>Циклдегі төбелердің алғышарт санағышы ешқашан нөлге жетпейді.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="algo-14-toposort:cycle:deadlock"><p class="l3-qt">Дерекқордағы deadlock пен тәуелділік циклінің ұқсастығы қандай?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Екеуі де «күту» графындағы цикл: бәрі бір-бірін күтеді</button><button type="button" class="l3-opt" data-i="1">Ешқандай</button><button type="button" class="l3-opt" data-i="2">Екеуі де жылдамдықтың мәселесі</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Екеуі де «күту» графындағы цикл: бәрі бір-бірін күтеді</p><p>Дерекқорлар deadlock-ты дәл осылай, күту графынан цикл іздеп табады.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="algo-14-toposort:cycle:fix"><p class="l3-qt">Модульдер арасындағы циклді қалай бұзады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Ортақ бөлікті жаңа модульге шығарып не бір тәуелділікті алып</button><button type="button" class="l3-opt" data-i="1">Модульдерді қайта атап</button><button type="button" class="l3-opt" data-i="2">Ештеңе істемей</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Ортақ бөлікті жаңа модульге шығарып не бір тәуелділікті алып</p><p>Цикл: дизайнның белгісі. Оны бұзу көбіне архитектураны жақсартады.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="algo-13-unionfind.html">← <span lang="en">Union-Find: Who Is Connected?</span></a><a href="../index.html#algo">Алгоритмдер</a><a href="algo-15-amortized.html"><span lang="en">Amortized Analysis: The Growing Array</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Retries, Backoff &amp; Circuit Breakers · Бұлт және DevOps - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Retries, Backoff &amp;amp; Circuit Breakers · Бұлт және DevOps - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Қайталау көмектесе ме, әлде құлаған қызметті біржола басып тастай ма? Қайталау дауылы, экспоненциалды кідіріс және сақтандырғыш.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/cloud/cloud-13-retries.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/cloud/cloud-13-retries.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Retries, Backoff &amp; Circuit Breakers · Бұлт және DevOps - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/cloud/cloud-13-retries.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Қайталау көмектесе ме, әлде құлаған қызметті біржола басып тастай ма? Қайталау дауылы, экспоненциалды кідіріс және сақтандырғыш.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="cloud-13-retries" style="--lc:#3a72c4">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#cloud">Бұлт және DevOps</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Бұлт және DevOps · 13-сабақ · ≈25 мин · 2 қадам · 6 сұрақ</p>
+        <h1 lang="en">Retries, Backoff &amp; Circuit Breakers</h1>
+        <p class="l3-lede">Қайталау көмектесе ме, әлде құлаған қызметті біржола басып тастай ма? Қайталау дауылы, экспоненциалды кідіріс және сақтандырғыш.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#cloud-13-retries">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Қайталау дауылы</a></li><li><a href="#s2">Сақтандырғыш</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Қайталау дауылы</h2><div class="l3-body"><h3>Идея</h3>
+<p>Желі мен қызметтер уақытша істен шығады. <strong>Қайталау</strong> (retry) табиғи шешім сияқты: «тағы бір рет сұрайыншы». Бірақ барлық клиент бір мезетте қайталаса, ол <strong>жүктемені көбейтеді</strong> дәл ең әлсіз сәтте.</p>
+<h3>Есептеп көрейік</h3>
+<p>Клиенттер 100 сұраныс/с жібереді. Тәуелді қызмет 10-нан 30-секундқа дейін құлаған, сосын 150/с көтере алады.</p>
+<ul><li><strong>Қайталаусыз</strong>: құлау кезінде 2000 қате, қызмет <strong>30-секундта</strong> оралады.</li><li><strong>Бірден үш қайталау</strong>: әр сәтсіз сұраныс 4 рет барады, жүктеме <strong>400/с</strong>. 30-секундта қызмет тұрады, бірақ 400 &gt; 150, қайта құлайды. Сәтсіздіктер жаңа қайталау береді. Қызмет <strong>ешқашан оралмайды</strong>, 5000 қате.</li></ul>
+<h3>Metastable failure</h3>
+<p>Себеп жойылса да, жүйе құлаған күйде қалады: оны <strong>қайталаулардың өзі</strong> ұстап тұр. Ірі бұлттық апаттардың көбі осылай ұзарады: алғашқы ақау бірнеше секунд, ал қайталау дауылы сағаттарға созылады.</p>
+<h3>Нақты әлемде</h3>
+<p>Мобильді қосымшаның «қайта қосылу» батырмасы, SDK-дағы әдепкі 3 қайталау, қабаттар бойы қайталау (клиент 3 × шлюз 3 × сервис 3 = 27 есе): бәрі дауылдың тұқымы.</p>
+<h3>Енді сен</h3>
+<p>Қайталаусыз, сосын бірден қайталаумен іске қос. Жүктеме сызығы қашан төмендейтініне қара.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Қайталаусыз: қызмет 30-секундта оралады</li><li>Бірден үш рет қайталау: қызмет мүлде оралмайды</li></ul><a class="btn secondary" href="../app/index.html#cloud-13-retries">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="1" data-qid="cloud-13-retries:storm:predict"><p class="l3-qt">Тәуелді қызмет 20 секунд құлады. Әр клиент сәтсіз сұранысты бірден үш рет қайталайды. Қызмет қайта көтерілгенде не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Бәрі жылдам қалпына келеді</button><button type="button" class="l3-opt" data-i="1">Қызмет 400 сұраныс/с жүктемеге тап болып, қайта құлайды: ешқашан оралмайды</button><button type="button" class="l3-opt" data-i="2">Клиенттер өздері тоқтайды</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Қызмет 400 сұраныс/с жүктемеге тап болып, қайта құлайды: ешқашан оралмайды</p><p>Әр сәтсіздік төрт сұранысқа айналады. Қызметтің сыйымдылығы 150/с, ал оған 400/с келеді. Ол тұрып үлгермей қайта құлайды, бұл сәтсіздіктер жаңа қайталауларды тудырады: тұйық шеңбер.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="cloud-13-retries:storm:amp"><p class="l3-qt">Әр сәтсіз сұранысты 3 рет бірден қайталау құлау кезінде жүктемені қанша есе өсіреді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">4 есе</button><button type="button" class="l3-opt" data-i="1">3 есе</button><button type="button" class="l3-opt" data-i="2">Өзгертпейді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 4 есе</p><p>Бастапқы сұраныс пен үш қайталау: 1 + 3 = 4.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="cloud-13-retries:storm:meta"><p class="l3-qt">Metastable failure дегеніміз не?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Алғашқы себеп жойылса да, жүйені оның өз жауабы (мысалы, қайталаулар) құлаған күйде ұстайды</button><button type="button" class="l3-opt" data-i="1">Сервердің физикалық бұзылуы</button><button type="button" class="l3-opt" data-i="2">Баяу деплой</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Алғашқы себеп жойылса да, жүйені оның өз жауабы (мысалы, қайталаулар) құлаған күйде ұстайды</p><p>Модельде құлау 30-секундта бітті, бірақ 400/с қайталау жүктемесі қызметті қайта көтерілуге жібермеді.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="cloud-13-retries:storm:layers"><p class="l3-qt">Клиент, шлюз және сервис әрқайсысы 3 рет қайталаса, ең нашар жағдайда төменгі қызметке неше сұраныс барады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">64 (4 × 4 × 4)</button><button type="button" class="l3-opt" data-i="1">9</button><button type="button" class="l3-opt" data-i="2">3</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 64 (4 × 4 × 4)</p><p>Әр қабат әр сұранысты 4 рет жібереді: 4³ = 64. Сондықтан қайталауды тек бір қабатта жасаған дұрыс.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Сақтандырғыш</h2><div class="l3-body"><h3>Экспоненциалды кідіріс</h3>
+<p>Қайталау керек, бірақ <strong>ақылмен</strong>:</p>
+<ul><li>кідіріс әр жолы екі есе: 100 мс, 200, 400, 800...;</li><li><strong>jitter</strong>: кездейсоқ ауытқу, клиенттер бір мезетте оралмасын;</li><li><strong>retry budget</strong>: қайталаулар жалпы сұраныстардың, мысалы, 10%-ынан аспасын.</li></ul>
+<p>Модельде жүктеме <strong>150/с</strong>-тан аспайды, қызмет <strong>30-секундта</strong> оралады.</p>
+<h3>Circuit breaker</h3>
+<p>Сақтандырғыштың үш күйі бар:</p>
+<ol><li><strong>Closed</strong>: бәрі қалыпты, сұраныстар өтеді.</li><li><strong>Open</strong>: қателер көп. 5 секунд бойы қызметке мүлде бармаймыз, пайдаланушыға бірден <strong>fallback</strong> береміз: кэштегі нұсқа, қарапайымдалған бет, «кейін көріңіз».</li><li><strong>Half-open</strong>: 5 секундтан кейін 10 сынақ сұранысы. Сәтті болса: closed, болмаса: тағы open.</li></ol>
+<h3>Есептеп көрейік</h3>
+<ul><li>Қате: <strong>130</strong> (бірінші секунд 100, үш сәтсіз сынақ 3 × 10).</li><li>Жылдам fallback: 2360 сұраныс.</li><li>Қызмет <strong>35-секундта</strong> толық оралады: соңғы сынақтың келесі секундында.</li></ul>
+<p>Пайдаланушы үшін 30 секунд «айналып тұрған» бет пен 50 мс-тағы «уақытша қолжетімсіз» хабарының айырмасы орасан.</p>
+<h3>Нақты әлемде</h3>
+<p>Netflix Hystrix (2012) идеяны танымал етті. Бүгін: Resilience4j, Polly, Envoy-дің outlier detection-ы. AWS SDK-лары әдепкі бойынша экспоненциалды кідіріс пен jitter қолданады.</p>
+<h3>Енді сен</h3>
+<p>Экспоненциалды кідірісті, сосын circuit breaker-ді іске қос. Жүктеме мен қателер сызығын салыстыр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Экспоненциалды кідіріс: жүктеме сыйымдылықтан аспайды, қызмет оралады</li><li>Circuit breaker: қате 200-ден аз</li></ul><a class="btn secondary" href="../app/index.html#cloud-13-retries">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="0" data-qid="cloud-13-retries:breaker:predict"><p class="l3-qt">Электр желісіндегі сақтандырғыш сияқты: қателер көбейсе, клиент қызметке 5 секунд бойы мүлде бармай, бірден «кейін көріңіз» деп жауап береді. Пайдаланушылар көретін қате азаяды ма?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Иә: қате орнына жылдам, түсінікті жауап, ал қызмет тынығып қалпына келеді</button><button type="button" class="l3-opt" data-i="1">Жоқ: бәрібір бәрі қате</button><button type="button" class="l3-opt" data-i="2">Қызмет ұзағырақ құлайды</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Иә: қате орнына жылдам, түсінікті жауап, ал қызмет тынығып қалпына келеді</p><p>Модельде 2000 қатенің орнына 130 қате. Қалғандары жылдам fallback (кэштегі нұсқа не «кейінірек» хабары) алды.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="cloud-13-retries:breaker:jitter"><p class="l3-qt">Экспоненциалды кідіріске неге кездейсоқ ауытқу (jitter) қосады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Мыңдаған клиент бір мезетте қайталамасын</button><button type="button" class="l3-opt" data-i="1">Кідірісті қысқарту үшін</button><button type="button" class="l3-opt" data-i="2">Шифрлау үшін</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Мыңдаған клиент бір мезетте қайталамасын</p><p>Jitter-сіз бәрі 100, 200, 400 мс-та бірге оралып, жаңа толқын жасайды.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="cloud-13-retries:breaker:states"><p class="l3-qt">Circuit breaker-дің half-open күйі не істейді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Бірнеше сынақ сұранысымен қызмет оралды ма, соны тексереді</button><button type="button" class="l3-opt" data-i="1">Барлық трафикті жібереді</button><button type="button" class="l3-opt" data-i="2">Қызметті қайта іске қосады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Бірнеше сынақ сұранысымен қызмет оралды ма, соны тексереді</p><p>Сынақ сәтті болса, сақтандырғыш жабылады. Болмаса, тағы біраз уақыт ашық тұрады.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="cloud-13-retries:breaker:fallback"><p class="l3-qt">Сақтандырғыш ашық кезде пайдаланушыға не беру керек?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Жылдам fallback: кэш, қарапайымдалған жауап не түсінікті хабар</button><button type="button" class="l3-opt" data-i="1">Ештеңе: күттіру</button><button type="button" class="l3-opt" data-i="2">Басқа пайдаланушының деректерін</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Жылдам fallback: кэш, қарапайымдалған жауап не түсінікті хабар</p><p>Мақсат: тез әрі адал жауап. Ұзақ күту ресурстарды байлап, мәселені тереңдетеді.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="cloud-12-lb.html">← <span lang="en">Load Balancing Algorithms</span></a><a href="../index.html#cloud">Бұлт және DevOps</a><a href="cloud-14-stampede.html"><span lang="en">Cache Stampede: Single-Flight &amp; Refresh-Ahead</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

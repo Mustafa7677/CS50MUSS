@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Queues &amp; Backpressure · Бұлт және DevOps - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Queues &amp;amp; Backpressure · Бұлт және DevOps - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Кезек толқынды жұтады, бірақ уақытты қарызға алады. Шектелген кезек және «қазір емес» деп айту.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/cloud/cloud-11-queues.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/cloud/cloud-11-queues.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Queues &amp; Backpressure · Бұлт және DevOps - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/cloud/cloud-11-queues.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Кезек толқынды жұтады, бірақ уақытты қарызға алады. Шектелген кезек және «қазір емес» деп айту.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="cloud-11-queues" style="--lc:#3a72c4">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#cloud">Бұлт және DevOps</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Бұлт және DevOps · 11-сабақ · ≈20 мин · 2 қадам · 6 сұрақ</p>
+        <h1 lang="en">Queues &amp; Backpressure</h1>
+        <p class="l3-lede">Кезек толқынды жұтады, бірақ уақытты қарызға алады. Шектелген кезек және «қазір емес» деп айту.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#cloud-11-queues">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Толқын</a></li><li><a href="#s2">Қарсы қысым</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Толқын</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Кезек</strong> (queue) өндіруші мен тұтынушыны ажыратады: сайт тапсырманы кезекке салады да, пайдаланушыға бірден жауап береді, ал өңдеуші оны кейін орындайды (хат жіберу, бейне өңдеу, төлем). Кезек <strong>толқынды жұтады</strong>: қысқа уақыт өңдеуші баяу болса да, ештеңе жоғалмайды.</p>
+<h3>Бірақ кезек тегін емес</h3>
+<p>Кезек уақытты қарызға алады. Келу жылдамдығы өңдеу жылдамдығынан көп болса, кезек сызықтық өседі.</p>
+<h3>Есептеп көрейік</h3>
+<p>Келу: 30 с бойы 150/с, сосын 50/с. Өңдеу: 100/с.</p>
+<ul><li>Кезек: әр секунд +50, 30 секундта <strong>1500</strong>.</li><li><strong>Литтл заңы</strong>: L = λ · W, яғни W = L / μ = 1500 / 100 = <strong>15 секунд</strong>.</li><li>Сосын кезек 50/с жылдамдықпен азаяды: тағы 30 секундта бос.</li></ul>
+<p>Екі өңдеуші (200/с) толқыннан күштірек: кезек <strong>мүлде пайда болмайды</strong>.</p>
+<h3>Нақты әлемде</h3>
+<p>Amazon SQS, RabbitMQ, Kafka. Кезек ұзындығы мен ең ескі хабардың жасы: бақылаудағы ең маңызды екі метрика. Автомасштабтау CPU бойынша емес, <strong>кезек ұзындығы</strong> бойынша жақсы жұмыс істейді.</p>
+<blockquote><p>⚠ Шексіз кезек: үнсіз апат. Пайдаланушы «жіберілді» деген жауап алды, ал хат 3 сағаттан кейін кетеді.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Бір өңдеушімен іске қос, кезек сызығына қара. Сосын өңдеушілер санын көбейт.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Бір өңдеуші, шексіз кезек: ең ұзақ күтуді тап</li><li>Өңдеушілерді көбейт: кезек мүлде пайда болмайды</li></ul><a class="btn secondary" href="../app/index.html#cloud-11-queues">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="1" data-qid="cloud-11-queues:burst:predict"><p class="l3-qt">30 секунд бойы секундына 150 тапсырма келеді, ал өңдеуші секундына 100 жасайды. Сосын ағын 50-ге түседі. Ең нашар сәтте тапсырма кезекте қанша күтеді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Шамамен 1 секунд</button><button type="button" class="l3-opt" data-i="1">Шамамен 15 секунд</button><button type="button" class="l3-opt" data-i="2">Кезек болмайды</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Шамамен 15 секунд</p><p>Әр секунд кезекке 50 артық тапсырма қосылады: 30 секундта 1500. Оларды 100/с жылдамдықпен өңдеу 15 секунд алады.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="cloud-11-queues:burst:little"><p class="l3-qt">Кезекте 600 тапсырма, өңдеу 200/с. Жаңа тапсырма шамамен қанша күтеді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">3 секунд</button><button type="button" class="l3-opt" data-i="1">600 секунд</button><button type="button" class="l3-opt" data-i="2">0,3 секунд</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 3 секунд</p><p>W = L / μ = 600 / 200 = 3 секунд.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="cloud-11-queues:burst:grow"><p class="l3-qt">Келу 150/с, өңдеу 100/с. Кезек қалай өзгереді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Тұрақты</button><button type="button" class="l3-opt" data-i="1">Секундына 50-ден өседі</button><button type="button" class="l3-opt" data-i="2">Секундына 150-ден өседі</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Секундына 50-ден өседі</p><p>Айырма: 150 − 100 = 50. Бұл ұзақ уақыт жалғасса, кезек шексіз өседі.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="cloud-11-queues:burst:metric"><p class="l3-qt">Кезекпен жұмыс істейтін өңдеушілерді неге масштабтау керек?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">CPU жүктемесі бойынша</button><button type="button" class="l3-opt" data-i="1">Кезек ұзындығы не ең ескі хабардың жасы бойынша</button><button type="button" class="l3-opt" data-i="2">Уақыт бойынша</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Кезек ұзындығы не ең ескі хабардың жасы бойынша</p><p>Пайдаланушыға маңыздысы: тапсырманың күтуі. Кезек дәл соны өлшейді.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Қарсы қысым</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Қарсы қысым</strong> (backpressure): жүйе өзі көтере алмайтын жүктемеге «қазір емес» деп айтады. HTTP-де бұл <strong>429 Too Many Requests</strong> (көбіне <code>Retry-After</code> тақырыбымен), кезектерде: шектелген кезек.</p>
+<h3>Есептеп көрейік</h3>
+<p>Сол толқын, бір өңдеуші, кезек 500-ден аспайды.</p>
+<ul><li>Ең ұзақ күту: 500 / 100 = <strong>5 секунд</strong>.</li><li>Бас тартылғаны: 1500 − 500 = <strong>1000 тапсырма</strong>.</li></ul>
+<p>Шексіз кезекте ешкім бас тарту алмады, бірақ кейбіреуі 15 секунд күтті: сайт «қатып қалды» деп көрінді, пайдаланушылар батырманы қайта басып, жүктемені одан сайын көбейтті.</p>
+<h3>Дұрыс бас тарту</h3>
+<ul><li><strong>Ерте және арзан</strong>: сұранысты бірінші қадамда тоқтат, ауыр жұмыстан кейін емес.</li><li><strong>Клиент кейін қайталасын</strong>: экспоненциалды кідіріспен (1, 2, 4 с) және кездейсоқ ауытқумен (jitter), әйтпесе бәрі бір сәтте оралады.</li><li><strong>Маңыздысын сақта</strong>: төлемге орын қалдырып, есепті кейінге қалдыр (load shedding).</li></ul>
+<h3>Нақты әлемде</h3>
+<p>Rate limiter (token bucket), API шлюздер, Kafka тұтынушыларының өз жылдамдығымен оқуы: бәрі қарсы қысым. Ең үлкен апаттардың көбі «шексіз» нәрседен басталады: шексіз кезек, шексіз қайталау, шексіз жад.</p>
+<h3>Енді сен</h3>
+<p>Кезекті 500-ге шекте де, бір өңдеушімен іске қос: күту мен бас тартуды салыстыр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Бір өңдеуші, кезек 500: күту 5 с-тан аспайды, артығы 429 алады</li></ul><a class="btn secondary" href="../app/index.html#cloud-11-queues">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="1" data-qid="cloud-11-queues:backpressure:predict"><p class="l3-qt">Кезекке 500 тапсырмалық шек қойдық, артығы «429 Too Many Requests» алады. Бұл жақсы ма?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Жоқ: тапсырмаларды жоғалтамыз, бұл әрқашан жаман</button><button type="button" class="l3-opt" data-i="1">Иә: кейбіреуі бас тартуды алады, бірақ қабылданғандары 5 секундтан аспай орындалады</button><button type="button" class="l3-opt" data-i="2">Айырмасы жоқ</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Иә: кейбіреуі бас тартуды алады, бірақ қабылданғандары 5 секундтан аспай орындалады</p><p>Шек күтуді шектейді. Бас тартылған клиент кейін қайта жібере алады, ал 15 секунд күткен пайдаланушы кетіп қалады.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="cloud-11-queues:backpressure:code"><p class="l3-qt">Сервер шамадан тыс жүктелгенде қандай HTTP коды дұрыс?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">500 Internal Server Error</button><button type="button" class="l3-opt" data-i="1">429 Too Many Requests</button><button type="button" class="l3-opt" data-i="2">404 Not Found</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 429 Too Many Requests</p><p>429: «сен көп сұрадың, кейін кел». Клиент мұны түсініп, күте алады.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="cloud-11-queues:backpressure:wait"><p class="l3-qt">Кезек 500-ге шектелді, өңдеу 100/с. Ең ұзақ күту қанша?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">5 секунд</button><button type="button" class="l3-opt" data-i="1">15 секунд</button><button type="button" class="l3-opt" data-i="2">0,5 секунд</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 5 секунд</p><p>500 / 100 = 5 секунд. Шек күтуге кепілдік береді.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="cloud-11-queues:backpressure:retry"><p class="l3-qt">Бас тарту алған клиенттер неге кездейсоқ кідіріспен (jitter) қайталауы керек?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Әділ болу үшін</button><button type="button" class="l3-opt" data-i="1">Бәрі бір мезетте қайтып оралып, жаңа толқын жасамауы үшін</button><button type="button" class="l3-opt" data-i="2">Серверді алдау үшін</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Бәрі бір мезетте қайтып оралып, жаңа толқын жасамауы үшін</p><p>Бірдей кідіріс бәрін синхрондайды (thundering herd). Кездейсоқтық оларды уақыт бойынша шашыратады.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="cloud-10-probes.html">← <span lang="en">Health Checks: Readiness &amp; Liveness</span></a><a href="../index.html#cloud">Бұлт және DevOps</a><a href="cloud-12-lb.html"><span lang="en">Load Balancing Algorithms</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

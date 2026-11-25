@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scaling &amp; Sharding · Дерекқорлар - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Scaling &amp;amp; Sharding · Дерекқорлар - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Деректер бір серверге сыймағанда: шардинг, mod N және consistent hashing.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/db/db-8-sharding.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/db/db-8-sharding.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Scaling &amp; Sharding · Дерекқорлар - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/db/db-8-sharding.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Деректер бір серверге сыймағанда: шардинг, mod N және consistent hashing.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="db-8-sharding" style="--lc:#0a4c7a">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#db">Дерекқорлар</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Дерекқорлар · 8-сабақ · ≈20 мин · 2 қадам · 4 сұрақ</p>
+        <h1 lang="en">Scaling &amp; Sharding</h1>
+        <p class="l3-lede">Деректер бір серверге сыймағанда: шардинг, mod N және consistent hashing.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#db-8-sharding">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Шардтарға бөлу</a></li><li><a href="#s2">Жаңа сервер қосу</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Шардтарға бөлу</h2><div class="l3-body"><h3>Идея</h3>
+<p>Деректер бір серверге сыймаса не бір сервер сұраныстарды көтере алмаса: оларды бірнеше серверге (<strong>шардқа</strong>) бөлеміз. Әр пайдаланушы бір шардта тұрады; қай шардта екенін <strong>хэш</strong> анықтайды:</p>
+<pre class="l3-pre"><code>шард = hash(user_id) mod N</code></pre>
+<h3>Түйсік</h3>
+<p>Кітапхананы бірнеше ғимаратқа бөлу: авторлардың тегі бойынша (А-Ж: бірінші ғимарат…). Ережені білетін кез келген адам керек ғимаратқа бірден барады.</p>
+<h3>Есептеп көрейік</h3>
+<p>1000 пайдаланушы, N = 4 шард: жақсы хэш функциясымен әр шардта ≈ 250 (± кездейсоқ ауытқу). Неге хэш, user_id mod N емес? Егер id-лер бірқалыпты болмаса (мысалы тек жұп сандар), id mod 4 тек 0 мен 2 шардтарын толтырар еді. Хэш мәндерді «араластырады».</p>
+<p><strong>Масштабтаудың екі жолы:</strong></p>
+<ul><li><strong>вертикаль</strong>: бір серверді күшейту (CPU, RAM): қарапайым, бірақ шегі бар</li><li><strong>горизонталь</strong>: серверлерді көбейту (шардинг): шексіз дерлік, бірақ күрделі</li></ul>
+<h3>Нақты әлемде</h3>
+<p>Instagram, Discord, Uber: пайдаланушылар мен хабарламаларды мыңдаған шардқа бөледі. Бағасы: бірнеше шардты қамтитын сұраныстар (JOIN, транзакция) күрделі әрі баяу.</p>
+<blockquote><p>⚠ Жиі қате: «ыстық кілт» (hot key). Бір атақты аккаунттың барлық деректері бір шардта: сол шард шамадан тыс жүктеледі.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Шард санын өзгертіп (мысалы 4-тен 6-ға), жүктеменің бөлінуін бақыла.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Шард санын өзгертіп, жүктеменің таралуын бақыла</li></ul><a class="btn secondary" href="../app/index.html#db-8-sharding">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="db-8-sharding:spread:hash"><p class="l3-qt">Неге шардты user_id mod N емес, hash(user_id) mod N арқылы таңдайды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Хэш id-лердің кез келген заңдылығын (тек жұп, тек үлкен) жойып, жүктемені біркелкі таратады</button><button type="button" class="l3-opt" data-i="1">Хэш жылдамырақ</button><button type="button" class="l3-opt" data-i="2">mod N жұмыс істемейді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Хэш id-лердің кез келген заңдылығын (тек жұп, тек үлкен) жойып, жүктемені біркелкі таратады</p><p>Нақты id-лерде заңдылықтар көп. Жақсы хэш оларды біркелкі таралған санға айналдырады.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="db-8-sharding:spread:cross"><p class="l3-qt">Шардингтің басты бағасы қандай?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Бірнеше шардты қамтитын JOIN мен транзакциялар қиындайды</button><button type="button" class="l3-opt" data-i="1">Деректер көбірек орын алады</button><button type="button" class="l3-opt" data-i="2">Хэш есептеу баяу</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Бірнеше шардты қамтитын JOIN мен транзакциялар қиындайды</p><p>Әр шард: бөлек дерекқор. Екі шардтағы деректерді біріктіру не атомарлы өзгерту желі арқылы координацияны (мысалы two-phase commit) талап етеді.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Жаңа сервер қосу</h2><div class="l3-body"><h3>Идея</h3>
+<p>Пайдаланушылар көбейіп, 5-ші сервер қостық. <code>hash mod 4</code> енді <code>hash mod 5</code>. Қанша пайдаланушы <strong>басқа шардқа көшеді</strong>?</p>
+<p><strong>mod N</strong> әдісінде: шамамен <strong>80%</strong>! Әр кілттің жаңа шарды ескісімен тек 1/5 ықтималдықпен сәйкес келеді. Терабайттаған деректі желі арқылы тасу: сағаттар мен күндер.</p>
+<p><strong>Consistent hashing</strong> (Каргер, 1997): шардтар мен кілттер бір «шеңберге» (0…2³²) хэштеледі; кілт сағат тілімен ең жақын шардқа тиесілі. Жаңа шард шеңбердің бір бөлігін ғана «алады»: <strong>≈ 1/5</strong> кілт көшеді.</p>
+<h3>Түйсік</h3>
+<p>Шеңбер бойында отырған 4 адам ортадағы тәттілерді бөліседі: әркім өзінің оң жағындағы бөлікті алады. 5-ші адам отырса, тек оның екі көршісінің бөлігі ғана азаяды: басқалары ештеңе жоғалтпайды.</p>
+<h3>Есептеп көрейік</h3>
+<p>4 → 5 шард, 1000 кілт:</p>
+<ul><li>mod N: ≈ 800 кілт көшеді</li><li>consistent: ≈ 200 кілт көшеді</li></ul>
+<p>Біркелкілік үшін әр шард шеңберде бірнеше <strong>виртуалды түйін</strong> (біздегі 64) ретінде орналасады: әйтпесе бір шардқа үлкен доға түсуі мүмкін.</p>
+<h3>Нақты әлемде</h3>
+<p>Amazon DynamoDB, Apache Cassandra, Discord, CDN-дер (Akamai: consistent hashing-ті коммерциялық түрде алғаш қолданған): бәрі осы идеяда.</p>
+<blockquote><p>💡 Түйін: дұрыс хэш алгоритмі: тек «біркелкі тарату» емес, сонымен қатар «өзгергенде аз нәрсе бұзу».</p></blockquote>
+<h3>Тереңірек: неге consistent hashing ≈ 1/(N+1) кілтті көшіреді</h3>
+<p>Шеңбер ұзындығын 1 деп алайық. N шардтың әрқайсысы V виртуалды нүкте ретінде кездейсоқ орналасқан. Кілт сағат тілімен ең жақын нүктеге тиесілі.</p>
+<p>Жаңа шард өзінің V нүктесін қосады. Әр жаңа нүкте тек өзінің алдындағы доғаны (алдыңғы нүктеге дейін) «алады». Шеңберде (N+1)·V нүкте, сондықтан бір доғаның күтілетін ұзындығы 1/((N+1)·V). Жаңа шардтың V доғасы: <strong>1/(N+1)</strong>. Тек сол доғалардағы кілттер көшеді, және тек жаңа шардқа: ескі шардтар арасында ешкім қозғалмайды.</p>
+<p><strong>Виртуалды түйіндер не үшін?</strong> V = 1 болса, доғалардың ұзындықтары қатты ауытқиды (ең үлкені ≈ ln N / N есе): бір шард басқасынан бірнеше есе көп жүктелуі мүмкін. V = 64 болса, шард үлесі 64 кездейсоқ доғаның қосындысы: үлкен сандар заңы бойынша орташаға жақын (ауытқу ≈ 1/√V ≈ 12%).</p>
+<p><strong>Rendezvous hashing</strong> (HRW, 1996): балама: әр кілт үшін барлық шардтардың hash(кілт, шард) мәнін есептеп, ең үлкенін таңда. Тағы ≈ 1/(N+1) көшеді, ал шеңбер керек емес; бағасы: әр іздеуде O(N).</p>
+<h3>Енді сен</h3>
+<p>mod әдісімен 4 → 5 шард қос, көшкен кілттер үлесін көр. Сосын consistent hashing-ке ауысып (алдымен 4-ке қайтар), тағы 4 → 5.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>mod N: 4 → 5 шард: кілттердің көбі көшеді</li><li>Consistent hashing: 4 → 5 шард: тек ≈ 1/5 көшеді</li></ul><a class="btn secondary" href="../app/index.html#db-8-sharding">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="db-8-sharding:add:mod"><p class="l3-qt">mod N әдісінде 9 шардтан 10 шардқа көшкенде кілттердің шамамен қанша бөлігі орнында қалады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">≈ 10%</button><button type="button" class="l3-opt" data-i="1">≈ 90%</button><button type="button" class="l3-opt" data-i="2">≈ 50%</button><button type="button" class="l3-opt" data-i="3">100%</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> ≈ 10%</p><p>Кілт орнында қалады, егер h mod 9 = h mod 10 болса: шамамен 1/10 жағдайда. Яғни ≈ 90% көшеді.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="db-8-sharding:add:ring"><p class="l3-qt">Consistent hashing-те N → N + 1 шардта шамамен қанша кілт көшеді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">≈ 1/(N + 1)</button><button type="button" class="l3-opt" data-i="1">≈ N/(N + 1)</button><button type="button" class="l3-opt" data-i="2">Бәрі</button><button type="button" class="l3-opt" data-i="3">Ешқайсысы</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> ≈ 1/(N + 1)</p><p>Жаңа шард өзінің «әділ үлесін»: 1/(N+1): басқалардан алады; қалған кілттер орнында қалады.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="db-7-concurrency.html">← <span lang="en">Concurrency</span></a><a href="../index.html#db">Дерекқорлар</a><a href="db-9-pset.html"><span lang="en">Problem Set: дерекқор инженері</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

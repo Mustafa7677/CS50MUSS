@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Load Balancing Algorithms · Бұлт және DevOps - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Load Balancing Algorithms · Бұлт және DevOps - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Үш сервер, біреуі баяу. Кезекпен бөлу, кездейсоқ бөлу және ең бос серверге жіберу.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/cloud/cloud-12-lb.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/cloud/cloud-12-lb.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Load Balancing Algorithms · Бұлт және DevOps - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/cloud/cloud-12-lb.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Үш сервер, біреуі баяу. Кезекпен бөлу, кездейсоқ бөлу және ең бос серверге жіберу.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="cloud-12-lb" style="--lc:#3a72c4">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#cloud">Бұлт және DevOps</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Бұлт және DevOps · 12-сабақ · ≈20 мин · 2 қадам · 6 сұрақ</p>
+        <h1 lang="en">Load Balancing Algorithms</h1>
+        <p class="l3-lede">Үш сервер, біреуі баяу. Кезекпен бөлу, кездейсоқ бөлу және ең бос серверге жіберу.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#cloud-12-lb">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Әділ бөлу</a></li><li><a href="#s2">Ең бос сервер</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Әділ бөлу</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Жүктеме теңестіргіш</strong> (load balancer) сұраныстарды серверлерге бөледі. Ең қарапайым ереже: <strong>round robin</strong>, кезекпен A, B, C, A, B, C. Серверлер бірдей болса, тамаша.</p>
+<h3>Серверлер бірдей болмаса</h3>
+<p>Біздің кластерде C ескі машина: сұранысты 50 мс-та өңдейді (A мен B: 25 мс). Сұраныстар әр 12 мс сайын (секундына 83), ал жалпы сыйымдылық: 40 + 40 + 20 = 100/с. Жүйе жалпы алғанда көтереді.</p>
+<p>Бірақ round robin C-ге үштен бірін береді: секундына 28, ал C-нің шегі 20. C-нің кезегі өседі, оған тиген әр сұраныс ұзағырақ күтеді.</p>
+<h3>Есептеп көрейік</h3>
+<p>300 сұраныс:</p>
+<ul><li><strong>Round robin</strong>: 100/100/100, медиана 25 мс, ал <strong>p95: 1226 мс</strong>.</li><li><strong>Кездейсоқ</strong>: орта есеппен де тең, сондықтан <strong>p95: 1858 мс</strong>, тіпті нашар.</li></ul>
+<p>Медиана бәрі жақсы деп көрсетеді. Нашар тәжірибе p95-те жасырынған: әр жиырмасыншы пайдаланушы бір секундтан көп күтеді.</p>
+<h3>Нақты әлемде</h3>
+<p>Серверлер ешқашан бірдей емес: бірінде GC жүріп жатыр, біріне ауыр сұраныс түсті, бірі басқа аймақта. Сондықтан тек орташаны емес, <strong>p95 мен p99-ды</strong> бақыла.</p>
+<h3>Енді сен</h3>
+<p>Round robin-ді, сосын кездейсоқ бөлуді іске қос. Әр сервердің кезегіне қара.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Round robin: p95-ті жазып ал</li><li>Кездейсоқ бөлуді сына</li></ul><a class="btn secondary" href="../app/index.html#cloud-12-lb">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="1" data-qid="cloud-12-lb:rr:predict"><p class="l3-qt">Үш сервер: A мен B сұранысты 25 мс-та, ескі C 50 мс-та өңдейді. Round robin сұраныстарды кезекпен тең бөледі. Не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Бәрі жақсы: жүктеме тең</button><button type="button" class="l3-opt" data-i="1">C-нің кезегі шексіз өседі: оған өзі көтере алатыннан көп келеді</button><button type="button" class="l3-opt" data-i="2">A мен B шамадан тыс жүктеледі</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> C-нің кезегі шексіз өседі: оған өзі көтере алатыннан көп келеді</p><p>Әр 12 мс сайын сұраныс келеді, C әр 36 мс сайын біреуін алады, бірақ біреуін өңдеуге 50 мс керек. Оның кезегі тоқтаусыз өседі.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="cloud-12-lb:rr:overload"><p class="l3-qt">C секундына 20 сұраныс көтереді. Round robin оған секундына 28 жібереді. Не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Оның кезегі секундына шамамен 8-ден өседі</button><button type="button" class="l3-opt" data-i="1">Ол тездейді</button><button type="button" class="l3-opt" data-i="2">Артығы A-ға кетеді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Оның кезегі секундына шамамен 8-ден өседі</p><p>Round robin сервердің жағдайына қарамайды. Артық сұраныстар C-нің кезегінде жиналады.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="cloud-12-lb:rr:p95"><p class="l3-qt">Неге медиана (25 мс) жүйе туралы шындықты айтпайды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Медиана дұрыс есептелмеген</button><button type="button" class="l3-opt" data-i="1">Сұраныстардың көбі тез, бірақ C-ге тигендері өте баяу: оны тек p95 көрсетеді</button><button type="button" class="l3-opt" data-i="2">Медиана тек A-ны өлшейді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Сұраныстардың көбі тез, бірақ C-ге тигендері өте баяу: оны тек p95 көрсетеді</p><p>Тек кейбір пайдаланушылар нашар тәжірибеде болғанда, оны тек жоғарғы перцентильдер көрсетеді.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="cloud-12-lb:rr:random"><p class="l3-qt">Кездейсоқ бөлу неге round robin-нен жақсы емес?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Ол да C-ге орта есеппен үштен бір береді, әрі кездейсоқ топтасулар қосылады</button><button type="button" class="l3-opt" data-i="1">Ол баяу</button><button type="button" class="l3-opt" data-i="2">Ол C-ні мүлде қолданбайды</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Ол да C-ге орта есеппен үштен бір береді, әрі кездейсоқ топтасулар қосылады</p><p>Кездейсоқтық та сервердің күйін білмейді. Үстіне кейде бір серверге қатарынан бірнеше сұраныс түседі.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Ең бос сервер</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Least connections</strong>: әр жаңа сұранысты қазір ең аз белсенді сұранысы бар серверге жібер. Теңестіргіш серверлердің жылдамдығын білмейді, бірақ оны <strong>байқайды</strong>: баяу сервердің сұраныстары ұзақ тұрады, сондықтан ол сирек таңдалады.</p>
+<h3>Есептеп көрейік</h3>
+<p>Сол 300 сұраныс:</p>
+<ul><li>бөлінуі <strong>144 / 104 / 52</strong>: C үштен бірдің орнына алтыдан бір шамасын алады;</li><li><strong>p95: 50 мс</strong>, ең ұзағы да 50 мс (C-нің бір сұранысы).</li></ul>
+<p>Round robin-де p95 1226 мс еді. Сол серверлер, сол сұраныстар: тек бөлу ережесі басқа.</p>
+<h3>Басқа ережелер</h3>
+<ul><li><strong>Weighted round robin</strong>: салмақтарды (A: 2, B: 2, C: 1) қолмен береді. Жақсы, бірақ сервер уақытша баяуласа, салмақ оны білмейді.</li><li><strong>Power of two choices</strong>: кездейсоқ екі серверді алып, солардың бос жағына жібер. Мыңдаған серверде бәрін тексерудің қажеті жоқ, ал нәтижесі least connections-қа жақын.</li><li><strong>Consistent hashing</strong>: бір пайдаланушыны үнемі бір серверге (кэш үшін пайдалы).</li></ul>
+<h3>Нақты әлемде</h3>
+<p>nginx <code>least_conn</code>, HAProxy <code>leastconn</code>, Envoy-дің <code>LEAST_REQUEST</code> саясаты (ол power of two choices қолданады). Ұзақ байланыстарда (WebSocket) round robin әсіресе нашар: бір серверде мыңдаған ескі байланыс жиналып қалуы мүмкін.</p>
+<h3>Енді сен</h3>
+<p>Least connections-пен іске қос: p95 пен C-нің үлесіне қара.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Least connections: p95 100 мс-тан төмен</li><li>Баяу C сервері жүктеменің үштен бірінен азын алады</li></ul><a class="btn secondary" href="../app/index.html#cloud-12-lb">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="1" data-qid="cloud-12-lb:least:predict"><p class="l3-qt">Енді теңестіргіш әр сұранысты қазір ең аз белсенді сұранысы бар серверге жібереді (least connections). C қанша сұраныс алады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Үштен бір, бұрынғыдай</button><button type="button" class="l3-opt" data-i="1">Үштен бірден аз: ол баяу болғандықтан, көбіне бос емес</button><button type="button" class="l3-opt" data-i="2">Нөл</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Үштен бірден аз: ол баяу болғандықтан, көбіне бос емес</p><p>Баяу сервер сұранысты ұзақ ұстайды, сондықтан оның белсенді сұраныстары көбірек. Теңестіргіш оны жиі айналып өтеді: модельде 300-ден 52.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="cloud-12-lb:least:how"><p class="l3-qt">Least connections баяу серверді қалай «табады»?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Әкімші оны белгілейді</button><button type="button" class="l3-opt" data-i="1">Баяу сервердің белсенді сұраныстары көп тұрады, сондықтан ол сирек таңдалады</button><button type="button" class="l3-opt" data-i="2">Ол серверге ping жібереді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Баяу сервердің белсенді сұраныстары көп тұрады, сондықтан ол сирек таңдалады</p><p>Ереже жылдамдықты өлшемейді, бірақ оның салдарын (ұзақ тұрған сұраныстар) көреді.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="cloud-12-lb:least:result"><p class="l3-qt">Модельде least connections-пен p95 қанша болды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">50 мс</button><button type="button" class="l3-opt" data-i="1">1226 мс</button><button type="button" class="l3-opt" data-i="2">25 мс</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 50 мс</p><p>Ешбір сервердің кезегі өспеді: ең ұзақ сұраныс: C-нің бір өңдеу уақыты, 50 мс.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="cloud-12-lb:least:p2c"><p class="l3-qt">Power of two choices не үшін керек?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Мыңдаған серверде бәрін тексермей-ақ, бос серверге жақын таңдау жасау үшін</button><button type="button" class="l3-opt" data-i="1">Екі есе көп сервер үшін</button><button type="button" class="l3-opt" data-i="2">Сұранысты екі серверге бірдей жіберу үшін</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Мыңдаған серверде бәрін тексермей-ақ, бос серверге жақын таңдау жасау үшін</p><p>Тек екі кездейсоқ серверді салыстыру: арзан, ал нәтижесі толық іздеуге өте жақын.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="cloud-11-queues.html">← <span lang="en">Queues &amp; Backpressure</span></a><a href="../index.html#cloud">Бұлт және DevOps</a><a href="cloud-13-retries.html"><span lang="en">Retries, Backoff &amp; Circuit Breakers</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

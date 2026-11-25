@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Enemy AI: State Machines · Ойын әзірлеу - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Enemy AI: State Machines · Ойын әзірлеу - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Күзетші: патруль, қуу, шабуыл. Бір шекара жыпылықтау береді, екі шекара (гистерезис) оны тоқтатады.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/game/game-11-fsm.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/game/game-11-fsm.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Enemy AI: State Machines · Ойын әзірлеу - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/game/game-11-fsm.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Күзетші: патруль, қуу, шабуыл. Бір шекара жыпылықтау береді, екі шекара (гистерезис) оны тоқтатады.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="game-11-fsm" style="--lc:#b8466a">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#game">Ойын әзірлеу</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Ойын әзірлеу · 11-сабақ · ≈20 мин · 2 қадам · 6 сұрақ</p>
+        <h1 lang="en">Enemy AI: State Machines</h1>
+        <p class="l3-lede">Күзетші: патруль, қуу, шабуыл. Бір шекара жыпылықтау береді, екі шекара (гистерезис) оны тоқтатады.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#game-11-fsm">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Жыпылықтау</a></li><li><a href="#s2">Гистерезис</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Жыпылықтау</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Күйлер машинасы</strong> (FSM): жаудың «ми»: бірнеше күй және олардың арасындағы ауысу ережелері.</p>
+<ul><li><strong>Патруль</strong>: маршрутпен жүреді.</li><li><strong>Қуу</strong>: ойыншы көру радиусына кірсе.</li><li><strong>Шабуыл</strong>: ойыншы 1 метрден жақын болса.</li></ul>
+<p>Әр кадрда тек бір күй жұмыс істейді, кодты оқу мен түзету оңай.</p>
+<h3>Жыпылықтау</h3>
+<p>Көру радиусы 5, жоғалту радиусы да 5. Ойыншы 5 пен 6 метрдің арасында жүрсе, күзетші әр секунд сайын ой өзгертеді: қуу, патруль, қуу. Модельде <strong>10 ауысу</strong>. Анимация мен дыбыс та әр секунд сайын ауысады: ойын бұзылған сияқты.</p>
+<p>Мұны <strong>dithering</strong> не <strong>oscillation</strong> дейді. Бұл кез келген табалдырықты жүйенің ауруы: термостат, автомасштабтау, сенсор.</p>
+<h3>Нақты әлемде</h3>
+<ul><li>Ойындарда FSM көбіне <strong>behavior tree</strong>-мен (Halo 2-ден бері кең тараған) не GOAP-пен ауыстырылады: күйлер көбейгенде ауысулар саны квадраттық өседі.</li><li>Бірақ қарапайым жаулар, есік, лифт, UI экрандары үшін FSM әлі де ең түсінікті шешім.</li></ul>
+<h3>Енді сен</h3>
+<p>Көру мен жоғалту радиусы бірдей кезде іске қос, күйлер сызығына қара.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Көру мен жоғалту радиусы бірдей: күйдің ауысуын сана</li></ul><a class="btn secondary" href="../app/index.html#game-11-fsm">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="1" data-qid="game-11-fsm:flicker:predict"><p class="l3-qt">Күзетші ойыншыны 5 метрден жақын көрсе қуады, 5 метрден алыс болса патрульге қайтады. Ойыншы шамамен 5 метрде ары-бері жүреді. Не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Күзетші бір рет қуа бастайды да, тоқтамайды</button><button type="button" class="l3-opt" data-i="1">Күзетші қуу мен патрульдің арасында қайта-қайта ауыса береді</button><button type="button" class="l3-opt" data-i="2">Ештеңе</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Күзетші қуу мен патрульдің арасында қайта-қайта ауыса береді</p><p>Бір шекара: 5 метрден кіші, 6 метрге шықты: патруль, тағы 5: қуу. Модельде 32 секундта 10 ауысу. Ойыншыға күзетші «ақымақ» көрінеді.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="game-11-fsm:flicker:fsm"><p class="l3-qt">Күйлер машинасында бір мезетте неше күй белсенді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Біреу</button><button type="button" class="l3-opt" data-i="1">Барлығы</button><button type="button" class="l3-opt" data-i="2">Екеу</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Біреу</p><p>Күзетші не патрульде, не қууда, не шабуылда. Бұл оның мінез-құлқын болжамды етеді.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="game-11-fsm:flicker:flicker"><p class="l3-qt">Неге бір ғана шекара жыпылықтау береді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Шекараның айналасында кішкене қозғалыс күйді әр жолы ауыстырады</button><button type="button" class="l3-opt" data-i="1">FSM баяу</button><button type="button" class="l3-opt" data-i="2">Ойыншы жылдам</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Шекараның айналасында кішкене қозғалыс күйді әр жолы ауыстырады</p><p>5 пен 6 метрдің айырмасы ойыншы үшін маңызды емес, бірақ ереже үшін ол: «көрдім» мен «көрмедім».</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="game-11-fsm:flicker:where"><p class="l3-qt">Жыпылықтау тағы қай жүйеде кездеседі?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Термостатта, автомасштабтауда: бір табалдырықпен қосылып-өшетін кез келген жүйеде</button><button type="button" class="l3-opt" data-i="1">Тек ойындарда</button><button type="button" class="l3-opt" data-i="2">Ешқайда</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Термостатта, автомасштабтауда: бір табалдырықпен қосылып-өшетін кез келген жүйеде</p><p>Cloud зертханасындағы автомасштабтау да бір табалдырықпен серверді қосып-өшіре берер еді.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Гистерезис</h2><div class="l3-body"><h3>Гистерезис</h3>
+<p>Кіру мен шығудың <strong>екі түрлі шегі</strong>: қууды 5 метрде бастау, бірақ тек 7 метрде тоқтату. 5 пен 7 арасында күзетші <strong>бұрынғы күйінде қалады</strong>. Бұл <strong>гистерезис</strong>: шешім тек қазіргі қашықтыққа емес, қазіргі күйге де байланысты.</p>
+<h3>Есептеп көрейік</h3>
+<p>Сол ойыншы, сол 32 секунд:</p>
+<ul><li>Бір шек (5/5): <strong>10 ауысу</strong>.</li><li>Гистерезис (5/7): <strong>4 ауысу</strong>: патрульден қууға, қуудан шабуылға, шабуылдан қууға, қуудан патрульге. Дәл ойыншы күтетін мінез.</li></ul>
+<h3>Тағы бір құрал: уақыт</h3>
+<p>Кейбір ойындар қосымша <strong>«іздеу» күйін</strong> қосады: ойыншы көрінбей қалса, күзетші бірден патрульге қайтпайды, біраз уақыт соңғы көрген жерін тексереді. Бұл да гистерезис, тек уақыт бойынша. Stealth ойындарындағы «күдікті», «дабыл», «тынышталу» деңгейлері осыдан шыққан.</p>
+<h3>Нақты әлемде</h3>
+<p>Шмитт триггері (электроника), термостаттың ±1° аймағы, автомасштабтаудың «cooldown» кезеңі: бәрі бір идея. Шулы кірістен тұрақты шешім алу үшін шешімге «есте сақтау» беру.</p>
+<h3>Енді сен</h3>
+<p>Жоғалту радиусын 7-ге көтеріп, қайта іске қос. Күйлер сызығын бұрынғымен салыстыр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Жоғалту радиусын көру радиусынан үлкен ет: ауысу 4-ке дейін азайсын</li><li>Күзетші ойыншыға жетіп, шабуылдасын</li></ul><a class="btn secondary" href="../app/index.html#game-11-fsm">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="1" data-qid="game-11-fsm:hysteresis:predict"><p class="l3-qt">Енді күзетші 5 метрде көріп қуа бастайды, бірақ тек 7 метрден ары кеткенде ғана тоқтатады. Ауысулар саны не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Сол 10</button><button type="button" class="l3-opt" data-i="1">Азаяды: шекараның айналасындағы кішкене қозғалыс енді күйді өзгертпейді</button><button type="button" class="l3-opt" data-i="2">Көбейеді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Азаяды: шекараның айналасындағы кішкене қозғалыс енді күйді өзгертпейді</p><p>Екі табалдырық арасындағы «өлі аймақ» шуды жұтады. Модельде 10 ауысудың орнына 4: қуу, шабуыл, қуу, патруль.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="game-11-fsm:hysteresis:what"><p class="l3-qt">Гистерезис дегеніміз не?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Кіру мен шығудың әр түрлі шегі: шешім қазіргі күйге де тәуелді</button><button type="button" class="l3-opt" data-i="1">Күйлерді кездейсоқ ауыстыру</button><button type="button" class="l3-opt" data-i="2">Бір күйді алып тастау</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Кіру мен шығудың әр түрлі шегі: шешім қазіргі күйге де тәуелді</p><p>Екі шек арасында жүйе бұрынғы күйін сақтайды. Бұл шуды сүзеді.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="game-11-fsm:hysteresis:count"><p class="l3-qt">Модельде гистерезиспен (5/7) неше ауысу болды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">10</button><button type="button" class="l3-opt" data-i="1">4</button><button type="button" class="l3-opt" data-i="2">1</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 4</p><p>Тек мағынасы бар ауысулар қалды: патруль, қуу, шабуыл, қуу, патруль.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="game-11-fsm:hysteresis:gap"><p class="l3-qt">Жоғалту радиусын 30 метр етсек не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Күзетші ойыншыны ешқашан дерлік тастамайды: тым жабысқақ</button><button type="button" class="l3-opt" data-i="1">Ештеңе өзгермейді</button><button type="button" class="l3-opt" data-i="2">Ол ешқашан қумайды</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Күзетші ойыншыны ешқашан дерлік тастамайды: тым жабысқақ</p><p>Гистерезис аймағы да баланс: тым тар болса жыпылықтайды, тым кең болса жау «қуып жете бермейтін» болады.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="game-10-pathfinding.html">← <span lang="en">Pathfinding: BFS, Dijkstra, A*</span></a><a href="../index.html#game">Ойын әзірлеу</a><a href="game-12-broadphase.html"><span lang="en">Collision: Broad Phase with a Grid</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How Internet Works · Веб-әзірлеу - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="How Internet Works · Веб-әзірлеу - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: URL енгізгеннен бет ашылғанға дейін: DNS, TCP, TLS, HTTP: әр қадам уақытымен.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/web/web-1-internet.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/web/web-1-internet.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"How Internet Works · Веб-әзірлеу - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/web/web-1-internet.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: URL енгізгеннен бет ашылғанға дейін: DNS, TCP, TLS, HTTP: әр қадам уақытымен.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="web-1-internet" style="--lc:#1d84a6">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#web">Веб-әзірлеу</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Веб-әзірлеу · 1-сабақ · ≈12 мин · 4 қадам · 8 сұрақ</p>
+        <h1 lang="en">How Internet Works</h1>
+        <p class="l3-lede">URL енгізгеннен бет ашылғанға дейін: DNS, TCP, TLS, HTTP: әр қадам уақытымен.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#web-1-internet">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Сұраудың саяхаты</a></li><li><a href="#s2">DNS кэші</a></li><li><a href="#s3">HTTP және HTTPS</a></li><li><a href="#s4">Кідіріс (latency)</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Сұраудың саяхаты</h2><div class="l3-body"><h3>Идея</h3>
+<p>Браузерге <code>https://inside.kz/</code> жазып, Enter басқанда шамамен 10 кезең өтеді:</p>
+<ol><li><strong>URL талдау</strong>: хаттама (https), хост (inside.kz), жол (/).</li><li><strong>DNS</strong>: «inside.kz» қай IP адресте? Компьютерлер аттарды емес, сандарды біледі.</li><li><strong>TCP handshake</strong>: сервермен байланыс орнату: SYN → SYN-ACK → ACK.</li><li><strong>TLS</strong>: байланысты шифрлау, сервердің шын inside.kz екенін сертификатпен тексеру.</li><li><strong>HTTP сұрау</strong>: <code>GET / HTTP/1.1</code>.</li><li><strong>Сервер</strong>: маршрутты тауып, жауап дайындайды.</li><li><strong>HTTP жауап</strong>: <code>200 OK</code> + HTML.</li><li><strong>Көрсету</strong>: HTML → DOM → бет.</li></ol>
+<h3>Түйсік</h3>
+<p>Хат жіберу: адрестер кітабынан мекенжайды табасың (DNS), алушыға «хат қабылдайсыз ба?» деп қоңырау шаласың (TCP), конвертті жабасың (TLS), хатты жібересің (HTTP).</p>
+<h3>Есептеп көрейік</h3>
+<p>Сервер 40 мс алыс (бір жаққа). HTTPS-те бетті алғанға дейін шамамен:</p>
+<pre class="l3-pre"><code>DNS 2×24 + TCP 3×40 + TLS 2×40 + HTTP 40 + жауап 40 ≈ 330 мс</code></pre>
+<p>Уақыттың көбі: есептеуге емес, <strong>сапарға</strong> кетеді.</p>
+<blockquote><p>💡 Түйін: интернет: бір-бірімен келісілген хаттамалар арқылы сөйлесетін компьютерлер.</p></blockquote>
+<h3>Тереңірек: TCP үш жақты қол алысу және sequence нөмірлері</h3>
+<p>TCP: сенімді байт ағыны. Әр байттың <strong>реттік нөмірі</strong> (sequence number) бар, ал қабылдаушы «келесі күтетін байт нөмірін» ACK ретінде жібереді.</p>
+<pre class="l3-pre"><code>Клиент → Сервер:  SYN,     seq = 1000          (кездейсоқ бастапқы нөмір)
+Сервер → Клиент:  SYN-ACK, seq = 5000, ack = 1001
+Клиент → Сервер:  ACK,     seq = 1001, ack = 5001</code></pre>
+<p>SYN бір нөмірді «жейді», сондықтан ack = 1000 + 1. Бастапқы нөмір кездейсоқ: бөтен адам байланысқа жалған пакет қосуы қиын болуы үшін.</p>
+<p>Енді клиент 200 байт жіберді (seq = 1001…1200). Сервер ack = 1201 қайтарады. Егер ack келмесе: таймерден кейін <strong>қайта жіберу</strong> (retransmission). Пакеттер ауысып келсе: seq бойынша ретке келтіріледі. Желі пакетті жоғалтады, қайталайды, ретін бұзады; TCP осының бәрін жасырады.</p>
+<p>Бағасы: кешігу: деректер жібермес бұрын 1 RTT (round-trip time) қол алысуға кетеді.</p>
+<h3>Енді сен</h3>
+<p>«Жіберу» бас. Пакеттің жолын бақыла, оң жақтағы кезеңдерді оқы.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>https://inside.kz/ бетін ал (200 OK)</li><li>DNS, TCP және TLS кезеңдерін көр</li></ul><a class="btn secondary" href="../app/index.html#web-1-internet">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="web-1-internet:journey:dns"><p class="l3-qt">DNS не үшін керек?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Деректерді шифрлау үшін</button><button type="button" class="l3-opt" data-i="1">Домен атауын IP адреске айналдыру үшін</button><button type="button" class="l3-opt" data-i="2">Бетті көрсету үшін</button><button type="button" class="l3-opt" data-i="3">Серверді өшіру үшін</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Домен атауын IP адреске айналдыру үшін</p><p>Желідегі компьютерлер IP адрестермен сөйлеседі. DNS: интернеттің «телефон кітабы».</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="web-1-internet:journey:order"><p class="l3-qt">Қай рет дұрыс?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">HTTP → DNS → TCP</button><button type="button" class="l3-opt" data-i="1">DNS → TCP → TLS → HTTP</button><button type="button" class="l3-opt" data-i="2">TLS → DNS → HTTP</button><button type="button" class="l3-opt" data-i="3">TCP → DNS → HTTP</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> DNS → TCP → TLS → HTTP</p><p>Алдымен адресті табамыз, сосын байланыс орнатамыз, шифрлаймыз, тек сосын бетті сұраймыз.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>DNS кэші</h2><div class="l3-body"><h3>Идея</h3>
+<p>DNS сұрауы: бөлек серверге сапар. Оны әр бетте қайталамау үшін браузер (және операциялық жүйе) жауапты <strong>кэштейді</strong>: есінде сақтайды. Әр DNS жазбасының <strong>TTL</strong> (time to live) мерзімі бар: кэш сонша секунд жарамды.</p>
+<h3>Есептеп көрейік</h3>
+<p>Бірінші сұрау: DNS 48 мс + қалғаны ≈ 330 мс. Екінші сұрау: DNS ~1 мс (кэш) → ≈ 285 мс. 14% жылдамырақ: тек бір кезеңнің есебінен.</p>
+<h3>Нақты әлемде</h3>
+<p>Кэш барлық деңгейде: браузерде, ОЖ-да, провайдердің DNS серверінде. Сондықтан домен басқа IP-ге көшсе, барлығына «жету» үшін TTL-ге дейін уақыт кетеді.</p>
+<blockquote><p>⚠ Жиі қате: «DNS өзгертсем, бірден жұмыс істейді». Кэштер ескі IP-ні TTL біткенше сақтауы мүмкін.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Тағы бір рет жібер. Кезеңдер тізімінде «DNS (кэш)» пайда болғанын және уақыттың азайғанын көр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>DNS кэшінен IP алынған сұрау жібер</li></ul><a class="btn secondary" href="../app/index.html#web-1-internet">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="web-1-internet:dns-cache:ttl"><p class="l3-qt">DNS жазбасындағы TTL нені білдіреді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Сервердің жылдамдығын</button><button type="button" class="l3-opt" data-i="1">Жауапты кэште қанша уақыт сақтауға болатынын</button><button type="button" class="l3-opt" data-i="2">IP адрестің ұзындығын</button><button type="button" class="l3-opt" data-i="3">Шифрлау түрін</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Жауапты кэште қанша уақыт сақтауға болатынын</p><p>TTL: кэштің жарамдылық мерзімі (секундпен).</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="web-1-internet:dns-cache:why"><p class="l3-qt">Екінші сұрау неге жылдамырақ?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Сервер жылдамдады</button><button type="button" class="l3-opt" data-i="1">DNS жауабы браузердің кэшінде болды</button><button type="button" class="l3-opt" data-i="2">Интернет жылдамдады</button><button type="button" class="l3-opt" data-i="3">HTML кішірейді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> DNS жауабы браузердің кэшінде болды</p><p>DNS серверіне сапар болмады: IP есте сақталған.</p></details></div></div></section><section class="l3-step" id="s3" aria-labelledby="s3-h"><h2 id="s3-h"><span class="l3-n">3</span>HTTP және HTTPS</h2><div class="l3-body"><h3>Идея</h3>
+<p>HTTP-де деректер желіде <strong>ашық</strong> жүреді: жолдағы кез келген роутер, Wi-Fi иесі немесе провайдер құпия сөзіңді оқи алады. HTTPS = HTTP + <strong>TLS</strong>:</p>
+<ul><li><strong>шифрлау</strong>: деректерді тек браузер мен сервер оқи алады;</li><li><strong>аутентификация</strong>: сертификат сервердің шынымен inside.kz екенін дәлелдейді (алаяқ сервер емес);</li><li><strong>тұтастық</strong>: деректер жолда өзгертілмегенін тексереді.</li></ul>
+<h3>Бағасы</h3>
+<p>TLS handshake бір-екі қосымша сапар алады (мұнда 2 × 40 = 80 мс). TLS 1.3 мұны бір сапарға дейін қысқартты.</p>
+<h3>Есептеп көрейік</h3>
+<pre class="l3-pre"><code>http://  : DNS + TCP + HTTP + жауап
+https:// : DNS + TCP + TLS(+80 мс) + HTTP + жауап</code></pre>
+<blockquote><p>⚠ Жиі қате: «Құлып белгісі = сайт қауіпсіз». Құлып тек байланыстың шифрланғанын білдіреді. Алаяқ сайттың да сертификаты болуы мүмкін.</p></blockquote>
+<h3>Тереңірек: Диффи-Хеллман: ашық арнада ортақ құпия</h3>
+<p>TLS-тің негізгі айласы: екі жақ ешқашан құпияны жібермей-ақ бірдей кілтке келеді. Кішкене сандармен (шын өмірде: эллипстік қисықтар, 256 бит):</p>
+<p>Ашық: p = 23, g = 5.</p>
+<ol><li>Клиент құпия a = 4 таңдайды, жібереді A = 5⁴ mod 23 = 625 mod 23 = <strong>4</strong></li><li>Сервер құпия b = 3 таңдайды, жібереді B = 5³ mod 23 = 125 mod 23 = <strong>10</strong></li><li>Клиент: B^a = 10⁴ mod 23 = 10000 mod 23 = <strong>18</strong></li><li>Сервер: A^b = 4³ mod 23 = 64 mod 23 = <strong>18</strong></li></ol>
+<p>Тыңдаушы 23, 5, 4, 10-ды көрді, бірақ 18-ді табу үшін «5 нешінші дәрежеде 4 болады?» (дискретті логарифм) есебін шешуі керек: үлкен сандарда іс жүзінде мүмкін емес.</p>
+<p><strong>Бірақ</strong> DH жалғыз өзі «ортадағы адамнан» (MITM) қорғамайды: шабуылшы екі жақпен бөлек DH жасай салады. Сондықтан сервер өзінің DH бөлігіне <strong>сертификаттағы кілтпен қол қояды</strong>, ал сертификатқа браузер сенетін CA қол қойған. Шифрлау + аутентификация = HTTPS.</p>
+<p>TLS 1.3-те мұның бәрі <strong>1 RTT</strong> алады (TLS 1.2-де 2 RTT).</p>
+<h3>Енді сен</h3>
+<p>http:// арқылы жібер. Кезеңдерді салыстыр: TLS қайда жоғалды?</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>http:// арқылы сұрау жібер</li></ul><a class="btn secondary" href="../app/index.html#web-1-internet">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="web-1-internet:https:tls"><p class="l3-qt">TLS не береді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Беттің жылдам жүктелуін</button><button type="button" class="l3-opt" data-i="1">Шифрлау, сервердің шынайылығы және деректердің тұтастығы</button><button type="button" class="l3-opt" data-i="2">DNS кэшін</button><button type="button" class="l3-opt" data-i="3">HTML-дің дұрыстығын</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Шифрлау, сервердің шынайылығы және деректердің тұтастығы</p><p>TLS үш нәрсені қамтамасыз етеді: құпиялылық, аутентификация, тұтастық.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="web-1-internet:https:lock"><p class="l3-qt">Браузердегі құлып белгісі нені кепілдейді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Сайт иесі адал</button><button type="button" class="l3-opt" data-i="1">Браузер мен сервер арасындағы байланыс шифрланған</button><button type="button" class="l3-opt" data-i="2">Сайтта вирус жоқ</button><button type="button" class="l3-opt" data-i="3">Сайт мемлекеттік</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Браузер мен сервер арасындағы байланыс шифрланған</p><p>Құлып: тек шифрланған байланыс. Сайттың ниетін кепілдемейді.</p></details></div></div></section><section class="l3-step" id="s4" aria-labelledby="s4-h"><h2 id="s4-h"><span class="l3-n">4</span>Кідіріс (latency)</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Latency (кідіріс)</strong>: сигналдың бір жаққа жету уақыты. Ол негізінен <strong>қашықтыққа</strong> тәуелді: оптикалық талшықтағы жарық ~200 000 км/с жүреді.</p>
+<p><strong>Bandwidth (өткізу қабілеті)</strong>: секундына қанша дерек өтетіні. Бұл екеуі әртүрлі: кең, бірақ ұзын құбыр.</p>
+<h3>Есептеп көрейік</h3>
+<p>Алматы → Франкфурт ≈ 5000 км → бір жаққа ≈ 25 мс (тек физика), іс жүзінде 40-60 мс. Кідірісті 40 мс-тан 200 мс-қа көтерсек:</p>
+<pre class="l3-pre"><code>TCP 3 сапар + TLS 2 + HTTP 1 + жауап 1 = 7 сапар
+7 × 200 мс = 1400 мс</code></pre>
+<p>Бет 7 есе баяу: бір де бір байт қосылмаса да!</p>
+<h3>Нақты әлемде</h3>
+<p>Сондықтан ірі сайттар <strong>CDN</strong> қолданады: көшірмелерді әлемнің әр қаласына қояды, ал HTTP/2, HTTP/3 және TLS 1.3 сапарлар санын азайтады.</p>
+<blockquote><p>💡 Түйін: веб-жылдамдықтың жауы көбінесе байттар емес, сапарлар саны × кідіріс.</p></blockquote>
+<h3>Тереңірек: кешігу бюджеті: физикадан бастап</h3>
+<p>Жарық оптикалық талшықта ≈ 200 000 км/с (вакуумнан ⅔). Алматы → Франкфурт ≈ 5 000 км:</p>
+<pre class="l3-pre"><code>бір жақ ≥ 5 000 / 200 000 = 25 мс,   RTT ≥ 50 мс</code></pre>
+<p>Бұл: физикалық шек, ешбір инженерия оны жеңбейді. Жаңа HTTPS сұраныстың бірінші байтына дейін:</p>
+<ol><li>DNS (кэш жоқ): 1 RTT</li><li>TCP қол алысу: 1 RTT</li><li>TLS 1.3: 1 RTT</li><li>HTTP сұраныс → жауап: 1 RTT</li></ol>
+<p>Барлығы ≈ 4 RTT = 200 мс + сервер уақыты. Сондықтан:</p>
+<ul><li><strong>CDN</strong>: серверді пайдаланушыға жақындатады (RTT 50 → 5 мс)</li><li><strong>keep-alive / HTTP/2</strong>: бір байланысты қайта қолданады (TCP+TLS қайталанбайды)</li><li><strong>DNS кэші</strong>: 1 RTT-ны үнемдейді</li></ul>
+<p>Өткізу қабілеті (bandwidth) мен кешігу (latency): әр түрлі нәрсе: 1 Гбит/с арна 50 мс RTT-ны қысқартпайды. Кішкене сұраныстар көп болғанда кешігу басым.</p>
+<h3>Енді сен</h3>
+<p>Сервердің кідірісін 200 мс-қа көтер, DNS кэшін тазала да, қайта жібер. 1 секундтан ұзақ сұрауды көр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Кідірісті өзгертіп, 1 секундтан ұзақ сұрауды көр</li></ul><a class="btn secondary" href="../app/index.html#web-1-internet">Симуляцияны ашу</a></div><details class="l3-hint"><summary>Кеңес</summary><ul><li>«Сервер» бөліміндегі кідіріс жүгірткісі. 200 мс × ~6 сапар ≈ 1.2 с.</li></ul></details><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="2" data-qid="web-1-internet:latency:trips"><p class="l3-qt">Кідіріс 100 мс, сұрауға 6 сапар керек. Шамамен қанша уақыт?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">100 мс</button><button type="button" class="l3-opt" data-i="1">300 мс</button><button type="button" class="l3-opt" data-i="2">600 мс</button><button type="button" class="l3-opt" data-i="3">1200 мс</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 600 мс</p><p>6 × 100 мс = 600 мс. Байттар саны емес, сапарлар саны көбейтіледі.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="web-1-internet:latency:cdn"><p class="l3-qt">CDN кідірісті неге азайтады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Деректерді сығады</button><button type="button" class="l3-opt" data-i="1">Мазмұнның көшірмесін пайдаланушыға жақын серверге қояды</button><button type="button" class="l3-opt" data-i="2">Шифрлауды өшіреді</button><button type="button" class="l3-opt" data-i="3">DNS-ті алып тастайды</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Мазмұнның көшірмесін пайдаланушыға жақын серверге қояды</p><p>Қашықтық азайса: сапар уақыты азаяды.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><span></span><a href="../index.html#web">Веб-әзірлеу</a><a href="web-2-html.html"><span lang="en">HTML &amp; DOM</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

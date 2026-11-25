@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Сызықтық теңдеулер жүйесі және Гаусс әдісі · Математика - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Сызықтық теңдеулер жүйесі және Гаусс әдісі · Математика - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Үш теңдеу: кеңістіктегі үш жазықтық, ал шешімі олардың қиылысу нүктесі. Белгісіздерді біртіндеп жойып, баспалдаққа келтіру.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/math/la-3-gauss.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/math/la-3-gauss.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Сызықтық теңдеулер жүйесі және Гаусс әдісі · Математика - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/math/la-3-gauss.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Үш теңдеу: кеңістіктегі үш жазықтық, ал шешімі олардың қиылысу нүктесі. Белгісіздерді біртіндеп жойып, баспалдаққа келтіру.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="la-3-gauss" style="--lc:#6b4fb3">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#math">Математика</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Математика · 3-сабақ · ≈30 мин · 2 қадам · 4 сұрақ</p>
+        <h1 lang="en">Сызықтық теңдеулер жүйесі және Гаусс әдісі</h1>
+        <p class="l3-lede">Үш теңдеу: кеңістіктегі үш жазықтық, ал шешімі олардың қиылысу нүктесі. Белгісіздерді біртіндеп жойып, баспалдаққа келтіру.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#la-3-gauss">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Төмен қарай жою</a></li><li><a href="#s2">Жоғары қарай: шешім</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Төмен қарай жою</h2><div class="l3-body"><h3>Идея</h3>
+<p>Жүйе:</p>
+<pre class="l3-pre"><code> x +  y +  z = 6
+2x +  y −  z = 1
+ x −  y + 2z = 5</code></pre>
+<p>Әр теңдеу кеңістікте <strong>жазықтық</strong>. Шешім: үшеуі қиылысатын нүкте. Сахнада үш жазықтықты көресің.</p>
+<p><strong>Гаусс әдісі</strong> белгісіздерді біртіндеп жояды. Жүйені өзгертпейтін үш <strong>жол амалы</strong> бар:</p>
+<ol><li>Екі жолдың орнын ауыстыру: R1 ↔ R2.</li><li>Жолды нөлден өзге санға көбейту: R2 ← c·R2.</li><li>Бір жолға басқа жолдың еселігін қосу: R2 ← R2 + c·R1.</li></ol>
+<p>Мақсат: <strong>баспалдақ</strong> түрі. Бірінші бағанда R1-ден төмен нөлдер, сосын екінші бағанда R2-ден төмен нөл.</p>
+<h3>Түйсік</h3>
+<p>Бір теңдеуден x-ті «ұрлап», басқа теңдеулерден жою. Әр амал жазықтықтарды бұрады, бірақ олардың ортақ нүктесі орнында қалады: шешім өзгермейді.</p>
+<h3>Есептеп көрейік</h3>
+<ul><li>R2 ← R2 − 2·R1: (0, −1, −3 | −11).</li><li>R3 ← R3 − R1: (0, −2, 1 | −1).</li><li>R3 ← R3 − 2·R2: (0, 0, 7 | 21).</li></ul>
+<p>Енді соңғы жолдан z = 3 бірден көрінеді.</p>
+<h3>Нақты әлемде</h3>
+<p>Гаусс әдісі ғылыми есептеулердің негізі: көпірдің жүктемесін, электр тізбегін, жүздеген айнымалысы бар үлгілерді шешу осыдан басталады. Компьютерлер оны миллиондаған теңдеуге қолданады.</p>
+<h3>Енді сен</h3>
+<p>Жол амалдарын таңда: коэффициентке 2, −1 не 1/7 сияқты сандарды жазуға болады. Бірінші бағанды тазала, сосын баспалдақ жаса.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Бірінші бағанда R1-ден төменгі екі санды нөлге айналдыр</li><li>Баспалдақ: R3-тегі y коэффициенті де нөл</li></ul><a class="btn secondary" href="../app/index.html#la-3-gauss">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="0" data-qid="la-3-gauss:forward:predict"><p class="l3-qt">Үш белгісізі бар үш сызықтық теңдеу кеңістікте нені білдіреді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Үш жазықтықты</button><button type="button" class="l3-opt" data-i="1">Үш түзуді</button><button type="button" class="l3-opt" data-i="2">Бір шарды</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Үш жазықтықты</p><p>ax + by + cz = d теңдеуін қанағаттандыратын нүктелер жазықтық құрайды. Үш теңдеуді бірден қанағаттандыратын нүкте үш жазықтықтың қиылысы.</p></details></div></div><div class="l3-box l3-worked"><h3>Шешілген мысал</h3><p>x + 2y = 5 және 3x − y = 1 жүйесін шеш.</p><ol><li><code>R2 ← R2 − 3·R1:  (3 − 3)x + (−1 − 6)y = 1 − 15</code><span>x-ті жою үшін R1-ді 3-ке көбейтіп, R2-ден аламыз.</span></li><li><code>−7y = −14, яғни y = 2</code><span>Бір ғана белгісіз қалды.</span></li><li><code>x + 2·2 = 5, яғни x = 1</code><span>Кері жүріс: y-ті бірінші теңдеуге қоямыз.</span></li><li><code>Тексеру: 3·1 − 2 = 1 ✓</code><span>Шешімді екінші бастапқы теңдеуге қойып тексереміз.</span></li></ol></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="la-3-gauss:forward:ops"><p class="l3-qt">Қай амал жүйенің шешімін өзгертуі мүмкін?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Жолды нөлге көбейту</button><button type="button" class="l3-opt" data-i="1">Екі жолдың орнын ауыстыру</button><button type="button" class="l3-opt" data-i="2">Бір жолға басқа жолдың еселігін қосу</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Жолды нөлге көбейту</p><p>Нөлге көбейткенде теңдеу 0 = 0-ге айналып, ақпарат жоғалады. Сондықтан көбейткіш нөл болмауы керек.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="la-3-gauss:forward:stair"><p class="l3-qt">Баспалдақ түрінің пайдасы неде?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Соңғы теңдеуде бір ғана белгісіз қалады</button><button type="button" class="l3-opt" data-i="1">Барлық коэффициент бүтін сан болады</button><button type="button" class="l3-opt" data-i="2">Теңдеулер саны бірден азаяды</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Соңғы теңдеуде бір ғана белгісіз қалады</p><p>Соңғы жолдан z шығады, оны жоғарыдағыға қойсаң y, сосын x: кері жүріс.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Жоғары қарай: шешім</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Кері жүріс</strong>: соңғы жолдан жоғары қарай. Әр жолды оның бас коэффициенті 1 болатындай етіп, сосын сол бағандағы қалған сандарды жоғарыдан жоямыз. Соңында сол жақ блок <strong>бірлік матрица</strong> болады:</p>
+<pre class="l3-pre"><code>1 0 0 | x
+0 1 0 | y
+0 0 1 | z</code></pre>
+<p>Оң жақ баған: шешім. Бұл түрі Гаусс-Жордан әдісі деп аталады.</p>
+<h3>Түйсік</h3>
+<p>Тұтқынды бір-бірлеп босату: алдымен ең төменгі есікті ашасың (z), сосын соның кілтімен жоғарыдағыларды (y, x).</p>
+<h3>Есептеп көрейік</h3>
+<ul><li>R3 ← (1/7)·R3: (0, 0, 1 | 3).</li><li>R2 ← R2 + 3·R3: (0, −1, 0 | −2), сосын R2 ← −1·R2: (0, 1, 0 | 2).</li><li>R1 ← R1 − R3, R1 ← R1 − R2: (1, 0, 0 | 1).</li></ul>
+<p>Шешім: x = 1, y = 2, z = 3. Тексеру: 1 + 2 + 3 = 6, 2 + 2 − 3 = 1, 1 − 2 + 6 = 5.</p>
+<h3>Нақты әлемде</h3>
+<p>Жазықтықтар бір нүктеде қиылыспауы да мүмкін: екеуі параллель болса, шешім жоқ; үшеуі бір түзу бойымен қиылысса, шешім шексіз көп. Гаусс әдісі мұны да анықтайды: «0 = 5» деген жол шешім жоқтығын, «0 = 0» деген жол еркін айнымалыны білдіреді.</p>
+<h3>Енді сен</h3>
+<p>Кері жүріспен сол жақ блокты бірлік матрицаға келтір. Сахнадағы жарқыраған нүкте үш жазықтықтың қиылысы.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Сол жақ блокты бірлік матрицаға келтір: оң жақ баған шешімді береді</li></ul><a class="btn secondary" href="../app/index.html#la-3-gauss">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="0" data-qid="la-3-gauss:back:predict"><p class="l3-qt">Баспалдақтан кейін соңғы жол 7z = 21. Келесі қадам не?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">R3-ті 1/7-ге көбейтіп, z-ті табу, сосын жоғары қарай жою</button><button type="button" class="l3-opt" data-i="1">R1-ді R3-ке қосып, басқалардан бұрын x-ті табу</button><button type="button" class="l3-opt" data-i="2">Жүйеде шешім жоқ деп тоқтату</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> R3-ті 1/7-ге көбейтіп, z-ті табу, сосын жоғары қарай жою</p><p>Кері жүріс: соңғы жолдан бастап әр белгісізді табамыз да, оны жоғарыдағы жолдардан жоямыз.</p></details></div></div><div class="l3-box l3-hunt"><h3>Қатені тап</h3><p>x + y = 3 және 2x + 3y = 8 жүйесі.</p><ol class="l3-lines"><li><code>R2 ← R2 − 2·R1</code></li><li><code>(0, 3 − 2 | 8 − 6) = (0, 1 | 2)</code></li><li><code>y = 2</code></li><li><code>x = 3 + 2 = 5</code></li></ol><details class="l3-ans"><summary>Жауабы</summary><p><b>4-жол қате.</b> y-ті бірінші теңдеуге қойғанда x + 2 = 3, яғни x = 3 − 2. Теңдіктің екінші жағына өткенде таңба ауысады.</p><p><b>Дұрысы:</b> <code>x = 3 − 2 = 1</code></p></details></div><div class="l3-box l3-self"><h3>Өз сөзіңмен түсіндір</h3><p>Гаусс әдісі жүйені қалай шешті және неге жол амалдары шешімді өзгертпейді?</p><details class="l3-ans"><summary>Жақсы түсіндірмеде болатын ойлар</summary><ul><li>әр теңдеу жазықтық, шешім: қиылысу нүктесі</li><li>төмен қарай жою: баспалдақ</li><li>кері жүріс: соңғы жолдан жоғары</li><li>жол амалдары шешімді сақтайды</li></ul></details></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="la-3-gauss:back:none"><p class="l3-qt">Жою кезінде (0, 0, 0 | 5) жолы пайда болса, бұл нені білдіреді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Шешім жоқ</button><button type="button" class="l3-opt" data-i="1">z = 5</button><button type="button" class="l3-opt" data-i="2">Шешім шексіз көп</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Шешім жоқ</p><p>Сол жақтың бәрі нөл, оң жағы нөл емес: ешбір x, y, z бұл теңдеуді қанағаттандырмайды.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="la-3-gauss:back:check"><p class="l3-qt">Табылған шешімді қалай тексеруге болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Бастапқы барлық теңдеуге қойып көру</button><button type="button" class="l3-opt" data-i="1">Тек соңғы теңдеуге қою</button><button type="button" class="l3-opt" data-i="2">Тексерудің қажеті жоқ</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Бастапқы барлық теңдеуге қойып көру</p><p>Әр жол амалы шешімді сақтайды, бірақ есептеуде қателесуге болады. Бастапқы теңдеулерге қою ең сенімді тексеру.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="la-2-dot.html">← <span lang="en">Скаляр көбейтінді және ортогональдық</span></a><a href="../index.html#math">Математика</a><a href="la-4-matrices.html"><span lang="en">Матрицалар және матрицалық амалдар</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

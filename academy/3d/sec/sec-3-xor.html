@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>XOR &amp; One-Time Pad · Киберқауіпсіздік - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="XOR &amp;amp; One-Time Pad · Киберқауіпсіздік - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Теориялық тұрғыдан бұзылмайтын шифр: және оны бұзатын бір қате.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/sec/sec-3-xor.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/sec/sec-3-xor.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"XOR &amp; One-Time Pad · Киберқауіпсіздік - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/sec/sec-3-xor.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Теориялық тұрғыдан бұзылмайтын шифр: және оны бұзатын бір қате.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="sec-3-xor" style="--lc:#2b3a5c">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#sec">Киберқауіпсіздік</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Киберқауіпсіздік · 3-сабақ · ≈15 мин · 2 қадам · 4 сұрақ</p>
+        <h1 lang="en">XOR &amp; One-Time Pad</h1>
+        <p class="l3-lede">Теориялық тұрғыдан бұзылмайтын шифр: және оны бұзатын бір қате.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#sec-3-xor">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Бір реттік блокнот</a></li><li><a href="#s2">Кілтті қайта қолдану</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Бір реттік блокнот</h2><div class="l3-body"><h3>Идея</h3>
+<p>Компьютерде мәтін: байттар, ал шифрлаудың ең қарапайым амалы: <strong>XOR</strong> (⊕): 1 ⊕ 1 = 0, 1 ⊕ 0 = 1. Ең маңызды қасиеті:</p>
+<pre class="l3-pre"><code>(m ⊕ k) ⊕ k = m</code></pre>
+<p>Бір кілтпен шифрлау мен дешифрлау: бір ғана амал.</p>
+<p><strong>One-time pad</strong> (бір реттік блокнот): кілт (1) толық кездейсоқ, (2) хабармен <strong>бірдей ұзын</strong>, (3) <strong>бір рет</strong> қолданылады. Клод Шеннон 1949 жылы дәлелдеді: мұндай шифрды <strong>ешқандай</strong> есептеу қуаты бұза алмайды (perfect secrecy).</p>
+<h3>Түйсік</h3>
+<p>Шифрмәтін «BXQ…» болса, кез келген 3 әріптік хабар мүмкін: «КЕЛ», «ЖОҚ», «ИӘ!»: себебі әрқайсысына сәйкес кілт бар. Шабуылшыға шифрмәтін ешқандай ақпарат бермейді.</p>
+<h3>Есептеп көрейік</h3>
+<p>&#x27;A&#x27; = 01000001, кілт &#x27;K&#x27; = 01001011:</p>
+<pre class="l3-pre"><code>  01000001   (A)
+⊕ 01001011   (K)
+= 00001010   (шифр)
+⊕ 01001011   (K)
+= 01000001   (A) ✓</code></pre>
+<p>Кілт хабардан қысқа болса, ол <strong>қайталанады</strong>: бұл енді one-time pad емес, Виженердің компьютерлік нұсқасы, оны бұзуға болады.</p>
+<h3>Нақты әлемде</h3>
+<p>Қырғи-қабақ соғыс кезінде Мәскеу-Вашингтон «қызыл телефоны» one-time pad қолданған. Бірақ мұндай кілттерді жеткізу мен сақтау өте қиын, сондықтан күнделікті өмірде AES сияқты шифрлар кілтті «кеңейтеді».</p>
+<blockquote><p>💡 Түйін: «теориялық бұзылмайтын» шифр бар, бірақ оның шарттары практикада өте қатаң.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Кілтті хабардан қысқа емес етіп, шифрла. 3D-де әр байттың биттерін бақыла.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Кілт хабардан қысқа болмайтындай шифрла</li></ul><a class="btn secondary" href="../app/index.html#sec-3-xor">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="sec-3-xor:otp:xor"><p class="l3-qt">1011 ⊕ 0110 = ?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">1101</button><button type="button" class="l3-opt" data-i="1">1111</button><button type="button" class="l3-opt" data-i="2">0010</button><button type="button" class="l3-opt" data-i="3">0110</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 1101</p><p>Биттер бойынша: 1⊕0 = 1, 0⊕1 = 1, 1⊕1 = 0, 1⊕0 = 1 → 1101.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="sec-3-xor:otp:conditions"><p class="l3-qt">One-time pad-тың шарттарына не жатпайды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Кілт қысқа әрі есте сақтауға оңай</button><button type="button" class="l3-opt" data-i="1">Кілт толық кездейсоқ</button><button type="button" class="l3-opt" data-i="2">Кілт хабардан қысқа емес</button><button type="button" class="l3-opt" data-i="3">Кілт бір рет қолданылады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Кілт қысқа әрі есте сақтауға оңай</p><p>Керісінше: кілт хабармен бірдей ұзын әрі кездейсоқ болуы керек: сондықтан оны есте сақтау мүмкін емес.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Кілтті қайта қолдану</h2><div class="l3-body"><h3>Идея</h3>
+<p>One-time pad-тың ең қауіпті қатесі: кілтті <strong>қайта қолдану</strong> (two-time pad). Екі хабар бір кілтпен шифрланса:</p>
+<pre class="l3-pre"><code>c₁ ⊕ c₂ = (m₁ ⊕ k) ⊕ (m₂ ⊕ k) = m₁ ⊕ m₂</code></pre>
+<p>Кілт <strong>жойылады</strong>! Шабуылшы екі хабардың XOR-ын алады, ал тіл артық ақпаратқа толы: екі мәтінді «ашуға» болады.</p>
+<h3>Түйсік</h3>
+<p>Бір трафаретті екі суретке салсаң, трафарет екеуінде де бірдей: оларды бір-бірінің үстіне қойсаң, трафарет «жоғалып», суреттердің айырмасы ғана қалады.</p>
+<h3>Есептеп көрейік</h3>
+<p>m₁ = «HELLO», m₂ = «WORLD», бір кілт k. Шабуылшы c₁ ⊕ c₂ = m₁ ⊕ m₂ есептейді. Енді ол «m₁-де THE сөзі бар шығар» деп болжаса, сол позицияда m₂-нің бөлігін алады (crib-dragging). Біртіндеп екі хабар да ашылады.</p>
+<h3>Нақты әлемде</h3>
+<p><strong>Venona жобасы</strong> (1943-1980): кеңес барлауы шифрлау блокноттарын қайта басып шығарғандықтан, американдық криптографтар ≈ 3000 хабарды ішінара ашып, Розенбергтер ісіндегі тыңшыларды анықтады. <strong>WEP</strong> (Wi-Fi, 1999) инициализация векторы тым қысқа болғандықтан, кілт ағыны қайталанып, минуттарда бұзылды.</p>
+<blockquote><p>⚠ Жиі қате: «бір кілт пен бір алгоритм: бәрібір бірдей қауіпсіз». Ағын шифрларында nonce/IV ешқашан қайталанбауы керек.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Сол кілтпен басқа хабарды шифрла. Екі шифрмәтіннің XOR-ы екі хабардың XOR-ына тең екенін тексер.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Бір кілтпен екі түрлі хабарды шифрла</li></ul><a class="btn secondary" href="../app/index.html#sec-3-xor">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="sec-3-xor:reuse:cancel"><p class="l3-qt">c₁ ⊕ c₂ неге тең, егер екеуі де бір кілтпен шифрланса?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">m₁ ⊕ m₂</button><button type="button" class="l3-opt" data-i="1">k</button><button type="button" class="l3-opt" data-i="2">0</button><button type="button" class="l3-opt" data-i="3">m₁ ⊕ k</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> m₁ ⊕ m₂</p><p>k ⊕ k = 0, сондықтан кілт жойылып, тек хабарлардың XOR-ы қалады.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="sec-3-xor:reuse:nonce"><p class="l3-qt">Заманауи ағын шифрлары (ChaCha20, AES-CTR) кілтті қайта қолдану мәселесін қалай шешеді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Әр хабарға бірегей nonce қосады, кілт ағыны әр жолы басқа болады</button><button type="button" class="l3-opt" data-i="1">Кілтті әр секунд сайын ауыстырады</button><button type="button" class="l3-opt" data-i="2">Хабарларды қысқартады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Әр хабарға бірегей nonce қосады, кілт ағыны әр жолы басқа болады</p><p>Бір кілт + әр түрлі nonce → әр түрлі кілт ағыны. Сондықтан nonce-ты ешқашан қайталамау: бұл шифрлардың ең маңызды ережесі.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="sec-2-frequency.html">← <span lang="en">Frequency Analysis</span></a><a href="../index.html#sec">Киберқауіпсіздік</a><a href="sec-4-hash.html"><span lang="en">Hashing</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

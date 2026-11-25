@@ -1,0 +1,264 @@
+# © 2026 AO17 командасы. All Rights Reserved.
+# AO17 · 3D зертхана: INSIDE TECH (AO17 командасының 3D платформасы) сабақтарының AO17 ішіндегі лекция беттері.
+# Дерек: tools/academy/data/inside_lessons.json (tools/sync_inside.py жаңартады). Әр сабақ: дәріс (Markdown), 3D симуляциядағы тапсырма,
+# болжам, тест (түсіндірмесімен), кеңес, шешілген мысал, «қатені тап», өз сөзіңмен түсіндіру. Комикстер алынбайды.
+# 3D симуляцияның өзі academy/3d/app/ ішінде (бір origin: прогресс «inside-tech:*» кілттерінде ортақ).
+import html
+import json
+import pathlib
+import re
+
+E = lambda s: html.escape(str(s), quote=True)  # noqa: E731
+DATA = pathlib.Path(__file__).resolve().parent / "data" / "inside_lessons.json"
+LAB_KK = {"ai": "Жасанды интеллект", "web": "Веб-әзірлеу", "game": "Ойын әзірлеу", "net": "Компьютерлік желілер", "db": "Дерекқорлар",
+          "arch": "Компьютер архитектурасы", "cloud": "Бұлт және DevOps", "sec": "Киберқауіпсіздік", "algo": "Алгоритмдер",
+          "iot": "Робототехника және IoT", "math": "Математика"}
+LAB_COLOR = {"ai": "#7a5cd6", "web": "#1d84a6", "game": "#b8466a", "net": "#1f8a70", "db": "#0a4c7a", "arch": "#b3262e",
+             "cloud": "#3a72c4", "sec": "#2b3a5c", "algo": "#a37a00", "iot": "#2e6b4f", "math": "#6b4fb3"}
+SPECIAL = {"blackbox": "«Қара жәшік»: жасырын ережені тап", "journey": "«Бір басудың саяхаты»: перне басылғаннан экранға дейін",
+           "parsons": "«Ретке келтір»: код жолдарын дұрыс ретке қой"}
+_cache = {}
+
+
+def data():
+    if "d" not in _cache:
+        d = json.loads(DATA.read_text(encoding="utf-8"))
+        labs = [l for l in d["labs"] if any(x["labId"] == l["id"] for x in d["lessons"])]
+        by_lab = {l["id"]: sorted([x["lesson"] for x in d["lessons"] if x["labId"] == l["id"]], key=lambda s: s["order"]) for l in labs}
+        lab_of = {s["id"]: lab for lab, ls in by_lab.items() for s in ls}
+        _cache["d"] = (labs, by_lab, lab_of)
+    return _cache["d"]
+
+
+def href(lesson_or_route, base="academy/"):
+    """AO17 ішіндегі сілтеме (base - сілтеме тұрған беттің academy/-ге қатысты префиксі)."""
+    _, _, lab_of = data()
+    if lesson_or_route in lab_of:
+        return f"{base}3d/{lab_of[lesson_or_route]}/{lesson_or_route}.html"
+    return f"{base}3d/app/index.html#{lesson_or_route}"
+
+
+# ------------------------------------------------------------------ Markdown (дәрістерде қолданылатын бөлігі)
+def inline(t):
+    """Дәрістегі HTML тегтері әрқашан МӘТІН болып көрінеді (олар - мысал: `<ul>`, `<script>`, модельдің `</s>` токені): ешқашан тег болмайды."""
+    t = E(t)
+    codes = []
+
+    def keep(m):
+        codes.append(m.group(1))
+        return f"\x00{len(codes) - 1}\x00"
+    t = re.sub(r"`([^`]+)`", keep, t)
+    t = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", t)
+    t = re.sub(r"(?<![\*\w])\*([^*\s][^*]*?)\*(?![\*\w])", r"<em>\1</em>", t)
+    return re.sub(r"\x00(\d+)\x00", lambda m: "<code>" + codes[int(m.group(1))] + "</code>", t)
+
+
+def md(text, hshift=1):
+    lines = str(text).replace("\r", "").split("\n")
+    out, i, n = [], 0, len(lines)
+    special = re.compile(r"^(```|#{1,6} |> ?|\s*[-*] |\s*\d+[.)] |\|)")
+    while i < n:
+        ln = lines[i]
+        if not ln.strip():
+            i += 1
+            continue
+        if ln.startswith("```"):
+            buf, i = [], i + 1
+            while i < n and not lines[i].startswith("```"):
+                buf.append(lines[i])
+                i += 1
+            out.append(f'<pre class="l3-pre"><code>{E(chr(10).join(buf))}</code></pre>')
+            i += 1
+            continue
+        m = re.match(r"^(#{1,6}) (.*)$", ln)
+        if m:
+            lv = min(6, len(m.group(1)) + hshift)
+            out.append(f"<h{lv}>{inline(m.group(2))}</h{lv}>")
+            i += 1
+            continue
+        if ln.startswith(">"):
+            buf = []
+            while i < n and lines[i].startswith(">"):
+                buf.append(lines[i][1:].lstrip())
+                i += 1
+            out.append("<blockquote>" + "".join(f"<p>{inline(b)}</p>" for b in buf if b.strip()) + "</blockquote>")
+            continue
+        if ln.lstrip().startswith("|"):
+            rows = []
+            while i < n and lines[i].lstrip().startswith("|"):
+                rows.append([c.strip() for c in lines[i].strip().strip("|").split("|")])
+                i += 1
+            body = [r for r in rows if not all(re.fullmatch(r":?-{2,}:?", c) for c in r if c)]
+            if body:
+                head, rest = body[0], body[1:]
+                out.append('<div class="table-wrap"><table class="l3-table"><thead><tr>' + "".join(f"<th>{inline(c)}</th>" for c in head) + "</tr></thead><tbody>"
+                           + "".join("<tr>" + "".join(f"<td>{inline(c)}</td>" for c in r) + "</tr>" for r in rest) + "</tbody></table></div>")
+            continue
+        m = re.match(r"^\s*([-*]|\d+[.)]) (.*)$", ln)
+        if m:
+            ordered = m.group(1)[0].isdigit()
+            items = []
+            while i < n:
+                mm = re.match(r"^\s*([-*]|\d+[.)]) (.*)$", lines[i])
+                if not mm or (mm.group(1)[0].isdigit()) != ordered:
+                    break
+                items.append(mm.group(2))
+                i += 1
+                while i < n and lines[i].startswith("  ") and lines[i].strip() and not re.match(r"^\s*([-*]|\d+[.)]) ", lines[i]):
+                    items[-1] += " " + lines[i].strip()
+                    i += 1
+            tag = "ol" if ordered else "ul"
+            out.append(f"<{tag}>" + "".join(f"<li>{inline(x)}</li>" for x in items) + f"</{tag}>")
+            continue
+        buf = []
+        while i < n and lines[i].strip() and not special.match(lines[i]):
+            buf.append(lines[i].strip())
+            i += 1
+        if not buf:   # жалғыз бөлек жол (мысалы «|»-сыз) - абзац ретінде
+            buf, i = [ln.strip()], i + 1
+        out.append(f"<p>{inline(' '.join(buf))}</p>")
+    return "\n".join(out)
+
+
+# ------------------------------------------------------------------ сабақ бетінің блоктары
+def quiz_block(q, qid, kind="quiz"):
+    opts = "".join(f'<button type="button" class="l3-opt" data-i="{k}">{inline(o)}</button>' for k, o in enumerate(q["options"]))
+    hint = f' data-hint="{E(q["wrongHint"])}"' if q.get("wrongHint") else ""
+    right = q["options"][q["answer"]] if 0 <= q.get("answer", -1) < len(q["options"]) else ""
+    return (f'<div class="l3-q l3-{kind}" data-answer="{q["answer"]}" data-qid="{E(qid)}"{hint}>'
+            f'<p class="l3-qt">{inline(q["question"])}</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары">{opts}</div>'
+            f'<p class="l3-fb" role="status" aria-live="polite"></p>'
+            f'<details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> {inline(right)}</p><p>{inline(q.get("explain", ""))}</p></details></div>')
+
+
+def step_html(L, i, s):
+    lid = L["id"]
+    parts = [f'<section class="l3-step" id="s{i}" aria-labelledby="s{i}-h"><h2 id="s{i}-h"><span class="l3-n">{i}</span>{inline(s["title"])}</h2>',
+             f'<div class="l3-body">{md(s.get("body", ""), hshift=1)}</div>']
+    objs = [o["text"] for o in s.get("objectives", []) if o.get("text")]
+    if objs:
+        parts.append(f'<div class="l3-task"><h3>3D симуляцияда орында</h3><ul>{"".join(f"<li>{inline(t)}</li>" for t in objs)}</ul>'
+                     f'<a class="btn secondary" href="../app/index.html#{E(lid)}">Симуляцияны ашу</a></div>')
+    if s.get("predict"):
+        parts.append('<div class="l3-box l3-predict"><h3>Алдымен болжа</h3>' + quiz_block(s["predict"], f"{lid}:{s['id']}:predict", "pred") + "</div>")
+    if s.get("hints"):
+        parts.append(f'<details class="l3-hint"><summary>Кеңес</summary><ul>{"".join(f"<li>{inline(h)}</li>" for h in s["hints"])}</ul></details>')
+    if s.get("worked"):
+        w = s["worked"]
+        parts.append(f'<div class="l3-box l3-worked"><h3>Шешілген мысал</h3><p>{inline(w["problem"])}</p><ol>'
+                     + "".join(f'<li><code>{E(x["line"])}</code><span>{inline(x["why"])}</span></li>' for x in w["steps"]) + "</ol></div>")
+    if s.get("hunt"):
+        h = s["hunt"]
+        parts.append(f'<div class="l3-box l3-hunt"><h3>Қатені тап</h3><p>{inline(h["problem"])}</p><ol class="l3-lines">'
+                     + "".join(f"<li><code>{E(x)}</code></li>" for x in h["lines"])
+                     + f'</ol><details class="l3-ans"><summary>Жауабы</summary><p><b>{h["wrong"] + 1}-жол қате.</b> {inline(h["why"])}</p>'
+                     f'<p><b>Дұрысы:</b> <code>{E(h["fix"])}</code></p></details></div>')
+    if s.get("contrast"):
+        c = s["contrast"]
+        col = lambda x: f'<div class="l3-cside"><h4>{inline(x["label"])}</h4><ul>{"".join(f"<li><code>{E(t)}</code></li>" for t in x["lines"])}</ul><p>{inline(x["result"])}</p></div>'  # noqa: E731
+        q = {"question": c["question"], "options": c["options"], "answer": c["answer"], "explain": c.get("why", "")}
+        parts.append(f'<div class="l3-box l3-contrast"><h3>{inline(c["title"])}</h3><div class="l3-cgrid">{col(c["a"])}{col(c["b"])}</div>'
+                     + quiz_block(q, f"{lid}:{s['id']}:contrast", "pred") + "</div>")
+    if s.get("selfExplain"):
+        se = s["selfExplain"]
+        parts.append(f'<div class="l3-box l3-self"><h3>Өз сөзіңмен түсіндір</h3><p>{inline(se["prompt"])}</p>'
+                     f'<details class="l3-ans"><summary>Жақсы түсіндірмеде болатын ойлар</summary><ul>'
+                     + "".join(f'<li>{inline(x["label"])}</li>' for x in se.get("concepts", [])) + "</ul></details></div>")
+    if s.get("quiz"):
+        parts.append('<div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3>' + "".join(quiz_block(q, f"{lid}:{s['id']}:{q['id']}") for q in s["quiz"]) + "</div>")
+    parts.append("</section>")
+    return "".join(parts)
+
+
+def lesson_page(lab, L, idx, prev_l, next_l, page):
+    steps = L.get("steps", [])
+    nq = sum(len(s.get("quiz", [])) for s in steps)
+    toc = "".join(f'<li><a href="#s{i}">{inline(s["title"])}</a></li>' for i, s in enumerate(steps, 1))
+    nav = ('<nav class="ac-pager" aria-label="Зертхананың сабақтары">' + (f'<a href="{E(prev_l["id"])}.html">← <span lang="en">{E(prev_l["title"])}</span></a>' if prev_l else "<span></span>")
+           + f'<a href="../index.html#{lab["id"]}">{E(LAB_KK.get(lab["id"], lab["title"]))}</a>'
+           + (f'<a href="{E(next_l["id"])}.html"><span lang="en">{E(next_l["title"])}</span> →</a>' if next_l else "<span></span>") + "</nav>")
+    body = f"""  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="{E(L['id'])}" style="--lc:{LAB_COLOR.get(lab['id'], '#0a4c7a')}">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#{lab['id']}">{E(LAB_KK.get(lab['id'], lab['title']))}</a></p>
+      <header class="l3-head">
+        <p class="l3-k">{E(LAB_KK.get(lab['id'], lab['title']))} · {idx}-сабақ · ≈{L.get('estimatedMinutes', 10)} мин · {len(steps)} қадам · {nq} сұрақ</p>
+        <h1 lang="en">{E(L['title'])}</h1>
+        <p class="l3-lede">{inline(L.get('summary', ''))}</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#{E(L['id'])}">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol>{toc}</ol></nav>
+      {"".join(step_html(L, i, s) for i, s in enumerate(steps, 1))}
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      {nav}
+    </article>
+  </div>"""
+    rel = f"academy/3d/{lab['id']}/{L['id']}.html"
+    return rel, page(rel, f"{L['title']} · {LAB_KK.get(lab['id'], lab['title'])}", f"AO17 3D зертхана: {L.get('summary', '')}"[:300], body,
+                     scripts=("assets/js/lab3d.js",), styles=("assets/css/lab3d.css",))
+
+
+def hub_page(page):
+    labs, by_lab, _ = data()
+    n_l = sum(len(v) for v in by_lab.values())
+    n_s = sum(len(L["steps"]) for v in by_lab.values() for L in v)
+    n_q = sum(len(s.get("quiz", [])) for v in by_lab.values() for L in v for s in L["steps"])
+    secs = []
+    for lab in labs:
+        ls = by_lab[lab["id"]]
+        items = "".join(f'<li><a href="{lab["id"]}/{E(L["id"])}.html"><b lang="en">{E(L["title"])}</b><span>{inline(L.get("summary", ""))}</span>'
+                        f'<small>≈{L.get("estimatedMinutes", 10)} мин · {len(L["steps"])} қадам</small></a></li>' for L in ls)
+        secs.append(f'<section class="l3-lab" id="{lab["id"]}" style="--lc:{LAB_COLOR.get(lab["id"], "#0a4c7a")}" aria-labelledby="h-{lab["id"]}">'
+                    f'<h2 id="h-{lab["id"]}">{E(LAB_KK.get(lab["id"], lab["title"]))} <small lang="en">{E(lab["title"])}</small></h2>'
+                    f'<p class="l3-labn">{len(ls)} сабақ</p><ol class="l3-lessons">{items}</ol></section>')
+    games = "".join(f'<li><a href="app/index.html#{k}">{E(v)}</a></li>' for k, v in SPECIAL.items())
+    jump = "".join(f'<li><a href="#{lab["id"]}">{E(LAB_KK.get(lab["id"], lab["title"]))}</a></li>' for lab in labs)
+    body = f"""  <div class="layout single">
+    <article class="content l3 l3-hub" id="main">
+      <header class="l3-hero">
+        <p class="l3-k">AO17 · 3D зертхана</p>
+        <h1>Технологияның ішінен</h1>
+        <p class="l3-lede">Процессор, желі, дерекқор, нейрон желі, алгоритм - әрқайсысының ішін 3D симуляцияда көріп, параметрін өзгертіп, нәтижесін өлшейсің. Әр сабақтың толық дәрісі, тесті және шешілген мысалдары осы жерде.</p>
+        <ul class="l3-stats"><li><b>{len(labs)}</b><span>зертхана</span></li><li><b>{n_l}</b><span>сабақ</span></li><li><b>{n_s}</b><span>дәріс қадамы</span></li><li><b>{n_q}</b><span>тест сұрағы</span></li></ul>
+        <p class="l3-cta"><a class="btn gold" href="app/index.html">3D қолданбаны ашу</a> <a class="btn secondary" href="../course.html">AO17 CS курсы</a></p>
+      </header>
+      <nav class="l3-jump" aria-label="Зертханалар"><ul>{jump}</ul></nav>
+      <section class="l3-games" aria-labelledby="g-h"><h2 id="g-h">Ойын түріндегі зертханалар</h2><ul>{games}</ul></section>
+      {"".join(secs)}
+      <p class="l3-src">Материалдар AO17 командасының INSIDE TECH 3D платформасынан алынған. Үшінші тарап кітапханаларының лицензиялары: <a href="app/THIRD-PARTY-NOTICES.txt">THIRD-PARTY-NOTICES.txt</a>.</p>
+    </article>
+  </div>"""
+    return "academy/3d/index.html", page("academy/3d/index.html", "3D зертхана: технологияның ішінен",
+                                         f"AO17 3D зертхана: {len(labs)} зертхана, {n_l} сабақ, {n_q} тест сұрағы. Процессор, желі, дерекқор, AI ішінен 3D симуляциямен.",
+                                         body, styles=("assets/css/lab3d.css",))
+
+
+def pages(page):
+    labs, by_lab, _ = data()
+    out = [hub_page(page)]
+    for lab in labs:
+        ls = by_lab[lab["id"]]
+        for k, L in enumerate(ls):
+            out.append(lesson_page(lab, L, k + 1, ls[k - 1] if k else None, ls[k + 1] if k + 1 < len(ls) else None, page))
+    return out
+
+
+def validate():
+    """Дерек толық па: әр сабақта қадам, әр қадамда дәріс; тест жауабының индексі нұсқалар ішінде."""
+    errs = []
+    labs, by_lab, _ = data()
+    ids = set()
+    for lab in labs:
+        for L in by_lab[lab["id"]]:
+            if L["id"] in ids:
+                errs.append(f"3D: сабақ id қайталанады: {L['id']}")
+            ids.add(L["id"])
+            if not L.get("steps"):
+                errs.append(f"3D {L['id']}: қадам жоқ")
+            for s in L.get("steps", []):
+                if len(s.get("body", "")) < 200:
+                    errs.append(f"3D {L['id']}/{s.get('id')}: дәріс тым қысқа")
+                for q in s.get("quiz", []) + ([s["predict"]] if s.get("predict") else []):
+                    if not (0 <= q.get("answer", -1) < len(q.get("options", []))):
+                        errs.append(f"3D {L['id']}/{s.get('id')}: тест жауабы нұсқалардың сыртында")
+    return errs

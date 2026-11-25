@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Problem Set: full-stack · Веб-әзірлеу - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Problem Set: full-stack · Веб-әзірлеу - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: SQL сұраныстар, өз API-ің және event loop болжамы. Тек спецификация мен автотексеруші.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/web/web-9-pset.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/web/web-9-pset.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Problem Set: full-stack · Веб-әзірлеу - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/web/web-9-pset.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: SQL сұраныстар, өз API-ің және event loop болжамы. Тек спецификация мен автотексеруші.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="web-9-pset" style="--lc:#1d84a6">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#web">Веб-әзірлеу</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Веб-әзірлеу · 9-сабақ · ≈40 мин · 3 қадам · 6 сұрақ</p>
+        <h1 lang="en">Problem Set: full-stack</h1>
+        <p class="l3-lede">SQL сұраныстар, өз API-ің және event loop болжамы. Тек спецификация мен автотексеруші.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#web-9-pset">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">1-есеп: SQL</a></li><li><a href="#s2">2-есеп: өз API-ің</a></li><li><a href="#s3">3-есеп: event loop</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>1-есеп: SQL</h2><div class="l3-body"><h3>Спецификация</h3>
+<p>Дерекқорда екі кесте бар: <code>users (id, name, city)</code> және <code>orders (id, user_id, item, price)</code>: 2000 жол. Үш сұраныс жаз. Автотексеруші сенің <strong>соңғы</strong> SELECT нәтижеңді эталон сұраныстың нәтижесімен жол-жолымен салыстырады (баған реті мен артық бағандар маңызды емес, ал жол <strong>реті</strong> маңызды).</p>
+<ol><li><strong>Астана мен Алматыдан басқа</strong> қалалардағы пайдаланушылардың аттары, <strong>алфавит бойынша</strong>.</li><li>3-пайдаланушының <strong>ең қымбат 5</strong> тапсырысы, бағасы кемуі бойынша.</li><li>5-пайдаланушының барлық тапсырыстары: бірақ дерекқор 2000 жолдың бәрін <strong>қарамауы</strong> керек (индекс арқылы).</li></ol>
+<h3>Синтаксис еске салғыш</h3>
+<pre class="l3-pre"><code>SELECT бағандар FROM кесте
+  WHERE шарт AND шарт
+  ORDER BY баған [ASC|DESC]
+  LIMIT n
+CREATE INDEX ON кесте (баған)</code></pre>
+<p>Салыстыру: <code>=  !=  &lt;  &gt;  &lt;=  &gt;=</code>. Мәтін: бір тырнақшада: <code>&#x27;Алматы&#x27;</code>.</p>
+<blockquote><p>⚠ Жиі қате: <code>ORDER BY</code> жоқ сұраныстың реті: «кездейсоқ». Ол бүгін дұрыс шығуы мүмкін, ертең: жоқ. Рет керек болса, оны әрдайым <strong>айт</strong>.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Үш сұранысты жазып, әрқайсысын орында.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>1: Астана мен Алматыдан тыс пайдаланушылар, алфавитпен</li><li>2: 3-пайдаланушының ең қымбат 5 тапсырысы</li><li>3: 5-пайдаланушының тапсырыстары индекс арқылы</li></ul><a class="btn secondary" href="../app/index.html#web-9-pset">Симуляцияны ашу</a></div><details class="l3-hint"><summary>Кеңес</summary><ul><li>1: SELECT name FROM users WHERE city != &#x27;Алматы&#x27; AND city != &#x27;Астана&#x27; ORDER BY name</li><li>3: алдымен CREATE INDEX ON orders (user_id)</li></ul></details><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="web-9-pset:sql:limit"><p class="l3-qt">«ORDER BY price DESC LIMIT 5» мен «LIMIT 5» сосын сұрыптау: айырмашылығы бар ма?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Иә: SQL алдымен бәрін сұрыптап, сосын 5-ін алады; керісінше болса: кездейсоқ 5 жолдың ішіндегі ең қымбаттары</button><button type="button" class="l3-opt" data-i="1">Жоқ, нәтиже бірдей</button><button type="button" class="l3-opt" data-i="2">LIMIT әрдайым ең үлкен мәндерді алады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Иә: SQL алдымен бәрін сұрыптап, сосын 5-ін алады; керісінше болса: кездейсоқ 5 жолдың ішіндегі ең қымбаттары</p><p>SELECT-тің логикалық реті: FROM → WHERE → ORDER BY → LIMIT. Сондықтан «ең қымбат 5» дұрыс шығады. Алдымен кез келген 5 жолды алып, сосын сұрыптасақ: ол «ең қымбат» емес.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="web-9-pset:sql:index"><p class="l3-qt">user_id бойынша индекс бар. Қай сұраныс одан пайда көрмейді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">WHERE user_id = 5</button><button type="button" class="l3-opt" data-i="1">WHERE price &gt; 1000</button><button type="button" class="l3-opt" data-i="2">WHERE user_id = 5 AND price &gt; 1000</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> WHERE price &gt; 1000</p><p>Индекс тек өзі салынған баған бойынша іздегенде көмектеседі. price бойынша индекс жоқ: толық сканерлеу. Үшінші сұраныста индекс user_id = 5 жолдарын тауып береді, price шарты солардың ішінде ғана тексеріледі.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>2-есеп: өз API-ің</h2><div class="l3-body"><h3>Спецификация</h3>
+<p>Мобильді қосымша командасы сенен endpoint сұрайды:</p>
+<pre class="l3-pre"><code>GET /api/users/:id/orders   →   200, сол пайдаланушының ең қымбат 5 тапсырысы (JSON массив, бағасы кемуі бойынша)</code></pre>
+<p>Неге бәрі емес? Әр пайдаланушыда ≈ 250 тапсырыс: телефонға 15 КБ жіберудің мәні жоқ. Нақты API-лер деректі <strong>беттеп</strong> (pagination) береді: LIMIT пен ORDER BY осы үшін. Бұл: <strong>жеке</strong> деректер, сондықтан:</p>
+<ul><li>token-сіз сұрау → <strong>401</strong></li><li>дұрыс token-мен (<code>secret-123</code>) → <strong>200</strong></li></ul>
+<h3>Автотексеруші</h3>
+<ol><li><code>/api/users/N/orders</code> сұрауына 200 және денесінде <strong>дәл</strong> N-пайдаланушының ең қымбат 5 тапсырысы, дұрыс ретпен.</li><li>Маршрут қорғалған: token-сіз 401, <strong>кейін</strong> token-мен 200.</li></ol>
+<h3>Ойлан</h3>
+<ul><li>Маршрут жолындағы <code>:id</code>: параметр. SQL ішінде ол <code>:id</code> болып қолданылады, сервер оны <strong>параметр ретінде</strong> қояды (SQL injection жоқ).</li><li>Неге 401, 404 емес? 404: «мұндай ресурс жоқ». Бірақ ресурс бар, тек сен кім екеніңді дәлелдемедің.</li></ul>
+<h3>Енді сен</h3>
+<p>Маршрутты құр, тексер, сосын қорға.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>GET /api/users/N/orders → N-нің ең қымбат 5 тапсырысы</li><li>Token-сіз 401, сосын token-мен 200</li></ul><a class="btn secondary" href="../app/index.html#web-9-pset">Симуляцияны ашу</a></div><details class="l3-hint"><summary>Кеңес</summary><ul><li>Маршрут: GET, жол /api/users/:id/orders, түрі SQL, SELECT * FROM orders WHERE user_id = :id ORDER BY price DESC LIMIT 5. Сосын «Token керек» қосқышын қос.</li></ul></details><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="web-9-pset:api:401"><p class="l3-qt">Пайдаланушы кірген, бірақ басқа біреудің тапсырыстарын сұрап тұр. Дұрыс жауап қандай?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">403 Forbidden</button><button type="button" class="l3-opt" data-i="1">401 Unauthorized</button><button type="button" class="l3-opt" data-i="2">404 Not Found</button><button type="button" class="l3-opt" data-i="3">200 OK</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 403 Forbidden</p><p>Сервер оны таниды (401 емес), бірақ бұл деректерге рұқсаты жоқ: 403. Кейбір жүйелер ресурс барын жасыру үшін әдейі 404 қайтарады. Ал 200: қауіпсіздік қатесі (IDOR).</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="web-9-pset:api:param"><p class="l3-qt">Неге SQL ішінде :id параметрін қолданамыз, жолды жай қосып жазбаймыз?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Параметр дерек ретінде ғана қойылады: «2 OR 1=1» сияқты мән SQL болып орындалмайды</button><button type="button" class="l3-opt" data-i="1">Параметр жылдамырақ, басқа айырмашылық жоқ</button><button type="button" class="l3-opt" data-i="2">Жолды қосу синтаксистік қате береді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Параметр дерек ретінде ғана қойылады: «2 OR 1=1» сияқты мән SQL болып орындалмайды</p><p>/api/users/2 OR 1=1/orders сияқты сұрау жолды қосқан кодта бүкіл кестені ашар еді. Параметрлер деректі кодтан бөледі: SQL injection-нан қорғаудың негізгі тәсілі.</p></details></div></div></section><section class="l3-step" id="s3" aria-labelledby="s3-h"><h2 id="s3-h"><span class="l3-n">3</span>3-есеп: event loop</h2><div class="l3-body"><h3>Спецификация</h3>
+<p>Екі жаңа бағдарлама: «кірістірілген кезектер» және «жарыс». Әрқайсысының шығысын <strong>іске қоспай</strong> болжа.</p>
+<h3>Ережелер (басқа ештеңе керек емес)</h3>
+<ol><li>Синхронды код соңына дейін орындалады.</li><li>Сосын microtask кезегі (Promise.then) <strong>толық</strong> босатылады: орындалу кезінде қосылған microtask-тар да.</li><li>Сосын <strong>бір</strong> macrotask (setTimeout, желі жауабы): және қайтадан 2-қадам.</li><li>Таймерлер кезегі уақыт бойынша: 0 мс-тық таймер 50 мс-тық таймерден бұрын, қай ретпен жазылғанына қарамастан.</li><li>fetch жауабы желі кешігуінен кейін келеді; оның <code>.then</code>-і: сол кезде орындалады.</li></ol>
+<h3>Әдіс</h3>
+<p>Қағаз ал. Үш баған сыз: <strong>стек</strong>, <strong>microtask-тар</strong>, <strong>macrotask-тар (уақытымен)</strong>. Әр жолды «орында» да, кезектерді жаңартып отыр. Бұл: «trace table», бағдарламашының негізгі құралы.</p>
+<h3>Енді сен</h3>
+<p>Екі бағдарламаның ретін де дұрыс болжа. Қателессең: «Болжамды тазалау» да, trace table-ды қайта тексер.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>«Кірістірілген кезектер» ретін дұрыс болжа</li><li>«Жарыс» ретін дұрыс болжа</li></ul><a class="btn secondary" href="../app/index.html#web-9-pset">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="web-9-pset:loop:nested"><p class="l3-qt">«Кірістірілген кезектер»-де неге 4 саны 2-ден бұрын шығады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">4: microtask, 2: macrotask; синхронды кодтан кейін алдымен microtask-тар толық босатылады</button><button type="button" class="l3-opt" data-i="1">Себебі 4 кодта кейінірек жазылған</button><button type="button" class="l3-opt" data-i="2">Себебі setTimeout 0 мс-тан ұзақ күтеді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 4: microtask, 2: macrotask; синхронды кодтан кейін алдымен microtask-тар толық босатылады</p><p>Синхронды: 1, 6. Microtask: 4 (ол 5-ке таймер қояды). Macrotask кезегі: [2-нің таймері, 5-тің таймері]. 2 шығады → оның ішіндегі Promise 3-ті microtask-қа қояды → ол бірден орындалады. Соңында 5. Нәтиже: 1 6 4 2 3 5.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="web-9-pset:loop:race"><p class="l3-qt">«Жарыс»-та B неге A-дан бұрын, бірақ C-дан кейін?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">C: 0 мс таймер; fetch жауабы 20 мс-та келеді; A: 50 мс таймер</button><button type="button" class="l3-opt" data-i="1">Себебі fetch әрдайым ең баяу</button><button type="button" class="l3-opt" data-i="2">Себебі Promise-тер таймерлерден кейін орындалады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> C: 0 мс таймер; fetch жауабы 20 мс-та келеді; A: 50 мс таймер</p><p>Синхронды: E. Microtask: D. Сосын уақыт бойынша macrotask-тар: C (0 мс), желі жауабы (20 мс) → B, A (50 мс). Нәтиже: E D C B A.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="web-8-deploy.html">← <span lang="en">Deploy</span></a><a href="../index.html#web">Веб-әзірлеу</a><a href="web-10-cache.html"><span lang="en">HTTP Caching: max-age &amp; ETag</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

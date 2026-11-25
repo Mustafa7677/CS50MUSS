@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TCP, QUIC &amp; UDP: Head-of-Line Blocking · Компьютерлік желілер - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="TCP, QUIC &amp;amp; UDP: Head-of-Line Blocking · Компьютерлік желілер - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Бір жоғалған пакет бүкіл бетті тоқтатады ма? Тәртіп кепілінің бағасы, QUIC-тің ағындары және дауысқа неге UDP.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/net/net-13-quic.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/net/net-13-quic.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"TCP, QUIC &amp; UDP: Head-of-Line Blocking · Компьютерлік желілер - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/net/net-13-quic.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Бір жоғалған пакет бүкіл бетті тоқтатады ма? Тәртіп кепілінің бағасы, QUIC-тің ағындары және дауысқа неге UDP.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="net-13-quic" style="--lc:#1f8a70">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#net">Компьютерлік желілер</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Компьютерлік желілер · 13-сабақ · ≈20 мин · 2 қадам · 6 сұрақ</p>
+        <h1 lang="en">TCP, QUIC &amp; UDP: Head-of-Line Blocking</h1>
+        <p class="l3-lede">Бір жоғалған пакет бүкіл бетті тоқтатады ма? Тәртіп кепілінің бағасы, QUIC-тің ағындары және дауысқа неге UDP.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#net-13-quic">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Кезектің басындағы бөгет</a></li><li><a href="#s2">Тірі дауыс</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Кезектің басындағы бөгет</h2><div class="l3-body"><h3>Идея</h3>
+<p>TCP қолданбаға <strong>бір реттелген байт ағынын</strong> береді. Бұл ыңғайлы: байттар жіберілген ретімен келеді. Бірақ оның бағасы бар: бір пакет жоғалса, одан <strong>кейінгі барлық</strong> байттар күтеді, тіпті олар басқа файлға тиесілі болса да.</p>
+<p>HTTP/2 бір TCP байланысында ондаған файлды қатар жібереді. Бір пакет жоғалса, бәрі тоқтайды. Мұны <strong>head-of-line blocking</strong> (кезектің басындағы бөгет) дейді.</p>
+<h3>Есептеп көрейік</h3>
+<p>12 пакет, әр 5 мс сайын, үш ағын (A: бет, B: стиль, C: сурет), жол 20 мс. Жоғалтусыз ағындар 65, 70, 75 мс-та бітеді. B-ның бір пакеті жоғалады, қайта жіберу +60 мс.</p>
+<ul><li><strong>TCP</strong>: үш ағын да <strong>85 мс</strong>-та бітеді. A мен C-ның деректері әлдеқашан келген, бірақ күтіп тұр.</li><li><strong>QUIC</strong>: A <strong>65</strong>, C <strong>75</strong>, тек B <strong>85</strong>.</li></ul>
+<h3>QUIC</h3>
+<p><strong>QUIC</strong> (HTTP/3 астында) UDP үстінде жұмыс істейді, бірақ өзі сенімді жеткізуді жасайды, әр ағынға <strong>бөлек</strong> тәртіппен. Бір ағындағы жоғалту басқаларын тоқтатпайды. Сонымен бірге TLS 1.3 іште: байланыс орнату бір айналымға қысқарады.</p>
+<h3>Нақты әлемде</h3>
+<p>Мобильді желіде жоғалту жиі: метрода, лифтте. Сол жерде HTTP/3 әсіресе көмектеседі. Google, YouTube, Cloudflare трафигінің үлкен бөлігі бүгін QUIC арқылы жүреді.</p>
+<h3>Енді сен</h3>
+<p>TCP-ны жоғалтумен іске қос, сосын QUIC-ті. Әр ағынның аяқталу уақытын салыстыр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>TCP, бір пакет жоғалды: үш ағын да 85 мс-қа дейін күтеді</li><li>QUIC: тек жоғалған пакеттің ағыны күтеді</li></ul><a class="btn secondary" href="../app/index.html#net-13-quic">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="1" data-qid="net-13-quic:hol:predict"><p class="l3-qt">Бір TCP байланысы арқылы үш файл келе жатыр: бет, стиль, сурет. Тек стильдің бір пакеті жоғалды. Бет пен сурет не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Әдеттегідей келе береді</button><button type="button" class="l3-opt" data-i="1">Олар да күтеді: TCP байттарды тек ретімен береді</button><button type="button" class="l3-opt" data-i="2">Олар қайта жіберіледі</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Олар да күтеді: TCP байттарды тек ретімен береді</p><p>TCP: бір реттелген байт ағыны. Жоғалған пакеттен кейінгі байттар келсе де, қолданбаға берілмейді, тесік толғанша. Бұл head-of-line blocking.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="net-13-quic:hol:hol"><p class="l3-qt">Head-of-line blocking дегеніміз не?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Бір жоғалған пакет одан кейінгі, басқа ағынның деректерін де тоқтатады</button><button type="button" class="l3-opt" data-i="1">Сервер кезекке тұрады</button><button type="button" class="l3-opt" data-i="2">Пакеттер ретсіз келеді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Бір жоғалған пакет одан кейінгі, басқа ағынның деректерін де тоқтатады</p><p>TCP-да ағын біреу, сондықтан оның кез келген тесігі бәріне ортақ.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="net-13-quic:hol:quic"><p class="l3-qt">QUIC бұны қалай шешеді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Әр ағынға бөлек тәртіп: жоғалту тек сол ағынды күттіреді</button><button type="button" class="l3-opt" data-i="1">Пакеттерді мүлде қайта жібермейді</button><button type="button" class="l3-opt" data-i="2">Екі TCP байланысын ашады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Әр ағынға бөлек тәртіп: жоғалту тек сол ағынды күттіреді</p><p>Сенімділік бар, бірақ ағындар бір-біріне тәуелсіз.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="net-13-quic:hol:numbers"><p class="l3-qt">Модельде TCP-да бет (A) неге 65 мс-та емес, 85 мс-та бітті?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Ол B-ның жоғалған пакетінен кейінгі байттарды күтті</button><button type="button" class="l3-opt" data-i="1">Беттің пакеті жоғалды</button><button type="button" class="l3-opt" data-i="2">Сервер баяу</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Ол B-ның жоғалған пакетінен кейінгі байттарды күтті</p><p>A-ның деректері уақытында келді, бірақ TCP оларды тесік толғанша бермейді.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Тірі дауыс</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>UDP</strong>: ең қарапайым көлік. Пакетті жібереді де ұмытады: қайта жіберу жоқ, тәртіп жоқ, байланыс орнату жоқ. Неге керек?</p>
+<p>Кейбір деректің <strong>уақыты өтеді</strong>. Дауыстың, бейне қоңыраудың, онлайн ойынның 60 мс кешіккен пакеті енді пайдасыз: ол уақытта келесі сөз айтылып қойған. TCP оны күтіп, бүкіл ағынды кешіктірер еді.</p>
+<h3>Есептеп көрейік</h3>
+<p>Сол 12 пакет, біреуі жоғалды:</p>
+<ul><li><strong>TCP</strong>: ең ұзақ кідіріс <strong>80 мс</strong>. Дауыс «қатып», сосын жылдам «қуып жетеді».</li><li><strong>UDP</strong>: ең ұзақ кідіріс <strong>20 мс</strong>, бір пакет <strong>жоғалды</strong>. Құлаққа бір сәттік шырт.</li></ul>
+<p>Кодек жоғалған 20 мс-ты алдыңғы мен келесіден «болжап» толтырады (packet loss concealment).</p>
+<h3>Нақты әлемде</h3>
+<ul><li>Zoom, WhatsApp, Discord: дауыс пен бейне UDP үстінде (RTP/WebRTC).</li><li>Онлайн ойындар: ойыншының орны UDP-мен, әр 16 мс сайын жаңа мән. Ескісін қайта жіберудің мәні жоқ.</li><li>DNS сұраулары да UDP: бір сұрақ, бір жауап, байланыс орнатудың қажеті жоқ.</li></ul>
+<blockquote><p>Ереже: деректің әр байты маңызды болса: TCP не QUIC. Уақыты маңызды болса: UDP.</p></blockquote>
+<h3>Енді сен</h3>
+<p>UDP-ны жоғалтумен іске қос: кідіріс пен жоғалған пакетке қара.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>UDP: ешбір пакет 20 мс-тан көп күтпейді, бірақ біреуі жоғалады</li></ul><a class="btn secondary" href="../app/index.html#net-13-quic">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="1" data-qid="net-13-quic:voice:predict"><p class="l3-qt">Тірі дауыстық қоңырау. Бір пакет (20 мс дыбыс) жоғалды. Не жақсы: оны қайта жіберіп, күту ме, әлде өткізіп жіберу ме?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Қайта жіберу: әр дыбыс маңызды</button><button type="button" class="l3-opt" data-i="1">Өткізіп жіберу: 60 мс кешіккен дыбыс енді керек емес, ал күту бүкіл сөйлесуді кешіктіреді</button><button type="button" class="l3-opt" data-i="2">Байланысты үзу</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Өткізіп жіберу: 60 мс кешіккен дыбыс енді керек емес, ал күту бүкіл сөйлесуді кешіктіреді</p><p>Тірі дауыста кешіккен дерек жоқ деректен жаман. UDP қайта жібермейді: кішкене үзіліс, бірақ кідіріс жоқ.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="net-13-quic:voice:udp"><p class="l3-qt">UDP нені кепілдемейді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Жеткізуді де, тәртіпті де</button><button type="button" class="l3-opt" data-i="1">Тек жылдамдықты</button><button type="button" class="l3-opt" data-i="2">Порттарды</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Жеткізуді де, тәртіпті де</p><p>UDP: «жібердім, ары қарай өзің». Қалғанын қолданба шешеді.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="net-13-quic:voice:why"><p class="l3-qt">Неге бейне қоңырауға UDP жақсырақ?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Кешіккен кадр пайдасыз, ал қайта жіберуді күту бәрін кешіктіреді</button><button type="button" class="l3-opt" data-i="1">UDP шифрлайды</button><button type="button" class="l3-opt" data-i="2">UDP көбірек дерек жібереді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Кешіккен кадр пайдасыз, ал қайта жіберуді күту бәрін кешіктіреді</p><p>Нақты уақытта бірнеше пакет жоғалту бүкіл ағынның кідіруінен жақсы.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="net-13-quic:voice:dns"><p class="l3-qt">DNS сұраулары көбіне неге UDP арқылы?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Бір кішкентай сұрақ пен бір жауап: TCP байланысын орнату оны екі есе ұзартар еді</button><button type="button" class="l3-opt" data-i="1">DNS құпия</button><button type="button" class="l3-opt" data-i="2">UDP міндетті</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Бір кішкентай сұрақ пен бір жауап: TCP байланысын орнату оны екі есе ұзартар еді</p><p>Жауап келмесе, клиент сұрауды қайталайды. Үлкен жауаптарға DNS бәрібір TCP-ға ауысады.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="net-12-switch.html">← <span lang="en">ARP &amp; Ethernet Switching</span></a><a href="../index.html#net">Компьютерлік желілер</a><a href="net-14-mtu.html"><span lang="en">MTU, Fragmentation &amp; PMTU Black Holes</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Load &amp; Latency · Бұлт және DevOps - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Load &amp;amp; Latency · Бұлт және DevOps - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Кезек теориясы: сервер 100% жүктелгенде кешігу шексізге ұмтылады.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/cloud/cloud-3-scaling.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/cloud/cloud-3-scaling.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Load &amp; Latency · Бұлт және DevOps - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/cloud/cloud-3-scaling.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Кезек теориясы: сервер 100% жүктелгенде кешігу шексізге ұмтылады.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="cloud-3-scaling" style="--lc:#3a72c4">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#cloud">Бұлт және DevOps</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Бұлт және DevOps · 3-сабақ · ≈20 мин · 2 қадам · 4 сұрақ</p>
+        <h1 lang="en">Load &amp; Latency</h1>
+        <p class="l3-lede">Кезек теориясы: сервер 100% жүктелгенде кешігу шексізге ұмтылады.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#cloud-3-scaling">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Шамадан тыс жүктеме</a></li><li><a href="#s2">SLO-ға жет</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Шамадан тыс жүктеме</h2><div class="l3-body"><h3>Идея</h3>
+<p>Бір сервер секундына μ = <strong>100</strong> сұранысты өңдейді. Келетін сұраныстар λ болса, <strong>жүктеме</strong> (utilization) ρ = λ/μ. Сұраныстар кездейсоқ келетіндіктен, кейде қатарынан бірнешеуі келіп, <strong>кезекте</strong> күтеді.</p>
+<p>Кезек теориясы (M/M/1 моделі) бойынша орташа уақыт:</p>
+<pre class="l3-pre"><code>W = 1 / (μ − λ)</code></pre>
+<p>λ ≥ μ болса: кезек шексіз өседі: жүйе <strong>шамадан тыс жүктелген</strong>.</p>
+<h3>Түйсік</h3>
+<p>Жол: машиналар аз болса: еркін жүресің. Жүктеме 90%-ға жеткенде кішкене тежеу де кептеліс тудырады. 100%-да: тұрып қаласың.</p>
+<h3>Есептеп көрейік</h3>
+<p>4 сервер, 800 сұраныс/с: әр серверге 200 &gt; 100: шамадан тыс, кешігу <strong>шексіз</strong> (сұраныстар таймаутқа түседі).</p>
+<p>Бір серверде:</p>
+<ul><li>λ = 50: W = 1/50 с = <strong>20 мс</strong></li><li>λ = 80: 1/20 = <strong>50 мс</strong></li><li>λ = 90: 1/10 = <strong>100 мс</strong></li><li>λ = 99: 1/1 = <strong>1000 мс</strong></li></ul>
+<p>Жүктеме 80%-дан 90%-ға өскенде кешігу <strong>екі есе</strong>, 99%-да: 20 есе.</p>
+<h3>Нақты әлемде</h3>
+<p>Сондықтан серверлерді «100% тиімді» жүктеу: қате. Google SRE кітабы сыйымдылықты 50-70% жүктемеге жоспарлауды ұсынады: қалғаны: кенеттен келетін толқындарға қор.</p>
+<blockquote><p>💡 Түйін: 3D-дегі кезектің ұзындығына қара: жүктеме 100%-ға жақындағанда ол шексіз өседі.</p></blockquote>
+<h3>Тереңірек: Литтл заңы және неге M/M/1 «құйрығы» ауыр</h3>
+<p><strong>Литтл заңы</strong> (1961): кез келген тұрақты жүйеге жарайды, үлестірімге тәуелсіз:</p>
+<pre class="l3-pre"><code>L = λ · W</code></pre>
+<p>L: жүйедегі орташа сұраныс саны, λ: келу жиілігі, W: жүйеде болу уақыты. Мысал: 800 сұраныс/с, W = 50 мс → бір мезгілде 40 сұраныс «ұшуда». Сервер 40 параллель байланысты ұстай алуы керек.</p>
+<p><strong>M/M/1</strong> (Пуассон ағыны, экспоненциалды қызмет уақыты, бір сервер) үшін:</p>
+<pre class="l3-pre"><code>W = 1 / (μ − λ),   ρ = λ / μ,   кезектегі орташа саны L_q = ρ² / (1 − ρ)</code></pre>
+<p>ρ = 0.9 → L_q = 8.1; ρ = 0.99 → L_q = 98. Кезек 1/(1 − ρ) ретінде өседі: сондықтан сыйымдылықтың соңғы пайыздары кешігуді ушықтырады.</p>
+<p><strong>Бір кезек, көп сервер</strong> (M/M/c) n бөлек кезектен (бізде) жақсырақ: бос сервер кезектен келесі сұранысты алады: дүкендегі «бір ортақ кезек → кез келген бос касса» неге тиімді екенінің математикасы.</p>
+<h3>Енді сен</h3>
+<p>Қазір 12 сервер, 800 сұраныс/с. Серверлерді азайтып (мысалы, 4-ке), жүйе жүктемені көтере алмайтын күйді көр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Серверлерді азайтып, олар жүктемені көтере алмайтын күйді көр</li></ul><a class="btn secondary" href="../app/index.html#cloud-3-scaling">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="cloud-3-scaling:overload:w"><p class="l3-qt">μ = 100, λ = 75 болса, орташа кешігу қанша?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">40 мс</button><button type="button" class="l3-opt" data-i="1">10 мс</button><button type="button" class="l3-opt" data-i="2">75 мс</button><button type="button" class="l3-opt" data-i="3">25 мс</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 40 мс</p><p>W = 1/(100 − 75) = 1/25 с = 40 мс.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="cloud-3-scaling:overload:nonlinear"><p class="l3-qt">Неге жүктеме 50%-дан 95%-ға өскенде кешігу 10 есе өседі?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">W = 1/(μ − λ): бос сыйымдылық (μ − λ) 50-ден 5-ке, яғни 10 есе азаяды</button><button type="button" class="l3-opt" data-i="1">Себебі сұраныстар үлкейеді</button><button type="button" class="l3-opt" data-i="2">Себебі сервер баяулайды</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> W = 1/(μ − λ): бос сыйымдылық (μ − λ) 50-ден 5-ке, яғни 10 есе азаяды</p><p>Кешігу бос сыйымдылыққа кері пропорционал, жүктемеге емес. Сондықтан соңғы пайыздар ең «қымбат».</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>SLO-ға жет</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>SLO</strong> (service level objective): сервиске қойылған мақсат: «кешігу ≤ 50 мс». Оған жету үшін неше сервер керек?</p>
+<p>Жүктеме n серверге тең бөлінсе, әрқайсысына λ/n келеді:</p>
+<pre class="l3-pre"><code>W = 1 / (μ − λ/n) ≤ 0.05 с  →  λ/n ≤ 80  →  n ≥ λ / 80</code></pre>
+<h3>Түйсік</h3>
+<p>50 мс: бір сервер 80%-дан аспағанда. Демек әр серверде 20% «тыныс алу» қоры болуы керек.</p>
+<h3>Есептеп көрейік</h3>
+<p>λ = 800: n ≥ 800/80 = <strong>10</strong> сервер.</p>
+<ul><li>9 сервер: 800/9 ≈ 88.9 → W = 1/11.1 ≈ 90 мс ✗</li><li>10 сервер: 80 → 50 мс ✓</li><li>12 сервер: 66.7 → 30 мс (артық шығын)</li></ul>
+<h3>Нақты әлемде</h3>
+<p>SLO, SLI (өлшенетін көрсеткіш, мысалы p99 кешігу) және SLA (клиентпен шарт, бұзылса: айыппұл): SRE (site reliability engineering) тәжірибесінің негізі. Шын жүйелерде орташа емес, <strong>p99</strong> (100 сұраныстың ең баяу 1-і) өлшенеді: пайдаланушыларды ең баяу сұраныстар ашуландырады.</p>
+<blockquote><p>⚠ Жиі қате: орташа кешігуге қарау. Орташа 50 мс болса да, p99: 500 мс болуы мүмкін: әр 100-ші пайдаланушы жарты секунд күтеді.</p></blockquote>
+<h3>Енді сен</h3>
+<p>800 сұраныс/с кезінде кешігу ≤ 50 мс болатын ең аз сервер санын тап.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>800 сұраныс/с кезінде кешігу ≤ 50 мс болатын ең аз сервер санын тап</li></ul><a class="btn secondary" href="../app/index.html#cloud-3-scaling">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="cloud-3-scaling:slo:count"><p class="l3-qt">λ = 1200 сұраныс/с, μ = 100, SLO 50 мс. Неше сервер керек?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">15</button><button type="button" class="l3-opt" data-i="1">12</button><button type="button" class="l3-opt" data-i="2">24</button><button type="button" class="l3-opt" data-i="3">10</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 15</p><p>n ≥ 1200/80 = 15. 12 сервер: 100% жүктеме (шексіз кешігу).</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="cloud-3-scaling:slo:p99"><p class="l3-qt">Неге SRE-лер орташа кешігуге емес, p99-ға қарайды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Орташа ең баяу сұраныстарды жасырады, ал пайдаланушылар дәл соларды сезеді</button><button type="button" class="l3-opt" data-i="1">p99 есептеу оңай</button><button type="button" class="l3-opt" data-i="2">Орташа әрдайым p99-дан үлкен</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Орташа ең баяу сұраныстарды жасырады, ал пайдаланушылар дәл соларды сезеді</p><p>Бір бетті ашу ондаған сұраныстан тұрса, ең баяуы бүкіл беттің уақытын анықтайды. Сондықтан «құйрық» (tail latency) маңызды.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="cloud-2-orchestration.html">← <span lang="en">Orchestration</span></a><a href="../index.html#cloud">Бұлт және DevOps</a><a href="cloud-4-autoscale.html"><span lang="en">Autoscaling</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

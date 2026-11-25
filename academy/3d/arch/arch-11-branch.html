@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Branch Prediction · Компьютер архитектурасы - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Branch Prediction · Компьютер архитектурасы - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Процессор тармақтың нәтижесін алдын ала болжайды: 1 биттік және 2 биттік болжағыш, сұрыпталған және кездейсоқ деректер.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/arch/arch-11-branch.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/arch/arch-11-branch.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Branch Prediction · Компьютер архитектурасы - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/arch/arch-11-branch.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Процессор тармақтың нәтижесін алдын ала болжайды: 1 биттік және 2 биттік болжағыш, сұрыпталған және кездейсоқ деректер.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="arch-11-branch" style="--lc:#b3262e">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#arch">Компьютер архитектурасы</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Компьютер архитектурасы · 11-сабақ · ≈20 мин · 2 қадам · 6 сұрақ</p>
+        <h1 lang="en">Branch Prediction</h1>
+        <p class="l3-lede">Процессор тармақтың нәтижесін алдын ала болжайды: 1 биттік және 2 биттік болжағыш, сұрыпталған және кездейсоқ деректер.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#arch-11-branch">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Цикл тармағы</a></li><li><a href="#s2">Сұрыпталған массив</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Цикл тармағы</h2><div class="l3-body"><h3>Идея</h3>
+<p>Конвейер тармақтың (<code>if</code>, цикл) нәтижесін күтіп тұрмайды: келесі нұсқаулықтарды <strong>болжап</strong> жүктей бастайды. Болжам дұрыс болса, ештеңе жоғалмайды; қате болса, конвейердегінің бәрі тасталады. Модельде бір қате <strong>15 такт</strong> тұрады (қазіргі процессорларда 15-20 такт).</p>
+<h3>1 биттік болжағыш</h3>
+<p>«Соңғы рет өтті ме, өтпеді ме, келесі жолы да солай». Цикл үшін бұл жаман: шығар кезде бір қате (тағы айналады деп ойлайды), қайта кіргенде тағы бір қате (шықты деп есте қалды). Модельде <strong>40-тан 19 қате</strong>.</p>
+<h3>2 биттік болжағыш</h3>
+<p>0-ден 3-ке дейінгі санауыш: тармақ өтсе +1, өтпесе −1. 2 не 3 болса: «өтеді» деп болжайды. Бір рет шығу оны 3-тен 2-ге ғана түсіреді, болжам өзгермейді. Модельде <strong>40-тан 10 қате</strong>: тек шығар кезде. Бір сирек ерекшелік болжамды бұзбайды.</p>
+<h3>Есептеп көрейік</h3>
+<p>1 бит: 19 × 15 = 285 такт жоғалды. 2 бит: 10 × 15 = 150 такт. Бір ғана тармақ үшін.</p>
+<h3>Нақты әлемде</h3>
+<p>Қазіргі болжағыштар (TAGE, перцептрон) тармақтың тарихын да ескереді және 95-99% дәлдікке жетеді. Сол 1-5% қате де маңызды: орташа есеппен әр 5-7 нұсқаулықтың бірі тармақ. Spectre шабуылы да осы болжаудың жанама іздеріне негізделген.</p>
+<h3>Енді сен</h3>
+<p>Циклды 1 биттік, сосын 2 биттік болжағышпен іске қос. Қызыл белгілер: қате болжамдар.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>1 биттік болжағышты циклда сына</li><li>2 биттік болжағыш сол циклда азырақ қателессін</li></ul><a class="btn secondary" href="../app/index.html#arch-11-branch">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="1" data-qid="arch-11-branch:loop:predict"><p class="l3-qt">Ішкі цикл 4 рет айналады, ал сыртқы цикл оны 10 рет қайталайды. Болжағыш «соңғы рет қалай болса, солай» (1 бит) деп жұмыс істейді. 40 тармақта неше рет қателеседі?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Шамамен 10: тек циклдан шыққанда</button><button type="button" class="l3-opt" data-i="1">Шамамен 20: шыққанда және қайта кіргенде</button><button type="button" class="l3-opt" data-i="2">Ешқашан</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Шамамен 20: шыққанда және қайта кіргенде</p><p>Шығарда ол «тағы айналады» деп қателеседі, ал келесі жолы циклға кіргенде «шықты» деп есте сақтағандықтан тағы қателеседі. Модельде 19 (бірінші кіру ғана дұрыс болжанады).</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="arch-11-branch:loop:cost"><p class="l3-qt">Тармақ қате болжанғанда не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Ештеңе</button><button type="button" class="l3-opt" data-i="1">Конвейерге алдын ала жүктелген нұсқаулықтар тасталып, дұрыс жолдан қайта басталады</button><button type="button" class="l3-opt" data-i="2">Бағдарлама қате нәтиже береді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Конвейерге алдын ала жүктелген нұсқаулықтар тасталып, дұрыс жолдан қайта басталады</p><p>Нәтиже дұрыс қалады, тек уақыт жоғалады: конвейер қайта толады.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="arch-11-branch:loop:twobit"><p class="l3-qt">2 биттік болжағыш циклда неге 1 биттіктен жақсы?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Ол жылдамырақ</button><button type="button" class="l3-opt" data-i="1">Бір рет шығу оның болжамын өзгертпейді: санауыш 3-тен 2-ге ғана түседі</button><button type="button" class="l3-opt" data-i="2">Ол екі тармақты бірден болжайды</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Бір рет шығу оның болжамын өзгертпейді: санауыш 3-тен 2-ге ғана түседі</p><p>Гистерезис: болжамды өзгерту үшін қатарынан екі қате керек. Циклдың бір реттік шығуы оған жетпейді.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="arch-11-branch:loop:lost"><p class="l3-qt">Модельде бір қате 15 такт. 2 биттік болжағыш циклда неше такт жоғалтты?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">150</button><button type="button" class="l3-opt" data-i="1">285</button><button type="button" class="l3-opt" data-i="2">15</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 150</p><p>10 қате × 15 такт = 150 такт.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Сұрыпталған массив</h2><div class="l3-body"><h3>Идея</h3>
+<p>Болжағыш тек <strong>үлгіні</strong> болжай алады. Тармақтың нәтижесі деректерге тәуелді болса, оның сапасы деректердің ретіне байланысты.</p>
+<h3>Есептеп көрейік</h3>
+<p><code>if (x &gt;= 128)</code> 64 кездейсоқ байтта. 2 биттік болжағыш: <strong>64-тен 31 қате</strong>, яғни 48%: монета лақтырғаннан артық емес. Сол 64 байт сұрыпталса: алдымен бәрі «жоқ», сосын бәрі «иә». Қате тек басында және ауысу кезінде: <strong>3</strong>.</p>
+<p>Яғни 31 × 15 = 465 такт пен 3 × 15 = 45 такт. Бір циклда он есе айырма.</p>
+<h3>Нақты әлемде</h3>
+<p>StackOverflow-тағы ең атақты сұрақтардың бірі: «Неге сұрыпталған массивті өңдеу сұрыпталмағаннан тезірек?» Жауабы дәл осы: тармақты болжау. Шешімдері:</p>
+<ul><li>деректерді сұрыптау (егер ол бәрібір керек болса);</li><li><strong>тармақсыз код</strong>: <code>sum += (x &gt;= 128) * x</code> не <code>cmov</code> нұсқаулығы. Тармақ жоқ, болжайтын ештеңе жоқ;</li><li>компиляторлар мұны көбіне өздері жасайды.</li></ul>
+<blockquote><p>Өнімділікті өлшемей оңтайландырма: <code>perf stat</code> branch-misses санын тікелей көрсетеді.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Кездейсоқ деректерде 2 биттік болжағышты іске қос, сосын сұрыпталған деректерде.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Кездейсоқ деректер: болжағыш монета сияқты</li><li>Сол деректер сұрыпталса: қате 5-тен аз</li></ul><a class="btn secondary" href="../app/index.html#arch-11-branch">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="1" data-qid="arch-11-branch:data:predict"><p class="l3-qt">64 байтта «x &gt;= 128 болса» деген тармақ. Деректер кездейсоқ. Сол деректерді алдын ала сұрыптасақ, бағдарлама тездей ме?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Жоқ, тексеру саны бірдей</button><button type="button" class="l3-opt" data-i="1">Иә: сұрыпталса тармақ алдымен үнемі «жоқ», сосын үнемі «иә», болжау оңай</button><button type="button" class="l3-opt" data-i="2">Тек жад аз болса</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Иә: сұрыпталса тармақ алдымен үнемі «жоқ», сосын үнемі «иә», болжау оңай</p><p>Кездейсоқ деректерде болжағыш монета лақтырғандай. Сұрыпталғанда тек бір ауысу бар: қателер саны бірнешеге дейін азаяды.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="1" data-qid="arch-11-branch:data:why"><p class="l3-qt">Неге кездейсоқ деректерде болжағыш шамамен жартысында қателеседі?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Ол сынған</button><button type="button" class="l3-opt" data-i="1">Нәтижеде үлгі жоқ: келесі тармақ алдыңғыға тәуелді емес</button><button type="button" class="l3-opt" data-i="2">Деректер тым көп</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Нәтижеде үлгі жоқ: келесі тармақ алдыңғыға тәуелді емес</p><p>Болжау: өткенге қарап болашақты айту. Кездейсоқтықта өткен ештеңе айтпайды.</p></details></div><div class="l3-q l3-quiz" data-answer="1" data-qid="arch-11-branch:data:sorted"><p class="l3-qt">Модельде сұрыпталған деректерде 2 биттік болжағыш неше рет қателесті?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">0</button><button type="button" class="l3-opt" data-i="1">3</button><button type="button" class="l3-opt" data-i="2">31</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 3</p><p>Біреуі басында (санауыш «иә» күйінен басталады), екеуі ауысу кезінде, санауыш 0-ден 2-ге көтерілгенше.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="arch-11-branch:data:branchless"><p class="l3-qt">Тармақсыз код (мысалы, <code>sum += (x &gt;= 128) * x</code>) неге көмектеседі?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Онда болжанатын тармақ жоқ: әр жолы бірдей нұсқаулықтар орындалады</button><button type="button" class="l3-opt" data-i="1">Ол жадты аз алады</button><button type="button" class="l3-opt" data-i="2">Ол көп ядроны қолданады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Онда болжанатын тармақ жоқ: әр жолы бірдей нұсқаулықтар орындалады</p><p>Қате болжам болмайды, өйткені болжам да жоқ. Бағасы: екі тармақтың жұмысы да әр жолы жасалады.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="arch-10-pipeline.html">← <span lang="en">Pipelining &amp; Hazards</span></a><a href="../index.html#arch">Компьютер архитектурасы</a><a href="arch-12-assoc.html"><span lang="en">Cache Associativity</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

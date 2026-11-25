@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Object Pooling &amp; GC Spikes · Ойын әзірлеу - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Object Pooling &amp;amp; GC Spikes · Ойын әзірлеу - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Ойын неге кенет «қатады»? Жаңа объектілер, қоқыс жинаушы және объектілерді қайта қолдану.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/game/game-13-pooling.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/game/game-13-pooling.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Object Pooling &amp; GC Spikes · Ойын әзірлеу - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/game/game-13-pooling.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Ойын неге кенет «қатады»? Жаңа объектілер, қоқыс жинаушы және объектілерді қайта қолдану.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="game-13-pooling" style="--lc:#b8466a">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#game">Ойын әзірлеу</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Ойын әзірлеу · 13-сабақ · ≈20 мин · 2 қадам · 6 сұрақ</p>
+        <h1 lang="en">Object Pooling &amp; GC Spikes</h1>
+        <p class="l3-lede">Ойын неге кенет «қатады»? Жаңа объектілер, қоқыс жинаушы және объектілерді қайта қолдану.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#game-13-pooling">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Кенет қату</a></li><li><a href="#s2">Пул</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Кенет қату</h2><div class="l3-body"><h3>Идея</h3>
+<p>JavaScript, C#, Java сияқты тілдерде жадты <strong>қоқыс жинаушы</strong> (garbage collector, GC) тазалайды. Ыңғайлы: <code>new</code> жазасың, <code>delete</code> ұмытасың. Бірақ GC уақыт алады, ал ойында уақыт кадрлармен өлшенеді: 60 FPS үшін бір кадрға <strong>16,7 мс</strong>.</p>
+<h3>Есептеп көрейік</h3>
+<p>Шутер: әр кадрда 40 оқ, әрқайсысы 30 кадр өмір сүреді, 300 кадр.</p>
+<ul><li>Барлығы <strong>12 000</strong> жаңа объект, өлгендері қоқысқа айналады.</li><li>Қоқыс 3000-ға жеткенде GC іске қосылады: 3000 × 0,01 мс = 30 мс қосымша.</li><li>Нәтиже: кадрлардың көбі <strong>8,8 мс</strong>, бірақ <strong>3</strong> кадр <strong>38,8 мс</strong>: ойыншы көретін «қату» (stutter).</li></ul>
+<p>Орташа FPS тамаша, бірақ ойыншы орташаны емес, ең нашар кадрды сезеді. Сондықтан ойын әзірлеушілері «1% low» не 99-перцентиль кадр уақытын өлшейді: Cloud 12-сабақтағы p95 сияқты.</p>
+<h3>Нақты әлемде</h3>
+<p>Unity-дің Profiler-інде «GC.Alloc» бағаны: ойынның ыстық циклінде ол 0 болуы керек. Шағын шетін жасаулар да (жол біріктіру, массив жасау, лямбда) әр кадрда қоқыс шығарады.</p>
+<h3>Енді сен</h3>
+<p>Пулсыз, кадрына 40 оқпен іске қос. Кадр уақыты сызығындағы шыңдарға қара.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Пулсыз, кадрына 40 оқ: 60 FPS шегінен асқан кадрлар бар</li></ul><a class="btn secondary" href="../app/index.html#game-13-pooling">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="1" data-qid="game-13-pooling:spikes:predict"><p class="l3-qt">Ойында әр кадр сайын 40 оқ жасалады (new), әрқайсысы 30 кадр өмір сүреді, сосын тасталады. Кадрдың орташа уақыты 9 мс, шек 16,7 мс. Ойын тегіс жүре ме?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Иә, 9 мс шектен әлдеқайда аз</button><button type="button" class="l3-opt" data-i="1">Әдетте иә, бірақ кейде кадр кенет 30 мс-тан асады: қоқыс жинаушы іске қосылады</button><button type="button" class="l3-opt" data-i="2">Жоқ, әр кадр баяу</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Әдетте иә, бірақ кейде кадр кенет 30 мс-тан асады: қоқыс жинаушы іске қосылады</p><p>Тасталған оқтар жиналады. Олар 3000-ға жеткенде қоқыс жинаушы ойынды тоқтатып, жадты тазалайды: кадр 38,8 мс. Орташасы жақсы, ал ойыншы «қатуды» көреді.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="game-13-pooling:spikes:budget"><p class="l3-qt">60 FPS үшін бір кадрға қанша уақыт бар?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Шамамен 16,7 мс</button><button type="button" class="l3-opt" data-i="1">60 мс</button><button type="button" class="l3-opt" data-i="2">1 мс</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Шамамен 16,7 мс</p><p>1000 мс / 60 ≈ 16,7 мс. Одан ұзақ кадр бір кадрдың өткізіліп кетуін білдіреді.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="game-13-pooling:spikes:avg"><p class="l3-qt">Неге кадрдың орташа уақыты жақсы болса да ойын «қатуы» мүмкін?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Сирек, бірақ ұзақ кідірістер (GC) орташада жасырынады</button><button type="button" class="l3-opt" data-i="1">Орташа дұрыс есептелмеген</button><button type="button" class="l3-opt" data-i="2">Монитор баяу</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Сирек, бірақ ұзақ кідірістер (GC) орташада жасырынады</p><p>300 кадрдың 3-і ғана баяу, бірақ ойыншы әрқайсысын сезеді.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="game-13-pooling:spikes:gc"><p class="l3-qt">Модельде пулсыз неше рет GC іске қосылды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">3</button><button type="button" class="l3-opt" data-i="1">0</button><button type="button" class="l3-opt" data-i="2">300</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 3</p><p>12 000 өлген оқтың әр 3000-ы бір жинау: соңғы жинауға дейін 3 рет.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Пул</h2><div class="l3-body"><h3>Пул</h3>
+<p><strong>Объектілер пулы</strong> (object pool): өлген объектіні жоймай, қайта қолдануға сақтау.</p>
+<pre class="l3-pre"><code>const bullet = pool.pop() ?? new Bullet();  // ал
+bullet.reset(x, y, dir);
+...
+pool.push(bullet);                          // қайтар</code></pre>
+<h3>Есептеп көрейік</h3>
+<p>Сол 40 оқ, 300 кадр:</p>
+<ul><li>жаңа объектілер <strong>1200</strong> (12 000 емес: 10 есе аз);</li><li>пулдың өлшемі <strong>1200</strong> = 40 оқ × 30 кадр өмір: бір мезгілде тірі ең көп оқ;</li><li>GC <strong>0</strong> рет, ең баяу кадр <strong>8,8 мс</strong>.</li></ul>
+<h3>Бағасы</h3>
+<ul><li><strong>Жад</strong>: пул ең көп жағдайға дайын объектілерді үнемі ұстайды.</li><li><strong>Қате қаупі</strong>: объектіні қайтарғанда толық тазаламасаң (reset), ескі оқтың күйі жаңасына «жұғады». Немесе қайтарылған объектіге әлдекім әлі сілтеме ұстап тұрады.</li><li>Сондықтан пул тек жиі жасалып-жойылатын нәрселерге: оқтар, бөлшектер (particles), жаулар, UI элементтері.</li></ul>
+<h3>Нақты әлемде</h3>
+<p>Unity-де <code>ObjectPool&lt;T&gt;</code> (2021-ден бастап кірістірілген), Godot-та, Unreal-да ұқсас механизмдер. Бөлшектер жүйелері мыңдаған ұшқынды бір алдын ала бөлінген массивте ұстайды.</p>
+<h3>Енді сен</h3>
+<p>Пулды қосып, сол 40 оқпен іске қос. Кадр сызығы мен жаңа объектілер санын салыстыр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Пулмен сол 40 оқ: бірде-бір кідіріс жоқ</li><li>Пул жаңа объектілерді 10 есе азайтты</li></ul><a class="btn secondary" href="../app/index.html#game-13-pooling">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="1" data-qid="game-13-pooling:pool:predict"><p class="l3-qt">Енді өлген оқты тастамай, «пулға» қайтарамыз, жаңа оқ керек болса, пулдан аламыз. Жалпы неше оқ объектісі жасалады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Сол 12 000</button><button type="button" class="l3-opt" data-i="1">1200: бір мезгілде тірі оқтардың ең көп саны (40 × 30)</button><button type="button" class="l3-opt" data-i="2">40</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 1200: бір мезгілде тірі оқтардың ең көп саны (40 × 30)</p><p>Бір мезгілде ең көбі 40 × 30 = 1200 оқ тірі. Пул сонша объектіге дейін өседі де, қалғанында бәрі қайта қолданылады. Қоқыс жоқ, GC жоқ.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="game-13-pooling:pool:size"><p class="l3-qt">Модельде пулдың өлшемі неге дәл 1200?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Бір мезгілде тірі оқтардың ең көп саны: 40 × 30</button><button type="button" class="l3-opt" data-i="1">Кездейсоқ</button><button type="button" class="l3-opt" data-i="2">GC шегі</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Бір мезгілде тірі оқтардың ең көп саны: 40 × 30</p><p>Пул тек бір уақытта қажет болғанша өседі, сосын тұрақты.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="game-13-pooling:pool:reset"><p class="l3-qt">Пулдан алынған объектімен ең жиі қате қандай?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Оны толық тазаламау: ескі күй жаңа объектіге қалады</button><button type="button" class="l3-opt" data-i="1">Оны тым жылдам алу</button><button type="button" class="l3-opt" data-i="2">Пулдың бос болуы</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Оны толық тазаламау: ескі күй жаңа объектіге қалады</p><p>Мысалы, оқтың «тиді» деген жалауы қалып қойса, жаңа оқ бірден жоғалады.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="game-13-pooling:pool:when"><p class="l3-qt">Пул неге пайдалы?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Жиі жасалып-жойылатын көп объектілерге: оқтар, бөлшектер</button><button type="button" class="l3-opt" data-i="1">Барлық объектіге</button><button type="button" class="l3-opt" data-i="2">Тек бір рет жасалатын объектілерге</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Жиі жасалып-жойылатын көп объектілерге: оқтар, бөлшектер</p><p>Сирек жасалатын объектіні пулда ұстау тек жадты бекер алады.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="game-12-broadphase.html">← <span lang="en">Collision: Broad Phase with a Grid</span></a><a href="../index.html#game">Ойын әзірлеу</a><a href="game-14-timestep.html"><span lang="en">Fixed Timestep Physics</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

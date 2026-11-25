@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Public-Key Cryptography · Киберқауіпсіздік - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Public-Key Cryptography · Киберқауіпсіздік - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: RSA: екі кілт: біреуі бәріне ашық, екіншісі тек сенде.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/sec/sec-7-rsa.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/sec/sec-7-rsa.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Public-Key Cryptography · Киберқауіпсіздік - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/sec/sec-7-rsa.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: RSA: екі кілт: біреуі бәріне ашық, екіншісі тек сенде.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="sec-7-rsa" style="--lc:#2b3a5c">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#sec">Киберқауіпсіздік</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Киберқауіпсіздік · 7-сабақ · ≈25 мин · 3 қадам · 6 сұрақ</p>
+        <h1 lang="en">Public-Key Cryptography</h1>
+        <p class="l3-lede">RSA: екі кілт: біреуі бәріне ашық, екіншісі тек сенде.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#sec-7-rsa">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Кілттер жұбы</a></li><li><a href="#s2">Шифрлау және ашу</a></li><li><a href="#s3">Цифрлық қолтаңба</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Кілттер жұбы</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Ашық кілтті криптография</strong> (1976-1977): екі кілт. <strong>Ашық кілт</strong> (e, n): бәріне жариялайсың; <strong>жабық кілт</strong> (d): тек сенде. Ашық кілтпен шифрланғанды тек жабық кілт ашады. Кілт жеткізу мәселесі шешілді!</p>
+<p><strong>RSA</strong> (Ривест, Шамир, Адлеман, 1977):</p>
+<ol><li>Екі жай сан p, q таңда; n = p · q</li><li>φ(n) = (p − 1)(q − 1)</li><li>e таңда: gcd(e, φ) = 1</li><li>d = e⁻¹ mod φ: яғни e · d ≡ 1 (mod φ)</li></ol>
+<h3>Түйсік</h3>
+<p>Ашық құлып: кез келген адам құлыпты басып жаба алады (ашық кілт), бірақ оны тек кілті бар адам ашады (жабық кілт). Құлыптарды тегін таратасың.</p>
+<h3>Есептеп көрейік</h3>
+<p>Оқулықтағы мысал:</p>
+<ul><li>p = 61, q = 53 → n = <strong>3233</strong></li><li>φ = 60 · 52 = <strong>3120</strong></li><li>e = 17 (gcd(17, 3120) = 1)</li><li>d = 17⁻¹ mod 3120 = <strong>2753</strong> (тексеру: 17 · 2753 = 46 801 = 15 · 3120 + 1 ✓)</li></ul>
+<p>Ашық кілт: (17, 3233). Жабық: 2753.</p>
+<h3>Нақты әлемде</h3>
+<p>Қауіпсіздік <strong>факторизацияның</strong> қиындығына сүйенеді: n-ді біле тұра p мен q-ды табу. 3233 = 61 · 53: оңай. 2048 биттік n (617 ондық цифр): белгілі алгоритмдермен мүмкін емес. HTTPS сертификаттары, SSH кілттері, Git қолтаңбалары: RSA не оның ізбасарлары (эллипстік қисықтар).</p>
+<blockquote><p>⚠ Жиі қате: p мен q-ды кішкене не бір-біріне жақын таңдау. Оқу үшін біз n ≤ 10⁶ қойдық; нақты кілттерде p мен q: әрқайсысы 1024 биттік кездейсоқ жай сандар.</p></blockquote>
+<h3>Енді сен</h3>
+<p>p, q және e енгізіп, кілттер жұбын жаса. Оқулықтағы 61, 53, 17-ден бастауға болады.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Жарамды RSA кілттер жұбын жаса</li></ul><a class="btn secondary" href="../app/index.html#sec-7-rsa">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="sec-7-rsa:keys:phi"><p class="l3-qt">p = 5, q = 11 болса, φ(n) неге тең?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">40</button><button type="button" class="l3-opt" data-i="1">55</button><button type="button" class="l3-opt" data-i="2">16</button><button type="button" class="l3-opt" data-i="3">50</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 40</p><p>φ(n) = (5 − 1)(11 − 1) = 4 · 10 = 40.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="sec-7-rsa:keys:security"><p class="l3-qt">RSA-ның қауіпсіздігі қандай есептің қиындығына сүйенеді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Үлкен n-ді жай көбейткіштерге жіктеу</button><button type="button" class="l3-opt" data-i="1">Жай сандарды табу</button><button type="button" class="l3-opt" data-i="2">Санды квадраттау</button><button type="button" class="l3-opt" data-i="3">Хэш коллизиясын табу</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Үлкен n-ді жай көбейткіштерге жіктеу</p><p>n белгілі. p мен q-ды тапсаң, φ мен d-ны бірден есептейсің. Ал жай сандарды табу (кілт жасау): керісінше, оңай.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Шифрлау және ашу</h2><div class="l3-body"><h3>Идея</h3>
+<p>Хабар: сан m (0 ≤ m &lt; n). Шифрлау мен ашу: модуль бойынша дәрежеге шығару:</p>
+<pre class="l3-pre"><code>шифрлау:  c = mᵉ mod n      (ашық кілт)
+ашу:      m = cᵈ mod n      (жабық кілт)</code></pre>
+<h3>Түйсік</h3>
+<p>mᵉ mod n: «бір бағытты есік»: есептеу оңай, ал e мен n-нен m-ге қайту: тек d арқылы. d: «құпия есік» (trapdoor).</p>
+<h3>Есептеп көрейік</h3>
+<p>m = 65 (ASCII «A»), e = 17, n = 3233:</p>
+<pre class="l3-pre"><code>c = 65¹⁷ mod 3233 = 2790</code></pre>
+<p>65¹⁷: 31 цифрлық сан, бірақ <strong>квадраттау және көбейту</strong> әдісімен (17 = 10001₂) тек 5 көбейту керек, әр қадамда mod алынады.</p>
+<pre class="l3-pre"><code>m = 2790²⁷⁵³ mod 3233 = 65 ✓</code></pre>
+<p>Неге жұмыс істейді? Эйлер теоремасы: m^φ(n) ≡ 1 (mod n), ал e·d = 1 + k·φ, сондықтан m^(ed) = m · (m^φ)ᵏ ≡ m.</p>
+<h3>Нақты әлемде</h3>
+<p>RSA баяу, сондықтан ол ұзын хабарларды шифрламайды. HTTPS-те RSA (не ECDH) тек <strong>кілт алмасу</strong> үшін, ал деректер AES-пен шифрланады: <strong>гибридті шифрлау</strong>. Сондай-ақ «оқулықтағы RSA» қауіпті: нақты жүйелер <strong>OAEP</strong> толтыруын (padding) қолданады: әйтпесе бірдей m әрдайым бірдей c береді.</p>
+<blockquote><p>💡 Түйін: 3D-де m → c → m айналымы: ашық кілт бір жаққа, жабық кілт кері жаққа.</p></blockquote>
+<h3>Тереңірек: d-ны кеңейтілген Евклид алгоритмімен табу</h3>
+<p>d: e-нің φ бойынша кері элементі: 17 · d ≡ 1 (mod 3120). Евклид алгоритмі ЕҮОБ-ты табады, ал «кеңейтілгені» коэффициенттерді де береді:</p>
+<pre class="l3-pre"><code>3120 = 183 · 17 + 9
+  17 =   1 · 9  + 8
+   9 =   1 · 8  + 1</code></pre>
+<p>Кері жүреміз:</p>
+<pre class="l3-pre"><code>1 = 9 − 8
+  = 9 − (17 − 9) = 2·9 − 17
+  = 2·(3120 − 183·17) − 17 = 2·3120 − 367·17</code></pre>
+<p>Демек 17 · (−367) ≡ 1 (mod 3120), d = −367 + 3120 = <strong>2753</strong> ✓</p>
+<p><strong>Неге дұрыс</strong> (Эйлер теоремасы): gcd(m, n) = 1 болса, m^φ(n) ≡ 1 (mod n). e·d = 1 + k·φ, сондықтан</p>
+<pre class="l3-pre"><code>(mᵉ)ᵈ = m^(1 + kφ) = m · (m^φ)ᵏ ≡ m · 1ᵏ = m (mod n)</code></pre>
+<p>(gcd(m, n) ≠ 1 жағдайы Қытай қалдық теоремасымен жеке дәлелденеді.)</p>
+<h3>Енді сен</h3>
+<p>Санды ашық кілтпен шифрлап, симулятор оны жабық кілтпен ашқанын тексер.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Санды ашық кілтпен шифрлап, жабық кілтпен аш</li></ul><a class="btn secondary" href="../app/index.html#sec-7-rsa">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="sec-7-rsa:encrypt:who"><p class="l3-qt">Сен Данаға құпия хат жібересің. Қай кілтпен шифрлайсың?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Дананың ашық кілтімен</button><button type="button" class="l3-opt" data-i="1">Дананың жабық кілтімен</button><button type="button" class="l3-opt" data-i="2">Өзіңнің жабық кілтіңмен</button><button type="button" class="l3-opt" data-i="3">Өзіңнің ашық кілтіңмен</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Дананың ашық кілтімен</p><p>Тек Дана ғана оқуы керек: сондықтан оның ашық кілтімен шифрлаймыз; ашатын: тек оның жабық кілті.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="sec-7-rsa:encrypt:hybrid"><p class="l3-qt">Неге HTTPS деректерді RSA-мен емес, AES-пен шифрлайды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">RSA мыңдаған есе баяу; оны тек AES кілтін алмасуға қолданады</button><button type="button" class="l3-opt" data-i="1">RSA қауіпсіз емес</button><button type="button" class="l3-opt" data-i="2">AES-тің кілті ашық</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> RSA мыңдаған есе баяу; оны тек AES кілтін алмасуға қолданады</p><p>Ашық кілтті алгоритмдер үлкен сандардың дәрежесімен жұмыс істейді: баяу. Симметриялық AES аппаратта (AES-NI) гигабайт/секунд жылдамдықпен жұмыс істейді.</p></details></div></div></section><section class="l3-step" id="s3" aria-labelledby="s3-h"><h2 id="s3-h"><span class="l3-n">3</span>Цифрлық қолтаңба</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Цифрлық қолтаңба</strong>: RSA-ны «керісінше» қолдану:</p>
+<pre class="l3-pre"><code>қол қою:   s = mᵈ mod n     (жабық кілтпен: тек сен)
+тексеру:   sᵉ mod n = m ?   (ашық кілтпен: кез келген адам)</code></pre>
+<p>Тексеру сәтті болса: хабар (1) <strong>сенен</strong> келді, (2) <strong>өзгертілмеді</strong>.</p>
+<h3>Түйсік</h3>
+<p>Мөр: оны тек сен қоя аласың (жабық кілт), бірақ кез келген адам оның сенікі екенін тани алады (ашық кілт).</p>
+<h3>Есептеп көрейік</h3>
+<p>m = 123, d = 2753, n = 3233:</p>
+<pre class="l3-pre"><code>s = 123²⁷⁵³ mod 3233
+sᵉ mod n = s¹⁷ mod 3233 = 123 ✓</code></pre>
+<p>Іс жүзінде хабардың өзіне емес, оның <strong>хэшіне</strong> қол қойылады: s = H(m)ᵈ mod n. Хэш кез келген ұзын құжатты кішкене санға айналдырады: 4-сабақ осында қолданылады.</p>
+<h3>Нақты әлемде</h3>
+<ul><li>Бағдарлама жаңартулары (Windows, Android, macOS): әзірлеушінің қолтаңбасымен</li><li>HTTPS сертификаттары: сертификат орталығының (CA) қолтаңбасы</li><li>Git коммиттері (<code>git commit -S</code>), Ethereum транзакциялары</li><li>Қазақстандағы <strong>ЭЦҚ</strong> (электрондық цифрлық қолтаңба): eGov порталында дәл осы идея</li></ul>
+<blockquote><p>⚠ Жиі қате: шифрлау мен қолтаңбаны шатастыру. Шифрлау: <strong>құпиялылық</strong> (кім оқи алады?), қолтаңба: <strong>түпнұсқалық</strong> (кім жазды?). Екеуі әр түрлі кілттерді қолданады.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Санға қол қойып, симулятор ашық кілтпен тексергенін көр.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Хабарға қол қойып, қолтаңбаны тексер</li></ul><a class="btn secondary" href="../app/index.html#sec-7-rsa">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="sec-7-rsa:sign:key"><p class="l3-qt">Қолтаңбаны жасау үшін қай кілт керек?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Жіберушінің жабық кілті</button><button type="button" class="l3-opt" data-i="1">Жіберушінің ашық кілті</button><button type="button" class="l3-opt" data-i="2">Алушының ашық кілті</button><button type="button" class="l3-opt" data-i="3">Кілт керек емес</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Жіберушінің жабық кілті</p><p>Қолтаңбаны тек иесі ғана жасай алуы керек: сондықтан жабық кілт. Ал тексеру: ашық кілтпен, кез келген адам.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="sec-7-rsa:sign:change"><p class="l3-qt">Қол қойылған хабарда бір әріп өзгертілсе, не болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Тексеру сәтсіз аяқталады: қолтаңба басқа хэшке арналған</button><button type="button" class="l3-opt" data-i="1">Қолтаңба әлі де жарамды</button><button type="button" class="l3-opt" data-i="2">Хабар автоматты түрде түзетіледі</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Тексеру сәтсіз аяқталады: қолтаңба басқа хэшке арналған</p><p>Хабар өзгерсе: хэші өзгереді (лавина әсері), ал қолтаңба ескі хэшке сәйкес. Жаңа қолтаңба жасау үшін жабық кілт керек.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="sec-6-strength.html">← <span lang="en">Password Strength</span></a><a href="../index.html#sec">Киберқауіпсіздік</a><a href="sec-8-injection.html"><span lang="en">Injection &amp; XSS</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

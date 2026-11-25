@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cache Stampede: Single-Flight &amp; Refresh-Ahead · Бұлт және DevOps - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Cache Stampede: Single-Flight &amp;amp; Refresh-Ahead · Бұлт және DevOps - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Кэш дерекқорды қорғайды, бірақ ыстық кілттің мерзімі біткен секундта бәрі бірден дерекқорға жүгіреді. Сұраныстарды біріктіру және алдын ала жаңарту.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/cloud/cloud-14-stampede.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/cloud/cloud-14-stampede.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Cache Stampede: Single-Flight &amp; Refresh-Ahead · Бұлт және DevOps - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/cloud/cloud-14-stampede.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Кэш дерекқорды қорғайды, бірақ ыстық кілттің мерзімі біткен секундта бәрі бірден дерекқорға жүгіреді. Сұраныстарды біріктіру және алдын ала жаңарту.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="cloud-14-stampede" style="--lc:#3a72c4">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#cloud">Бұлт және DevOps</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Бұлт және DevOps · 14-сабақ · ≈20 мин · 2 қадам · 4 сұрақ</p>
+        <h1 lang="en">Cache Stampede: Single-Flight &amp; Refresh-Ahead</h1>
+        <p class="l3-lede">Кэш дерекқорды қорғайды, бірақ ыстық кілттің мерзімі біткен секундта бәрі бірден дерекқорға жүгіреді. Сұраныстарды біріктіру және алдын ала жаңарту.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#cloud-14-stampede">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Дүрбелең</a></li><li><a href="#s2">Біреуі ғана барады</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Дүрбелең</h2><div class="l3-body"><h3>Идея</h3>
+<p><strong>Cache-aside</strong>: қосымша алдымен кэштен іздейді; жоқ болса, дерекқордан алып, кэшке салады да, TTL береді. Әдетте бұл тамаша: ыстық кілт 20 секундта бір рет қана дерекқорға барады.</p>
+<p>Бірақ мерзім біткен сәтте бір проблема бар. Кілтті толтыру 2 секунд алады. Осы 2 секундта келген <strong>әрбір</strong> сұраныс кэштен ештеңе таппайды да, өзі дерекқорға барады. Бұл <strong>cache stampede</strong> (кэш дүрбелеңі, thundering herd).</p>
+<h3>Түйсік</h3>
+<p>Дүкенде нан бітті. Сатушы қоймаға барды. Ол оралғанша кезектегі жүз адамның бәрі «өзім әкелейін» деп қоймаға жүгірді. Қойманың есігі біреу ғана.</p>
+<h3>Есептеп көрейік</h3>
+<ul><li>Кэшсіз: секундына 500 сұраныс, дерекқор 50-ге шыдайды. 60 секундтың бәрі шамадан тыс.</li><li>TTL кэш: кілт 0, 22, 44-секундтарда бос (әрқайсысы 2 с). 54 секунд кэштен: hit rate 90%. Бірақ сол 6 секундта дерекқорға секундына 500 сұраныс: әр секундта 450 қате, барлығы 2700.</li></ul>
+<p>Орташа көрсеткіш (90%) жақсы көрінеді, ал дерекқордың графигінде үш биік шың тұр.</p>
+<h3>Нақты әлемде</h3>
+<p>Дүрбелең көбіне ең нашар сәтте болады: таңертеңгі шыңда, кэш сервері қайта іске қосылғанда (барлық кілт бірден бос), не көптеген кілтке бірдей TTL берілгенде (бәрінің мерзімі бір секундта бітеді). Соңғысын TTL-ге кездейсоқ «діріл» (jitter) қосып шешеді.</p>
+<h3>Енді сен</h3>
+<p>Алдымен кэшсіз ойнат. Сосын «TTL кэш» таңда да, дерекқордың графигіндегі шыңдарды тап.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Кэшсіз: дерекқор 60 секундтың бәрінде шамадан тыс жүктелген</li><li>TTL кэш: 90% сұраныс кэштен, бірақ әр мерзім біткенде дерекқорға 500/с</li></ul><a class="btn secondary" href="../app/index.html#cloud-14-stampede">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="0" data-qid="cloud-14-stampede:stampede:predict"><p class="l3-qt">Ыстық кілт секундына 500 рет оқылады, кэштің TTL-і 20 с, дерекқор секундына 50 сұранысқа шыдайды. Кэштің арқасында бәрі әрқашан жақсы ма?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Жоқ: кілттің мерзімі біткен сәтте 500 сұраныс бірден дерекқорға барады</button><button type="button" class="l3-opt" data-i="1">Иә: кэш 90% сұранысты өзі береді</button><button type="button" class="l3-opt" data-i="2">Жоқ: кэш дерекқорды үнемі баяулатады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Жоқ: кілттің мерзімі біткен сәтте 500 сұраныс бірден дерекқорға барады</p><p>Орташа есеппен кэш тамаша жұмыс істейді. Бірақ мерзім біткен екі секундта кілт бос, ал әр сұраныс «кэште жоқ, өзім әкелейін» деп дерекқорға барады.</p></details></div></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="cloud-14-stampede:stampede:what"><p class="l3-qt">Cache stampede қашан болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Ыстық кілттің мерзімі біткенде, ол толтырылғанша барлық сұраныс дерекқорға барады</button><button type="button" class="l3-opt" data-i="1">Кэш толып кеткенде</button><button type="button" class="l3-opt" data-i="2">Дерекқор жаңартылғанда</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Ыстық кілттің мерзімі біткенде, ол толтырылғанша барлық сұраныс дерекқорға барады</p><p>Мәселе кэштің өзінде емес, бос кілтті кім толтыратынында: үйлестіру болмаса, бәрі бірден толтыруға тырысады.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="cloud-14-stampede:stampede:avg"><p class="l3-qt">Hit rate 90% болса да, неге дерекқор құлауы мүмкін?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Қалған 10% біркелкі емес, бірнеше секундқа жиналып келеді</button><button type="button" class="l3-opt" data-i="1">90% жеткіліксіз, 99% керек</button><button type="button" class="l3-opt" data-i="2">Hit rate дерекқорға әсер етпейді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Қалған 10% біркелкі емес, бірнеше секундқа жиналып келеді</p><p>Орташа шама шыңдарды жасырады. Дерекқор орташа жүктемеге емес, ең үлкен секундтағы жүктемеге шыдауы керек.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Біреуі ғана барады</h2><div class="l3-body"><h3>Идея</h3>
+<p>Екі шешім бар:</p>
+<ol><li><strong>Single-flight</strong> (сұраныстарды біріктіру): кілт бос болса, тек бірінші сұраныс дерекқорға барады, ал қалғандары оның жауабын күтеді. Дерекқорға жүктеме: мерзімге бір сұраныс. Бірақ пайдаланушылар толтыру уақытында (2 с) бәрібір күтеді.</li><li><strong>Refresh-ahead</strong> (алдын ала жаңарту): мерзімі бітуге 3 секунд қалғанда фондық тапсырма кілтті жаңартады. Кілт ешқашан бос болмайды, пайдаланушылар күтпейді. Тек ең бірінші, суық старт қалады.</li></ol>
+<h3>Түйсік</h3>
+<p>Single-flight: сатушы «мен әкелемін, күте тұрыңдар» дейді, кезек тыныш күтеді. Refresh-ahead: сатушы нан бітпей тұрып, сөреде екі бөлке қалғанда қоймаға барып келеді.</p>
+<h3>Есептеп көрейік</h3>
+<ul><li>Single-flight: дерекқорға ең көп 1/с, шамадан тыс секунд жоқ. Пайдаланушылар 6 секунд күтті (0, 22, 44-секундтардағы толтырулар).</li><li>Refresh-ahead: дерекқорға ең көп 1/с, пайдаланушылар тек 2 секунд күтті (суық старт), hit rate 97%.</li></ul>
+<h3>Нақты әлемде</h3>
+<p>Go тіліндегі <code>singleflight</code> пакеті, CDN-дердің «request collapsing» мүмкіндігі және Nginx-тің <code>proxy_cache_lock</code> баптауы дәл осы бірінші идеяны жүзеге асырады. Ал «stale-while-revalidate» тақырыбы екіншісіне жақын: ескі көшірмені бере тұрып, фонда жаңарту.</p>
+<blockquote><p>⚠ Single-flight бір сервердің ішінде жұмыс істейді. Ондаған сервер болса, әрқайсысы өз сұранысын жібереді: онда ортақ құлып (мысалы, Redis-те) керек.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Single-flight-ты ойнат та, дерекқордың графигін TTL кэшпен салыстыр. Сосын «Алдын ала жаңарту» таңда.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Single-flight: бір мерзімге дерекқорға бір ғана сұраныс</li><li>Алдын ала жаңарту: пайдаланушылар тек суық стартта күтеді</li></ul><a class="btn secondary" href="../app/index.html#cloud-14-stampede">Симуляцияны ашу</a></div><div class="l3-box l3-predict"><h3>Алдымен болжа</h3><div class="l3-q l3-pred" data-answer="0" data-qid="cloud-14-stampede:flight:predict"><p class="l3-qt">Кілт бос болғанда тек бірінші сұраныс дерекқорға барады, ал қалғандары оның нәтижесін күтеді. Дерекқорға ең көп жүктеме қандай болады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Секундына 1 сұраныс</button><button type="button" class="l3-opt" data-i="1">Секундына 50</button><button type="button" class="l3-opt" data-i="2">Секундына 500, бірақ қысқарақ</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Секундына 1 сұраныс</p><p>Бұл single-flight (request coalescing): бір кілтке бір уақытта тек бір толтыру. Қалған 499 сұраныс сол бір жауапты бөліседі.</p></details></div></div><div class="l3-box l3-self"><h3>Өз сөзіңмен түсіндір</h3><p>Неге TTL кэшінде мерзім біткенде дерекқорға 500 сұраныс барады, ал single-flight пен алдын ала жаңарту қалай көмектеседі?</p><details class="l3-ans"><summary>Жақсы түсіндірмеде болатын ойлар</summary><ul><li>кілт бос кезде әр сұраныс өзі дерекқорға барады</li><li>single-flight: бір ғана сұраныс барады, қалғаны күтеді</li><li>алдын ала жаңарту кілтті бос қалдырмайды</li></ul></details></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="cloud-14-stampede:flight:sf"><p class="l3-qt">Single-flight дерекқорды қалай қорғайды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Бір кілтке бір уақытта тек бір толтыру сұранысы жіберіледі, қалғандары соны күтеді</button><button type="button" class="l3-opt" data-i="1">Кэштің TTL-ін ұзартады</button><button type="button" class="l3-opt" data-i="2">Сұраныстардың жартысын тастайды</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Бір кілтке бір уақытта тек бір толтыру сұранысы жіберіледі, қалғандары соны күтеді</p><p>Сұраныстар саны емес, дерекқорға баратын сұраныстар саны азаяды: 500 орнына 1.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="cloud-14-stampede:flight:ra"><p class="l3-qt">Refresh-ahead-тің single-flight-тан артықшылығы неде?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Кілт ешқашан бос болмайды, сондықтан пайдаланушылар толтыруды күтпейді</button><button type="button" class="l3-opt" data-i="1">Дерекқорға мүлде бармайды</button><button type="button" class="l3-opt" data-i="2">Жадты аз қолданады</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Кілт ешқашан бос болмайды, сондықтан пайдаланушылар толтыруды күтпейді</p><p>Жаңарту фонда, мерзім бітпей тұрып басталады. Бағасы: кейде ешкім сұрамайтын кілтті де жаңартып қоюың мүмкін.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="cloud-13-retries.html">← <span lang="en">Retries, Backoff &amp; Circuit Breakers</span></a><a href="../index.html#cloud">Бұлт және DevOps</a><a href="cloud-15-shutdown.html"><span lang="en">Graceful Shutdown &amp; Connection Draining</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

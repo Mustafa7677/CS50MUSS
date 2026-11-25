@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The CPU · Компьютер архитектурасы - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="The CPU · Компьютер архитектурасы - AO17">
+  <meta property="og:description" content="AO17 3D зертхана: Fetch → decode → execute: процессор бір нұсқауды қалай орындайды.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/3d/arch/arch-5-cpu.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/3d/arch/arch-5-cpu.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"The CPU · Компьютер архитектурасы - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/3d/arch/arch-5-cpu.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 3D зертхана: Fetch → decode → execute: процессор бір нұсқауды қалай орындайды.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../../assets/css/comic.css">
+  <link rel="stylesheet" href="../../../assets/css/lab3d.css">
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../../../assets/js/academy-logic.js" defer></script>
+  <script src="../../../assets/js/academy-arith.js" defer></script>
+  <script src="../../../assets/js/academy-disc.js" defer></script>
+  <script src="../../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../../assets/js/academy-bits.js" defer></script>
+  <script src="../../../assets/js/academy.js" defer></script>
+  <script src="../../../assets/js/academy-cine.js" defer></script>
+  <script src="../../../assets/js/ao-viz.js" defer></script>
+  <script src="../../../assets/js/ao-viz2.js" defer></script>
+  <script src="../../../assets/js/lab3d.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../../index.html#main">Лекциялар</a>
+        <a href="../../../practice.html">Жаттығу</a>
+        <a href="../../../games.html">Ойындар</a>
+        <a href="../../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single">
+    <article class="content l3" id="main" data-lesson="arch-5-cpu" style="--lc:#b3262e">
+      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#arch">Компьютер архитектурасы</a></p>
+      <header class="l3-head">
+        <p class="l3-k">Компьютер архитектурасы · 5-сабақ · ≈20 мин · 3 қадам · 6 сұрақ</p>
+        <h1 lang="en">The CPU</h1>
+        <p class="l3-lede">Fetch → decode → execute: процессор бір нұсқауды қалай орындайды.</p>
+        <p class="l3-cta"><a class="btn gold" href="../app/index.html#arch-5-cpu">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
+        <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
+      </header>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol><li><a href="#s1">Нұсқау циклі</a></li><li><a href="#s2">Бағдарламаны соңына дейін</a></li><li><a href="#s3">Секіру және цикл</a></li></ol></nav>
+      <section class="l3-step" id="s1" aria-labelledby="s1-h"><h2 id="s1-h"><span class="l3-n">1</span>Нұсқау циклі</h2><div class="l3-body"><h3>Идея</h3>
+<p>Процессор (CPU): бір қарапайым әрекетті миллиардтаған рет қайталайтын машина. Ол <strong>нұсқау циклі</strong>:</p>
+<ol><li><strong>Fetch</strong> (алу): PC (program counter) көрсеткен нұсқауды жадтан IR-ге (instruction register) әкел.</li><li><strong>Decode</strong> (түсіну): нұсқау не істеу керегін анықта: қай регистрлер, қай амал.</li><li><strong>Execute</strong> (орындау): ALU есептейді, нәтиже регистрге не жадқа жазылады, PC келесі нұсқауға жылжиды.</li></ol>
+<p>Біздің процессорда: 4 регистр (R0-R3): CPU ішіндегі ең жылдам «қалталар», PC, жалаулар Z (нөл) және C (тасымал), 16 байт жад.</p>
+<h3>Түйсік</h3>
+<p>Аспаз рецепт бойынша жұмыс істейді: келесі жолды оқиды (fetch), не істеу керегін түсінеді (decode), істейді (execute). Саусағын рецептте келесі жолға қояды (PC).</p>
+<h3>Есептеп көрейік</h3>
+<p><code>LI R0, 5</code> нұсқауы:</p>
+<ul><li>fetch: IR ← бағдарлама[PC = 0]</li><li>decode: «R0-ге 5 тұрақтысын жаз»</li><li>execute: R0 = 5, PC = 1</li></ul>
+<p>Бағдарлама 5 нұсқаудан тұрады → 15 кезең.</p>
+<h3>Нақты әлемде</h3>
+<p>3 ГГц процессордың сағаты секундына 3·10⁹ рет соғады: бір такт ≈ 0.33 наносекунд. Жарық сол уақытта ≈ 10 см ғана жүреді! Заманауи процессорлар <strong>конвейер</strong> (pipeline) қолданады: бір нұсқау execute кезеңінде тұрғанда, келесісі decode-та, одан кейінгісі fetch-те.</p>
+<blockquote><p>💡 Түйін: 3D-де белсенді блок жанады: fetch: бағдарлама және PC, decode: басқару блогы, execute: ALU, регистрлер не жад.</p></blockquote>
+<h3>Тереңірек: конвейер (pipeline) және оның қауіптері</h3>
+<p>Біздің процессор бір нұсқауды 3 кезеңде бітіріп, сосын келесісіне кіріседі: n нұсқау → 3n такт. <strong>Конвейерде</strong> әр кезең бөлек блок, сондықтан олар қатар жұмыс істейді:</p>
+<pre class="l3-pre"><code>такт:     1   2   3   4   5
+нұсқ. 1:  F   D   E
+нұсқ. 2:      F   D   E
+нұсқ. 3:          F   D   E</code></pre>
+<p>n нұсқау → n + 2 такт: үлкен n-де ≈ 3 есе жылдам. Нақты процессорларда 10-20 кезең бар.</p>
+<p><strong>Қауіптер</strong> (hazards):</p>
+<ul><li><strong>Деректер</strong>: <code>ADD R0, R1</code> нәтижесі келесі <code>OUT R0</code>-ге әлі дайын емес → нәтижені тікелей жеткізу (forwarding) не күту (stall)</li><li><strong>Басқару</strong>: <code>JNZ</code> секіре ме, жоқ па: execute-та ғана белгілі, ал келесі нұсқау әлдеқашан алынды → <strong>branch prediction</strong>: болжап, қателессе: конвейерді тазалау (≈ 15-20 такт айыппұл)</li></ul>
+<p>Сондықтан сұрыпталған массивті өңдейтін цикл кейде сұрыпталмағаннан бірнеше есе жылдам: секірулер болжауға оңай.</p>
+<h3>Енді сен</h3>
+<p>«Кезең» батырмасымен кемінде 6 кезең (2 нұсқау) жүр. Әр кезеңде PC мен IR қалай өзгеретінін бақыла.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Кемінде 6 кезеңді (2 нұсқау) қолмен жүргіз</li></ul><a class="btn secondary" href="../app/index.html#arch-5-cpu">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="arch-5-cpu:cycle:pc"><p class="l3-qt">PC (program counter) нені сақтайды?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Келесі орындалатын нұсқаудың адресін</button><button type="button" class="l3-opt" data-i="1">Соңғы нәтижені</button><button type="button" class="l3-opt" data-i="2">Нұсқаулар санын</button><button type="button" class="l3-opt" data-i="3">Жад көлемін</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Келесі орындалатын нұсқаудың адресін</p><p>PC: «рецепттегі саусақ». Әдетте әр нұсқаудан кейін 1-ге өседі, ал секіру (JMP) нұсқаулары оны басқа адреске қояды.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="arch-5-cpu:cycle:order"><p class="l3-qt">Нұсқау циклінің дұрыс реті қандай?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Fetch → decode → execute</button><button type="button" class="l3-opt" data-i="1">Decode → fetch → execute</button><button type="button" class="l3-opt" data-i="2">Execute → fetch → decode</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Fetch → decode → execute</p><p>Алдымен нұсқауды алу керек, сосын оны түсіну, сосын орындау.</p></details></div></div></section><section class="l3-step" id="s2" aria-labelledby="s2-h"><h2 id="s2-h"><span class="l3-n">2</span>Бағдарламаны соңына дейін</h2><div class="l3-body"><h3>Идея</h3>
+<p>Нұсқаулар жиыны (instruction set): процессордың «сөздігі». Біздің процессордікі:</p>
+<pre class="l3-pre"><code>LI  Rd, n      Rd ← n (тұрақты)
+MOV Rd, Rs     Rd ← Rs
+ADD Rd, Rs     Rd ← Rd + Rs      (Z, C жалауларын қояды)
+SUB Rd, Rs     Rd ← Rd − Rs
+INC / DEC Rd   Rd ± 1
+CMP Ra, Rb     Ra − Rb есептеп, тек жалауларды қояды
+LOAD Rd, [a]   Rd ← mem[a]        STORE Rs, [a]   mem[a] ← Rs
+JMP L  JZ L  JNZ L  JC L  JNC L   секірулер
+OUT Rs         Rs мәнін шығару
+HALT           тоқта</code></pre>
+<h3>Түйсік</h3>
+<p>Әр нұсқау өте қарапайым: «екі санды қос», «секір». Күрделі бағдарламалар осы атомдардан құралады, кірпіштерден үй салғандай.</p>
+<h3>Есептеп көрейік</h3>
+<pre class="l3-pre"><code>LI R0, 5       R0 = 5
+LI R1, 7       R1 = 7
+ADD R0, R1     R0 = 12, Z = 0
+OUT R0         шығыс: 12
+HALT</code></pre>
+<p>5 нұсқау, 5 такт.</p>
+<h3>Нақты әлемде</h3>
+<p>x86 (Intel, AMD): ≈ 1000+ нұсқау, ARM (телефондар, Apple M чиптері): жүздеген, RISC-V: негізгі жиыны ≈ 40. Біздің 16 нұсқау: RISC (reduced instruction set) идеясының кішкене моделі.</p>
+<blockquote><p>⚠ Жиі қате: HALT-ты ұмыту. Онда PC бағдарламадан тыс жадқа өтіп, кездейсоқ «қоқысты» нұсқау ретінде орындай бастайды. Біздің симулятор бұл жағдайды қате деп көрсетеді.</p></blockquote>
+<h3>Енді сен</h3>
+<p>«Соңына дейін» бас: бағдарлама 12 шығарып, HALT-қа жетсін.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Бағдарлама 12 шығарып, HALT-қа жетсін</li></ul><a class="btn secondary" href="../app/index.html#arch-5-cpu">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="arch-5-cpu:run:z"><p class="l3-qt">SUB R0, R1 орындалғанда R0 = R1 болса, Z жалауы қандай?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">1</button><button type="button" class="l3-opt" data-i="1">0</button><button type="button" class="l3-opt" data-i="2">R0-ге тең</button><button type="button" class="l3-opt" data-i="3">Өзгермейді</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 1</p><p>Нәтиже 0, ал Z (zero) жалауы «нәтиже нөл» дегенді білдіреді. Шартты секірулер осы жалауға қарайды.</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="arch-5-cpu:run:risc"><p class="l3-qt">RISC идеясы неде?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Аз, қарапайым нұсқаулар: әрқайсысы жылдам және бірдей ұзындықта</button><button type="button" class="l3-opt" data-i="1">Мүмкіндігінше көп күрделі нұсқаулар</button><button type="button" class="l3-opt" data-i="2">Регистрлерсіз жұмыс істеу</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Аз, қарапайым нұсқаулар: әрқайсысы жылдам және бірдей ұзындықта</p><p>Қарапайым нұсқауларды конвейерге қою оңай және оларды жоғары жиілікте орындауға болады. ARM мен RISC-V: RISC.</p></details></div></div></section><section class="l3-step" id="s3" aria-labelledby="s3-h"><h2 id="s3-h"><span class="l3-n">3</span>Секіру және цикл</h2><div class="l3-body"><h3>Идея</h3>
+<p>Секірулер бағдарламаны «шешім қабылдауға» және <strong>қайталауға</strong> мүмкіндік береді. <code>JNZ loop</code>: «Z = 0 болса (соңғы нәтиже нөл емес), loop белгісіне секір».</p>
+<p>Жоғары деңгейлі тілдердегі <code>while</code>, <code>for</code>, <code>if</code>: бәрі процессорда шартты секірулерге айналады.</p>
+<h3>Түйсік</h3>
+<pre class="l3-pre"><code>while (R1 != 0) { R0 = R0 + R1; R1 = R1 - 1; }</code></pre>
+<p>компилятордан кейін:</p>
+<pre class="l3-pre"><code>loop: ADD R0, R1
+      DEC R1
+      JNZ loop</code></pre>
+<h3>Есептеп көрейік</h3>
+<p>1 + 2 + … + 10 бағдарламасы:</p>
+<ul><li>алдымен 2 нұсқау (LI, LI)</li><li>цикл денесі 3 нұсқау × 10 рет = 30</li><li>соңында OUT, HALT = 2</li></ul>
+<p>Барлығы <strong>34</strong> нұсқау. PC цикл ішінде 2 → 3 → 4 → 2 → … айналады. Нәтиже 55.</p>
+<h3>Нақты әлемде</h3>
+<p>Процессорлар келесі секірудің бағытын <strong>болжайды</strong> (branch prediction): конвейерді тоқтатпау үшін. Заманауи болжағыштар 95%+ дәл. Spectre (2018) осалдығы дәл осы болжаудың жанама әсерлерін пайдаланды.</p>
+<blockquote><p>⚠ Жиі қате: санауышты азайтуды ұмыту: шексіз цикл. Біздің симулятор 5000 нұсқаудан кейін тоқтатады.</p></blockquote>
+<h3>Енді сен</h3>
+<p>Цикл бағдарламасын қадамдап немесе ойнатып жүргіз. PC-нің артқа секіргенін бақыла. Нәтиже 55 болуы керек.</p></div><div class="l3-task"><h3>3D симуляцияда орында</h3><ul><li>Циклмен 1 + … + 10 = 55 есепте</li></ul><a class="btn secondary" href="../app/index.html#arch-5-cpu">Симуляцияны ашу</a></div><div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3><div class="l3-q l3-quiz" data-answer="0" data-qid="arch-5-cpu:loop:count"><p class="l3-qt">Бағдарламада LI R1, 10 орнына LI R1, 20 болса, неше нұсқау орындалады?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">64</button><button type="button" class="l3-opt" data-i="1">34</button><button type="button" class="l3-opt" data-i="2">44</button><button type="button" class="l3-opt" data-i="3">60</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> 64</p><p>2 + 3·20 + 2 = 64. Цикл денесі санауыш мәніне пропорционал: O(n).</p></details></div><div class="l3-q l3-quiz" data-answer="0" data-qid="arch-5-cpu:loop:jnz"><p class="l3-qt">JNZ loop нұсқауы қашан секірмейді?</p><div class="l3-opts" role="group" aria-label="Жауап нұсқалары"><button type="button" class="l3-opt" data-i="0">Соңғы нәтиже нөл болғанда (Z = 1)</button><button type="button" class="l3-opt" data-i="1">Ешқашан</button><button type="button" class="l3-opt" data-i="2">R0 = 0 болғанда ғана</button><button type="button" class="l3-opt" data-i="3">C = 1 болғанда</button></div><p class="l3-fb" role="status" aria-live="polite"></p><details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> Соңғы нәтиже нөл болғанда (Z = 1)</p><p>JNZ = jump if not zero. DEC R1 нәтижесі 0 болғанда Z = 1, секіру болмайды: цикл аяқталады.</p></details></div></div></section>
+      <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
+      <nav class="ac-pager" aria-label="Зертхананың сабақтары"><a href="arch-4-adder.html">← <span lang="en">Building an Adder</span></a><a href="../index.html#arch">Компьютер архитектурасы</a><a href="arch-6-asm.html"><span lang="en">Assembly</span> →</a></nav>
+    </article>
+  </div>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../../index.html"><img src="../../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../../academy/index.html">CS Universe</a></li><li><a href="../../../academy/3d/index.html">3D зертхана</a></li><li><a href="../../../programming.html">Бағдарламалау</a></li><li><a href="../../../en/">English Academy</a></li><li><a href="../../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../../math/">Математика</a></li><li><a href="../../../academy/ielts/index.html">IELTS</a></li><li><a href="../../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../../index.html#main">Лекциялар</a></li><li><a href="../../../courses.html">Барлық курстар</a></li><li><a href="../../../map.html">Курс картасы</a></li><li><a href="../../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../../glossary.html">Сөздік</a></li><li><a href="../../../exam.html">Қорытынды емтихан</a></li><li><a href="../../../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../../practice.html">Жаттығулар</a></li><li><a href="../../../playground.html">Сынақ алаңы</a></li><li><a href="../../../viz.html">Визуализациялар</a></li><li><a href="../../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../../games.html">Ойындар</a></li><li><a href="../../../debug.html">Қатені тап</a></li><li><a href="../../../detective.html">SQL детектив</a></li><li><a href="../../../flask.html">Flask зертханасы</a></li><li><a href="../../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../../about.html">Курс туралы</a></li><li><a href="../../../team.html">Команда</a></li><li><a href="../../../alash.html">Алаш тұлғалары</a></li><li><a href="../../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../../certificate.html">Сертификат</a></li><li><a href="../../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../../teacher.html">Мұғалім беті</a></li><li><a href="../../../profile.html">Менің кабинетім</a></li><li><a href="../../../partners.html">Серіктестерге</a></li><li><a href="../../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../../../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../../../cpp/">C++</a> · <a href="../../../java/">Java</a> · <a href="../../../en/">Ағылшын тілі</a> · <a href="../../../math/">Математика</a></p><p class="ft-links"><a href="../../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>
