@@ -120,3 +120,21 @@ for (const scheme of ["light", "dark"]) {
     await c.close();
   });
 }
+
+test("INSIDE TECH (бір origin): 3D зертханадағы сабақтар әрекетке, ал күндер серияға қосылады", async ({ browser }) => {
+  const today = new Date(), y1 = new Date(today.getTime() - 86400000);
+  const c = await browser.newContext({ reducedMotion: "reduce" });
+  await blockFonts(c);
+  await c.addInitScript((seed) => {
+    if (sessionStorage.getItem("seeded")) return; sessionStorage.setItem("seeded", "1");
+    localStorage.setItem("inside-tech:activity", JSON.stringify({ days: seed }));
+  }, { [iso(today)]: { lesson: 3, problem: 2 }, [iso(y1)]: { review: 1, focus: 2 }, "жарамсыз": { lesson: 50 } });
+  const p = await c.newPage(); const errors = collectErrors(p);
+  await p.goto("yurt.html");
+  await expect(p.locator("#yurt-lab")).toHaveText("6");        // 3 + 2 + 1; «жарамсыз» күн есептелмейді
+  await expect(p.locator("#yurt-total")).toHaveText("6");
+  await expect(p.locator("#yurt-streak")).toHaveText("2");     // бүгін және кеше (кешегі - қайталау мен фокус)
+  await expect(p.locator("#yurt-stage")).toHaveText("Кереге тұрғызылды");
+  expect(errors).toEqual([]);
+  await c.close();
+});

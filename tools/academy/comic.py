@@ -1,13 +1,15 @@
 # © 2026 AO17 командасы. All Rights Reserved.
-# AO17 Комикс: «Айша мен Бота» - сабақтың өзегін түсіндіретін комикс-кадрлар (build кезінде дайын HTML + SVG).
-# Кейіпкерлер (AO17-нің түпнұсқа кейіпкерлері):
-#   Айша - үкілі тақиялы оқушы қыз (сұрақ қояды, қателеседі, түсінеді);
-#   Бота - AO17 маскоты, ботақан (түсіндіреді).
+# AO17 Комикс: «Нұрай, Мустафа және Бота» - сабақтың өзегін түсіндіретін комикс-кадрлар (build кезінде дайын HTML + SVG).
+# Кейіпкерлер (AO17 және INSIDE TECH әлемінің ортақ кейіпкерлері):
+#   Нұрай - үкілі тақиялы оқушы қыз: мұқият, сұрақ қояды;
+#   Мустафа - көк кепкалы оқушы ұл: батыл, асығыс кодтайды, сондықтан жиі тұзаққа түседі;
+#   Бота - AO17 маскоты, ботақан: түсіндіреді.
 # Кадр: жоғарыда сөз бұлттары (HTML - оқуға, аударуға, экран оқу құралына қолжетімді), төменде сурет (SVG).
 # Сөз бұлты мен сурет бір-бірін жаппайды: мәтін ұзарса, кадр биіктейді.
 # Екі түрі бар:
 #   1) авторлық эпизодтар (comic_eps.py) - Level I-дің әр модулінің бірінші сабағы, 6 кадр;
-#   2) «Тұзақ» - әр сабақтың mistakes[0] деректерінен құралатын 4 кадр (қате -> тоқта -> себеп -> ереже).
+#   2) «Тұзақ» - әр сабақтың mistakes[0] деректерінен құралатын 4 кадр (қате -> тоқта -> себеп -> ереже);
+#      қатені кезекпен Нұрай не Мустафа жасайды (сабақ id-інен анықталады).
 import hashlib
 import html
 import math
@@ -18,12 +20,15 @@ E = lambda s: html.escape(str(s), quote=True)  # noqa: E731
 INK = "#1b1510"
 PAPER = "#f7f1e3"
 SKIN, SKIN_SH = "#f2c9a0", "#e0a982"
+MSKIN, MSKIN_SH = "#d9a77c", "#c08b62"      # Мустафа (INSIDE TECH-тегі түс)
+JACKET, JACKET_HI, CAP = "#2e6b4f", "#3f8a67", "#2f5bea"
 HAIR, HAIR_HI = "#2a1a13", "#4b3022"
 HOOD, HOOD_HI, HOOD_SH = "#0a4c7a", "#1d6ea6", "#083a5e"
 GOLD, RED, FEATHER = "#f2b705", "#b3262e", "#f6f2ea"
 BOTA, BOTA_SH, BOTA_MUZ = "#e3a865", "#c98a4a", "#f0c48f"
 MOODS = {"calm", "happy", "think", "wow", "worried", "laugh"}
-WHO = {"A": "Айша", "B": "Бота"}
+WHO = {"N": "Нұрай", "M": "Мустафа", "B": "Бота"}
+GEN = {"N": "Нұрайдың", "M": "Мустафаның", "B": "Ботаның"}   # ілік септік: «...-ның жазбасы»
 MOOD_KK = {"calm": "сабырлы", "happy": "қуанышты", "think": "ойланып тұр", "wow": "таңғалды", "worried": "абыржыды", "laugh": "күліп тұр"}
 BGS = {"yurt", "class", "steppe", "night", "desk", "flash", "screen", "aul"}
 H = 230
@@ -41,8 +46,8 @@ def _arm(pts, color, w=12.5):
             f'<path d="{d}" fill="none" stroke="{color}" stroke-width="{w}" stroke-linecap="round" stroke-linejoin="round"/>')
 
 
-def _hand(x, y, r=8):
-    return f'<circle cx="{_n(x)}" cy="{_n(y)}" r="{r}" fill="{SKIN}" stroke="{INK}" stroke-width="2.4"/>'
+def _hand(x, y, r=8, skin=SKIN):
+    return f'<circle cx="{_n(x)}" cy="{_n(y)}" r="{r}" fill="{skin}" stroke="{INK}" stroke-width="2.4"/>'
 
 
 def _eyes(mood, xs, ey, iris="#2a1a12", sc=1.0):
@@ -96,8 +101,8 @@ def _mouth(mood, mx, my, sc=1.0):
     return f'<path d="M{_n(mx - 6 * k)} {_n(my)} Q{_n(mx)} {_n(my + 4.5 * k)} {_n(mx + 6 * k)} {_n(my - 1)}" fill="none" stroke="{INK}" stroke-width="2.2" stroke-linecap="round"/>'
 
 
-def aisha(mood="calm", gesture=None):
-    """Айша, оңға қарап тұр; координат басы - кеуде суретінің төменгі ортасы (y жоғары қарай теріс)."""
+def nurai(mood="calm", gesture=None):
+    """Нұрай, оңға қарап тұр; координат басы - кеуде суретінің төменгі ортасы (y жоғары қарай теріс)."""
     p = []
     # артқы шаш: желкеге түседі
     p.append(f'<path d="M-38 -128 C-44 -170 22 -184 34 -146 C34 -120 26 -104 16 -98 L-20 -94 C-34 -96 -40 -104 -38 -128 Z" fill="{HAIR}" stroke="{INK}" stroke-width="3"/>')
@@ -139,19 +144,60 @@ def aisha(mood="calm", gesture=None):
     p.append(_brows(mood, (-3, 17), -126))
     p.append(f'<path d="M26 -121 q4 5 -1 6" fill="none" stroke="{INK}" stroke-width="2" stroke-linecap="round"/>')
     p.append(_mouth(mood, 15, -104))
-    # қимыл
-    if gesture == "chin":
-        p.append(_arm([(38, -34), (30, -62), (20, -86)], HOOD) + _hand(19, -92, 8.6))
-    elif gesture == "point":
-        p.append(_arm([(44, -40), (62, -58), (78, -72)], HOOD) + _hand(81, -75, 8)
-                 + f'<path d="M84 -79 L97 -88" stroke="{INK}" stroke-width="7.6" stroke-linecap="round"/><path d="M84 -79 L97 -88" stroke="{SKIN}" stroke-width="4.4" stroke-linecap="round"/>')
-    elif gesture == "up":
-        p.append(_arm([(36, -58), (46, -100), (52, -146)], HOOD) + f'<ellipse cx="53" cy="-156" rx="8" ry="10.5" fill="{SKIN}" stroke="{INK}" stroke-width="2.4"/>'
-                 + f'<path d="M48 -164 v-6 M53 -166 v-7 M58 -164 v-6" stroke="{INK}" stroke-width="1.6" stroke-linecap="round"/>')
+    # қимыл (нұсқалары _gestures-та: N_HEAD-тан кейін анықталған, шақыру кезінде қолжетімді)
+    p.append(_gestures(gesture, HOOD, SKIN))
     return "".join(p)
 
 
-A_HEAD = (2, -128, 34)      # бас ортасы мен радиусы (жергілікті координат)
+N_HEAD = (2, -128, 34)      # бас ортасы мен радиусы (жергілікті координат)
+
+
+def _gestures(gesture, sleeve, skin):
+    if gesture == "chin":
+        return _arm([(38, -34), (30, -62), (20, -86)], sleeve) + _hand(19, -92, 8.6, skin)
+    if gesture == "point":
+        return (_arm([(44, -40), (62, -58), (78, -72)], sleeve) + _hand(81, -75, 8, skin)
+                + f'<path d="M84 -79 L97 -88" stroke="{INK}" stroke-width="7.6" stroke-linecap="round"/><path d="M84 -79 L97 -88" stroke="{skin}" stroke-width="4.4" stroke-linecap="round"/>')
+    if gesture == "up":
+        return (_arm([(36, -58), (46, -100), (52, -146)], sleeve) + f'<ellipse cx="53" cy="-156" rx="8" ry="10.5" fill="{skin}" stroke="{INK}" stroke-width="2.4"/>'
+                + f'<path d="M48 -164 v-6 M53 -166 v-7 M58 -164 v-6" stroke="{INK}" stroke-width="1.6" stroke-linecap="round"/>')
+    return ""
+
+
+def mustafa(mood="calm", gesture=None):
+    """Мустафа, оңға қарап тұр: қысқа қара шаш, көк кепка (күнқағары алдында), жасыл куртка. Координат басы - кеуде суретінің төменгі ортасы."""
+    p = []
+    # куртка
+    p.append(f'<path d="M-66 0 C-64 -38 -56 -60 -30 -69 L-11 -76 L13 -76 L32 -69 C58 -60 66 -38 66 0 Z" fill="{JACKET}" stroke="{INK}" stroke-width="3" stroke-linejoin="round"/>')
+    p.append(f'<path d="M-60 0 C-58 -32 -50 -50 -36 -58" fill="none" stroke="#24543e" stroke-width="7" stroke-linecap="round" opacity=".85"/>')
+    p.append(f'<path d="M-12 -76 L1 -54 L14 -76 L28 -70 L12 -44 L1 -56 L-10 -44 L-26 -70 Z" fill="{JACKET_HI}" stroke="{INK}" stroke-width="2.4" stroke-linejoin="round"/>')
+    p.append(f'<path d="M1 -54 V0" stroke="{GOLD}" stroke-width="3"/><path d="M1 -54 V0" stroke="{INK}" stroke-width="1" stroke-dasharray="2 4"/>')
+    p.append(f'<rect x="-44" y="-36" width="22" height="14" rx="3" fill="#fffdf7" stroke="{INK}" stroke-width="1.8"/>'
+             f'<text x="-33" y="-25.5" text-anchor="middle" font-family="Unbounded, Inter, sans-serif" font-weight="800" font-size="9" fill="{HOOD}">AO</text>')
+    # мойын мен бас
+    p.append(f'<path d="M-10 -96 L-10 -72 Q1 -64 12 -72 L12 -96 Z" fill="{MSKIN}" stroke="{INK}" stroke-width="2.6"/>')
+    p.append(f'<path d="M-9 -88 Q2 -80 11 -88 L11 -82 Q2 -76 -9 -82 Z" fill="{MSKIN_SH}" opacity=".8"/>')
+    p.append(f'<ellipse cx="2" cy="-127" rx="30" ry="33" fill="{MSKIN}" stroke="{INK}" stroke-width="3"/>')
+    # қысқа шаш (желке мен самай)
+    p.append(f'<path d="M-29 -122 C-34 -150 -18 -162 0 -162 C18 -162 30 -152 32 -134 C26 -142 16 -146 4 -146 C-10 -146 -20 -140 -24 -128 L-22 -112 C-26 -112 -29 -116 -29 -122 Z" '
+             f'fill="#1d1b26" stroke="{INK}" stroke-width="2.4" stroke-linejoin="round"/>')
+    p.append(f'<ellipse cx="-24" cy="-122" rx="5.6" ry="8" fill="{MSKIN}" stroke="{INK}" stroke-width="2.3"/><path d="M-25 -126 q3 3 0 7" fill="none" stroke="{MSKIN_SH}" stroke-width="2"/>')
+    # кепка: күмбез, күнқағар (бет жақта), түйме, алтын белгі
+    p.append(f'<path d="M-31 -142 C-31 -172 28 -176 33 -144 C16 -150 -14 -150 -31 -142 Z" fill="{CAP}" stroke="{INK}" stroke-width="2.6" stroke-linejoin="round"/>')
+    p.append(f'<path d="M-6 -169 C-8 -158 -9 -150 -8 -146 M14 -168 C16 -158 16 -152 15 -147" fill="none" stroke="#1f43b8" stroke-width="1.8"/>')
+    p.append(f'<path d="M22 -146 C36 -151 50 -148 58 -141 C47 -138 32 -138 20 -141 Z" fill="#2449c4" stroke="{INK}" stroke-width="2.4" stroke-linejoin="round"/>')
+    p.append(f'<circle cx="2" cy="-171" r="3.2" fill="#1f43b8" stroke="{INK}" stroke-width="1.6"/><path d="M8 -158 l4 -5 l4 5 l-4 5 z" fill="{GOLD}" stroke="{INK}" stroke-width="1"/>')
+    # бет
+    p.append(f'<circle cx="-8" cy="-110" r="4.2" fill="#e07a62" opacity=".35"/>')
+    p.append(_eyes(mood, (-2, 17), -124))
+    p.append(_brows(mood, (-2, 17), -124).replace('stroke-width="2.4"', 'stroke-width="3.2"'))
+    p.append(f'<path d="M26 -119 q4 5 -1 6" fill="none" stroke="{INK}" stroke-width="2" stroke-linecap="round"/>')
+    p.append(_mouth(mood, 14, -103))
+    p.append(_gestures(gesture, JACKET, MSKIN))
+    return "".join(p)
+
+
+M_HEAD = (2, -127, 33)
 
 
 def bota(mood="happy"):
@@ -203,16 +249,18 @@ B_HEAD = (36, -78, 20)    # бас ортасы (масштабқа дейінг
 
 def actor(who, mood, x, s, face, gesture=None):
     """Кейіпкерді (x, H) нүктесіне қояды. face: 1 - оңға, -1 - солға."""
-    if who == "A":
-        body, k = aisha(mood, gesture), s
+    if who == "N":
+        body, k = nurai(mood, gesture), s
+    elif who == "M":
+        body, k = mustafa(mood, gesture), s
     else:
         body, k = bota(mood), s * BK
     return f'<g transform="translate({_n(x)} {H}) scale({_n(k * face)} {_n(k)})">{body}</g>'
 
 
 def head_xy(who, x, s, face):
-    hx, hy, hr = A_HEAD if who == "A" else B_HEAD
-    k = s if who == "A" else s * BK
+    hx, hy, hr = {"N": N_HEAD, "M": M_HEAD}.get(who, B_HEAD)
+    k = s * BK if who == "B" else s
     return x + hx * k * face, H + hy * k, hr * k
 
 
@@ -570,6 +618,8 @@ def _layout(n_cast, has_prop, w, prop_side=None):
     """Кейіпкерлердің x-і, масштабы және заттың аймағы."""
     if n_cast == 0:
         return [], 1, (16, w - 16)
+    if n_cast == 3:   # үш кейіпкер - тек затсыз кадрда (validate тексереді)
+        return ([w * .2, w * .5, w * .8], .9 if w > 400 else .7, None)
     if w > 400:   # кең кадр
         if n_cast == 1:
             return ([110], .95, (230, w - 24)) if has_prop else ([w / 2], .95, None)
@@ -627,8 +677,8 @@ def _talk(pn, cast):
         elif who.endswith("#"):
             who, kind = who[:-1], " cx-nt"
         side = _speak_side(cast, who)
-        lab = {"": "", " cx-th": " (ойлайды)", " cx-sh": " (айқайлайды)", " cx-nt": "ның жазбасы"}[kind]
-        talk.append(f'<p class="cx-b cx-{side}{kind}"><span class="cx-who">{WHO[who]}{lab}: </span>{E(text)}</p>')
+        name = GEN[who] + " жазбасы" if kind == " cx-nt" else WHO[who] + {"": "", " cx-th": " (ойлайды)", " cx-sh": " (айқайлайды)"}[kind]
+        talk.append(f'<p class="cx-b cx-{side}{kind}"><span class="cx-who">{name}: </span>{E(text)}</p>')
     return "".join(talk)
 
 
@@ -701,14 +751,15 @@ def trap(L):
     stop, bang = _pick(POOL_STOP, key, "s")
     bgk = _pick(POOL_BG, key, "b")
     fix = m["fix"].strip()
+    w = _pick(["N", "M"], key, "who")      # қатені кім жасайды
     return {"title": "Тұзақ: " + L["title"], "panels": [
-        {"bg": bgk, "cast": [("A", "happy", "l", "point"), ("B", "calm", "r")], "cap": "Жиі кездесетін тұзақ",
-         "say": [("A", _pick(POOL_SAY1, key, "1")), ("A#", m["mistake"].strip())]},
-        {"bg": "flash", "cast": [("A", "wow", "l"), ("B", "wow", "r")], "say": [("B!", stop)], "sfx": bang},
-        {"bg": bgk, "cast": [("A", "think", "l", "chin"), ("B", "think", "r")], "say": [("A", _pick(POOL_WHY, key, "w")), ("B", m["why"].strip())],
-         "fx": {"A": "q"}},
-        {"bg": bgk, "cast": [("A", "happy", "l"), ("B", "happy", "r")], "say": [("B", "Ереже: " + fix), ("A", _pick(POOL_END, key, "e"))],
-         "fx": {"A": "idea"}},
+        {"bg": bgk, "cast": [(w, "happy", "l", "point"), ("B", "calm", "r")], "cap": "Жиі кездесетін тұзақ",
+         "say": [(w, _pick(POOL_SAY1, key, "1")), (w + "#", m["mistake"].strip())]},
+        {"bg": "flash", "cast": [(w, "wow", "l"), ("B", "wow", "r")], "say": [("B!", stop)], "sfx": bang},
+        {"bg": bgk, "cast": [(w, "think", "l", "chin"), ("B", "think", "r")], "say": [(w, _pick(POOL_WHY, key, "w")), ("B", m["why"].strip())],
+         "fx": {w: "q"}},
+        {"bg": bgk, "cast": [(w, "happy", "l"), ("B", "happy", "r")], "say": [("B", "Ереже: " + fix), (w, _pick(POOL_END, key, "e"))],
+         "fx": {w: "idea"}},
     ]}
 
 
@@ -730,6 +781,8 @@ def validate(comic, where):
                 errs.append(f"{where} {i + 1}-кадр: белгісіз кейіпкер {c[0]}")
             if c[1] not in MOODS:
                 errs.append(f"{where} {i + 1}-кадр: белгісіз көңіл-күй {c[1]}")
+        if len(cast) > 3 or (len(cast) == 3 and pn.get("prop")):
+            errs.append(f"{where} {i + 1}-кадр: үш кейіпкер тек затсыз кадрда (ең көбі 3)")
         if pn.get("bg", "yurt") not in BGS:
             errs.append(f"{where} {i + 1}-кадр: белгісіз сахна {pn.get('bg')}")
         for who, text in pn.get("say", []):

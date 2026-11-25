@@ -1,7 +1,8 @@
 /* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
 /* AO17: «Менің шаңырағым» - оқу прогресі қазақ үйіне айналады.
    Әр оқылған лекция, орындалған жаттығу мен сөздік жаттығуы шаңырақты өсіреді; күн қатарынан оқу шаңырақтың жарығын күшейтеді.
-   Деректің бәрі осы құрылғының localStorage-інен оқылады, ешқайда жіберілмейді. Сурет (canvas) осы құрылғыда салынады.
+   Деректің бәрі осы құрылғының localStorage-інен оқылады, ешқайда жіберілмейді. INSIDE TECH (3D зертханалар) осы origin-де тұрғандықтан,
+   оның «inside-tech:activity» күнделігі де есептеледі: 3D зертханадағы оқу да шаңырақты өсіреді. Сурет (canvas) осы құрылғыда салынады.
    Басқа бет те қолдана алуы үшін window.AO17Yurt ашық: read(), stage(), draw(), shareText(). */
 (function () {
   "use strict";
@@ -15,7 +16,7 @@
     [140, "Киіз жабылды", "Үй киізбен жабылды. Енді оны оюлап әшекейлейсіз."],
     [280, "Ақ үй", "Толық Ақ үй: ою, киіз, жарқыраған шаңырақ."]
   ];
-  var PAL = { prog: "#2b9fbd", eng: "#c4506a", math: "#d9a826", gold: "#bfa276", ivory: "#ece8df" };
+  var PAL = { prog: "#2b9fbd", eng: "#c4506a", math: "#d9a826", lab: "#8b6fe0", gold: "#bfa276", ivory: "#ece8df" };
 
   // ---------- деректі оқу (қате болса да бет құламайды) ----------
   function J(k, d) { try { var v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } }
@@ -27,7 +28,7 @@
   function readStats() {
     var prog = obj(J("cs50kz:progress", {}));
     var read = obj(prog.read), quiz = obj(prog.quiz);
-    var u = { prog: 0, eng: 0, math: 0 };
+    var u = { prog: 0, eng: 0, math: 0, lab: 0 };
     function kind(id) { return /^en:/.test(id) ? "eng" : /^math:/.test(id) ? "math" : "prog"; }
     Object.keys(read).forEach(function (id) { if (read[id]) u[kind(id)]++; });
     Object.keys(quiz).forEach(function (id) { if (quiz[id]) u[kind(id)]++; });
@@ -55,6 +56,14 @@
     var days = obj(J("cs50kz:days", {})), act = {};
     Object.keys(days).forEach(function (d) { if (n(days[d])) act[d] = 1; });
     Object.keys(vDays).forEach(function (d) { if (n(obj(vDays[d]).n)) act[d] = 1; });
+    // INSIDE TECH: {days: {"ЖЖЖЖ-АА-КК": {lesson, review, problem, focus}}} - сабақ, қайталау, есеп әрекет болып саналады, кез келген жұмыс күнді белсенді етеді
+    var itDays = obj(obj(J("inside-tech:activity", {})).days);
+    Object.keys(itDays).forEach(function (d) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return;
+      var x = obj(itDays[d]), k = n(x.lesson) + n(x.review) + n(x.problem);
+      u.lab += Math.floor(Math.min(k, 9999));
+      if (k || n(x.focus)) act[d] = 1;
+    });
     var d0 = new Date(), streak = 0, best = 0, run = 0;
     if (!act[dayKey(d0)]) d0.setDate(d0.getDate() - 1);
     while (act[dayKey(d0)]) { streak++; d0.setDate(d0.getDate() - 1); }
@@ -66,8 +75,8 @@
     var plays = 0, g = obj(J("cs50kz:games", {}));
     Object.keys(g).forEach(function (id) { plays += n(obj(g[id]).plays); });
 
-    var total = u.prog + u.eng + u.math;
-    return { total: total, prog: u.prog, eng: u.eng, math: u.math, streak: streak, best: Math.max(best, streak), plays: plays, activeDays: Object.keys(act).length };
+    var total = u.prog + u.eng + u.math + u.lab;
+    return { total: total, prog: u.prog, eng: u.eng, math: u.math, lab: u.lab, streak: streak, best: Math.max(best, streak), plays: plays, activeDays: Object.keys(act).length };
   }
 
   function stageOf(total) {
@@ -85,7 +94,7 @@
 
   // Академия бөліктері: кереге панельдерінің түсі (бағдарламалау - көк, ағылшын - қызғылт, математика - алтын)
   function panelColors(st, count) {
-    var parts = [["prog", st.prog], ["eng", st.eng], ["math", st.math]].filter(function (p) { return p[1] > 0; });
+    var parts = [["prog", st.prog], ["eng", st.eng], ["math", st.math], ["lab", st.lab || 0]].filter(function (p) { return p[1] > 0; });
     if (!parts.length) return [];
     var sum = parts.reduce(function (s, p) { return s + p[1]; }, 0), out = [];
     parts.forEach(function (p) { p.q = p[1] / sum * count; p.c = Math.floor(p.q); });
@@ -242,7 +251,7 @@
     var $ = function (id) { return document.getElementById(id); };
     // көрсетілім: #demo=120&streak=9 - нақты прогресс емес, бөлісу өшіріледі
     var m = /[#&]demo=(\d+)/.exec(location.hash), ms = /[#&]streak=(\d+)/.exec(location.hash), demo = !!m;
-    var st = demo ? { total: +m[1], prog: Math.ceil(+m[1] * .5), eng: Math.floor(+m[1] * .3), math: Math.floor(+m[1] * .2), streak: ms ? +ms[1] : 0, best: ms ? +ms[1] : 0, plays: Math.floor(+m[1] / 8), activeDays: Math.floor(+m[1] / 4) } : readStats();
+    var st = demo ? { total: +m[1], prog: Math.ceil(+m[1] * .5), eng: Math.floor(+m[1] * .3), math: Math.floor(+m[1] * .1), lab: Math.floor(+m[1] * .1), streak: ms ? +ms[1] : 0, best: ms ? +ms[1] : 0, plays: Math.floor(+m[1] / 8), activeDays: Math.floor(+m[1] / 4) } : readStats();
     var sg = stageOf(st.total);
     $("yurt-stage").textContent = sg.name; $("yurt-stage-t").textContent = sg.text;
     $("yurt-total").textContent = st.total; $("yurt-streak").textContent = st.streak; $("yurt-best").textContent = st.best; $("yurt-days").textContent = st.activeDays;
@@ -250,7 +259,7 @@
     var bar = $("yurt-bar"); bar.style.width = sg.pct + "%"; bar.parentNode.setAttribute("aria-valuenow", sg.pct);
     $("yurt-light").textContent = st.streak > 0 ? st.streak + " күн қатарынан: шаңырақ жарқырап тұр" : "Шаңырақ тыныш. Бүгін бір әрекет жасасаңыз, от тұтанады";
     cv.setAttribute("aria-label", "Қазақ үйі: «" + sg.name + "», " + st.total + " әрекет, " + st.streak + " күн жарық");
-    [["prog", st.prog], ["eng", st.eng], ["math", st.math]].forEach(function (p) { var e = $("yurt-" + p[0]); if (e) e.textContent = p[1]; });
+    [["prog", st.prog], ["eng", st.eng], ["math", st.math], ["lab", st.lab || 0]].forEach(function (p) { var e = $("yurt-" + p[0]); if (e) e.textContent = p[1]; });
     var dn = $("yurt-demo"); if (dn) dn.hidden = !demo;
     document.querySelectorAll("#yurt-ladder li").forEach(function (li, i) { li.classList.toggle("is-on", i <= sg.i); li.classList.toggle("is-now", i === sg.i); });
 
