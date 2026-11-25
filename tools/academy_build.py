@@ -29,6 +29,7 @@ import tracks as TR  # noqa: E402
 import cine as CN  # noqa: E402
 import comic as CX  # noqa: E402
 import comic_eps as CXE  # noqa: E402
+import course as CRS  # noqa: E402
 sys.path.insert(0, str(ROOT / "assets" / "py"))
 import ao_judge as JG  # noqa: E402
 import math  # noqa: E402,F401  (number.check өрнектері үшін)
@@ -453,7 +454,7 @@ def validate(lessons, run_code=True):
 
 
 def validate_comics(lessons, run_code=True):
-    """«Айша мен Бота» эпизодтары: сабақ бар ма, кадрлар дұрыс па, код кадрларының шығысы нағыз Python/gcc шығысымен сәйкес пе."""
+    """«Нұрай, Мустафа және Бота» эпизодтары: сабақ бар ма, кадрлар дұрыс па, код кадрларының шығысы нағыз Python/gcc шығысымен сәйкес пе."""
     errs, ids = [], {L["id"] for L in lessons}
     for n, ep in enumerate(CXE.EPISODES, 1):
         where = f"комикс {n}-эпизод ({ep['lesson']})"
@@ -507,7 +508,7 @@ SECTIONS = [("a", "Оқу мақсаттары"), ("b", "Алғышарттар"
             ("m", "Рефлексия"), ("n", "Тереңірек")]
 
 
-def page(rel, title, desc, body, scripts=(), body_cls="ao-acad", intro=""):
+def page(rel, title, desc, body, scripts=(), body_cls="ao-acad", intro="", styles=()):
     pre = "../" * rel.count("/")
     intro_js = ("\n  <script>/* Академияға кірер алдында - оның фильм-прологы: әр сеанста бір рет. Сілтемеде #… болса, ?nofilm, іздеу роботы не автотест болса - жоқ. */\n"
                 "  (function () { try {\n"
@@ -517,6 +518,7 @@ def page(rel, title, desc, body, scripts=(), body_cls="ao-acad", intro=""):
                 f'    location.replace("{pre}film/{intro}/?intro=1");\n'
                 "  } catch (e) {} })();\n  </script>") if intro else ""
     sc = "".join(f'\n  <script src="{pre}{s}" defer></script>' for s in scripts)
+    css = "".join(f'\n  <link rel="stylesheet" href="{pre}{s}">' for s in styles)
     return f"""<!DOCTYPE html>
 <html lang="kk">
 <head>
@@ -532,7 +534,7 @@ def page(rel, title, desc, body, scripts=(), body_cls="ao-acad", intro=""):
   <link rel="stylesheet" href="{pre}assets/css/academy.css">
   <link rel="stylesheet" href="{pre}assets/css/ao-viz.css">
   <link rel="stylesheet" href="{pre}assets/css/ao-labs.css">
-  <link rel="stylesheet" href="{pre}assets/css/comic.css">
+  <link rel="stylesheet" href="{pre}assets/css/comic.css">{css}
   <script src="{pre}assets/js/main.js"></script>
   <script src="{pre}assets/js/academy-logic.js" defer></script>
   <script src="{pre}assets/js/academy-arith.js" defer></script>
@@ -596,7 +598,7 @@ def lesson_html(L, plan_by_id, prev_l, next_l):
         n_ep, e = ep
         prv, nxt = (CXE.EPISODES[n_ep - 1] if n_ep else None), (CXE.EPISODES[n_ep + 1] if n_ep + 1 < len(CXE.EPISODES) else None)
         hrefs = lambda x: "../" + x["lesson"].split(".")[1] + "/" + x["lesson"].split(".")[2] + ".html#s-comic"  # noqa: E731
-        head = (f'<div class="cx-head"><div><p class="cx-k">Комикс · «Айша мен Бота», {n_ep + 1}-эпизод</p>'
+        head = (f'<div class="cx-head"><div><p class="cx-k">Комикс · «Нұрай, Мустафа және Бота», {n_ep + 1}-эпизод</p>'
                 f'<h2 class="cx-t" id="cx-h">{E(e["title"])}</h2></div><a href="../comics.html">Барлық эпизодтар</a></div>')
         foot = ('<p class="cx-foot">' + (f'<a href="{hrefs(prv)}">← {E(prv["title"])}</a>' if prv else '<span></span>')
                 + (f'<a href="{hrefs(nxt)}">{E(nxt["title"])} →</a>' if nxt else '<span></span>') + '</p>')
@@ -649,7 +651,7 @@ DONE = set()
 
 
 def comics_html(lessons):
-    """«Айша мен Бота» хабы: барлық эпизодтар (мұқаба - бірінші кадр) және «Тұзақ» комикстері туралы."""
+    """«Нұрай, Мустафа және Бота» хабы: барлық эпизодтар (мұқаба - бірінші кадр) және «Тұзақ» комикстері туралы."""
     by_id = {L["id"]: L for L in lessons}
     cards = []
     for n, e in enumerate(CXE.EPISODES, 1):
@@ -662,17 +664,81 @@ def comics_html(lessons):
     sample = next(L for L in lessons if L["moduleId"] == "m07" and L["slug"] == "l01")
     body = f"""  <div class="layout single">
     <article class="content" id="main">
-      <header class="lecture-head" style="--lc:#b3262e"><div class="num">CS Universe</div><h1>Комикс: Айша мен Бота</h1>
-        <p>Айша - сұрақ қоятын, қателесетін және түсінетін оқушы. Бота - AO17-нің ботақаны, ол түсіндіреді. Level I-дің әр модулі бір эпизодпен ашылады: күнделікті өмірден алынған мысал, қате және оның себебі. Комикстегі әр код кадрының шығысы сайтты құрастыру кезінде нағыз Python не gcc арқылы тексерілген.</p></header>
+      <header class="lecture-head" style="--lc:#b3262e"><div class="num">CS Universe</div><h1>Комикс: Нұрай, Мустафа және Бота</h1>
+        <p>Нұрай - мұқият, сұрақ қоятын оқушы. Мустафа - батыл, асығыс кодтайтын, сондықтан тұзаққа жиі түсетін оқушы. Бота - AO17-нің ботақаны, ол түсіндіреді. Нұрай мен Мустафа INSIDE TECH 3D зертханаларында да кездеседі. Level I-дің әр модулі бір эпизодпен ашылады: күнделікті өмірден алынған мысал, қате және оның себебі. Комикстегі әр код кадрының шығысы сайтты құрастыру кезінде нағыз Python не gcc арқылы тексерілген.</p></header>
       <h2>Level I: {len(cards)} эпизод</h2>
       <ul class="cxh-grid">{"".join(cards)}</ul>
       <h2>«Тұзақ» комикстері: әр сабақта</h2>
-      <p>Әр сабақтың «Жиі қателер» бөлімінде төрт кадрлық комикс бар: Айша жиі кездесетін қатені жасайды, Бота тоқтатады, себебін түсіндіреді және ережені айтады. Мәтін сабақтың тексерілген деректерінен алынады, сондықтан {len(lessons)} сабақтың әрқайсысында өз тұзағы бар. Мысал - «{E(sample["title"])}» сабағы:</p>
+      <p>Әр сабақтың «Жиі қателер» бөлімінде төрт кадрлық комикс бар: Нұрай не Мустафа жиі кездесетін қатені жасайды, Бота тоқтатады, себебін түсіндіреді және ережені айтады. Мәтін сабақтың тексерілген деректерінен алынады, сондықтан {len(lessons)} сабақтың әрқайсысында өз тұзағы бар. Мысал - «{E(sample["title"])}» сабағы:</p>
       {CX.trap_html(sample)}
       <p><a href="index.html">CS Universe картасына оралу</a></p>
     </article>
   </div>"""
-    return "academy/comics.html", page("academy/comics.html", "Комикс: Айша мен Бота", "AO17 комиксі: Айша мен Бота бағдарламалау, логика және компьютер негіздерін күнделікті өмір мысалдарымен түсіндіреді. Әр сабақта жиі қате туралы комикс.", body)
+    return "academy/comics.html", page("academy/comics.html", "Комикс: Нұрай, Мустафа және Бота", "AO17 комиксі: Нұрай, Мустафа және Бота бағдарламалау, логика және компьютер негіздерін күнделікті өмір мысалдарымен түсіндіреді. Әр сабақта жиі қате туралы комикс.", body)
+
+
+def course_html(lessons, st):
+    """AO17 CS: 12 апталық курс беті (CS Universe Level I + комикс + INSIDE TECH 3D зертханалары + жоба)."""
+    by_mod = {}
+    for L in lessons:
+        by_mod.setdefault(L["moduleId"], []).append(L)
+    mods = {m[0]: m for m in C.ALL_MODULES}
+    eps = {e["lesson"].split(".")[1]: e for e in CXE.EPISODES}
+    weeks, n3d, tot_l, tot_t, tot_min = [], set(), 0, 0, 0
+    for n, (mid, question, labs) in enumerate(CRS.WEEKS, 1):
+        ls = sorted(by_mod.get(mid, []), key=lambda x: x["slug"])
+        if not ls:
+            continue
+        tasks = sum(len(x["exercises"]) + len(x["assessment"]) for x in ls)
+        mins = sum(x["minutes"] for x in ls)
+        tot_l, tot_t, tot_min = tot_l + len(ls), tot_t + tasks, tot_min + mins
+        pj = next((x for x in ls if x.get("project")), None)
+        ep = eps.get(mid)
+        n3d.update(h for h, _ in labs)
+        lab_links = ", ".join(f'<a href="{CRS.INSIDE}#{h}" target="_blank" rel="noopener">{E(t)}</a>' for h, t in labs)
+        items = (f'<li class="crs-comic"><span>Комикс</span><a href="{mid}/l01.html#s-comic">{E(ep["title"])}</a></li>' if ep else "") \
+            + f'<li class="crs-3d"><span>3D зертхана</span><p>{lab_links}</p></li>' \
+            + (f'<li class="crs-pj"><span>Жоба</span><a href="{mid}/{pj["slug"]}.html#project">{E(pj["project"]["title"])}</a></li>' if pj else "")
+        weeks.append(f'<li class="crs-w" id="w{n}"><p class="crs-wn"><span>Апта</span><b>{n}</b></p><div class="crs-wb">'
+                     f'<h3><a href="{mid}/l01.html">{E(mods[mid][2])}</a></h3><p class="crs-wq">{E(question)}</p>'
+                     f'<p class="crs-wm">{len(ls)} сабақ · {tasks} тапсырма · ≈{round(mins / 60)} сағат</p><ul class="crs-wl">{items}</ul></div></li>')
+    final = next((x for x in sorted(by_mod.get("m12", []), key=lambda x: x["slug"]) if x.get("project")), None)
+    pillars = "".join(f'<li><b>{E(a)}</b><p>{E(b)}</p></li>' for a, b in CRS.PILLARS)
+    ld = {"@context": "https://schema.org", "@type": "Course", "name": "AO17 CS: Компьютерлік ғылымға кіріспе", "inLanguage": "kk",
+          "description": f"12 апталық тегін курс: логика, дәлелдеу, дискретті құрылымдар, алгоритмдер, бит, Python, функциялар, деректер құрылымы, C, жад және жүйелер. {tot_l} сабақ, {tot_t} тапсырма.",
+          "provider": {"@type": "Organization", "name": "AO17", "url": "https://mustafa7677.github.io/CS50MUSS/"},
+          "isAccessibleForFree": True, "url": "https://mustafa7677.github.io/CS50MUSS/academy/course.html",
+          "hasCourseInstance": {"@type": "CourseInstance", "courseMode": "online", "courseWorkload": f"PT{round(tot_min / 60)}H"}}
+    body = f"""  <div class="layout single">
+    <article class="content crs" id="main">
+      <header class="crs-hero">
+        <p class="crs-k">AO17 CS · Level I</p>
+        <h1>Компьютерлік ғылымға кіріспе</h1>
+        <p class="crs-lede">Он екі апта: логикадан жүйеге дейін. Қазақ тілінде, тегін, браузерде. Әр апта ұғымды түсіндіруден басталып, 3D зертханамен жалғасады да, өзің жазатын кодпен бітеді.</p>
+        <ul class="crs-stats"><li><b>12</b><span>апта</span></li><li><b>{tot_l}</b><span>сабақ</span></li><li><b>{tot_t}</b><span>тапсырма</span></li>
+          <li><b>{len(CXE.EPISODES)}</b><span>комикс эпизоды</span></li><li><b>{len(n3d)}</b><span>3D зертхана</span></li><li><b>≈{round(tot_min / 60)}</b><span>сағат</span></li></ul>
+        <p class="crs-cta"><a class="btn gold" href="m01/l01.html">1-аптадан бастау</a> <a class="btn secondary" href="comics.html">Комикстер</a> <a class="btn secondary" href="{CRS.INSIDE}" target="_blank" rel="noopener">INSIDE TECH 3D зертханалары</a></p>
+      </header>
+      <h2>Әр апта үш қадаммен жүреді</h2>
+      <ol class="crs-pillars">{pillars}</ol>
+      <h2>Бағдарлама</h2>
+      <ol class="crs-weeks">{"".join(weeks)}</ol>
+      <section class="crs-final"><h2>Қорытынды жоба</h2>
+        <p>Он екінші аптаның жобасы{(" - «" + E(final["project"]["title"]) + "»") if final else ""}: курстың бәрін бір жүйеге жинайсың. Деректі оқитын, тексеретін, есептейтін және нәтиже шығаратын компоненттерді Python мен C-да жазып, екеуін тестпен салыстырасың. Жобаны мұғалім рубрикамен бағалайды.</p>
+        {f'<p><a class="btn secondary" href="m12/{final["slug"]}.html#project">Жобаның талаптары</a></p>' if final else ""}</section>
+      <section class="crs-faq"><h2>Жиі қойылатын сұрақтар</h2>
+        <details><summary>Курс кімге арналған?</summary><p>Бағдарламалауды нөлден бастағысы келетін оқушы мен студентке. Алдын ала білім керек емес: бірінші апта логикадан, «иә» мен «жоқтан» басталады.</p></details>
+        <details><summary>Ақылы ма?</summary><p>Жоқ. Курс тегін, тіркеусіз ашылады. Прогресс осы құрылғыда сақталады, оны кабинеттен басқа құрылғыға көшіруге болады.</p></details>
+        <details><summary>3D зертханалар қайда ашылады?</summary><p>INSIDE TECH-те: бұл AO17 командасының 3D оқу платформасы. Нұрай мен Мустафа сонда да бар. Екі платформа бір мекенжайда тұрғандықтан, INSIDE TECH-тегі оқу күндері «Менің шаңырағым» бетіндегі серияға да қосылады.</p></details>
+        <details><summary>Тапсырмалар қалай тексеріледі?</summary><p>Браузерде, бірден: Python коды AO17 Judge-де нағыз тестпен тексеріледі, C мысалдарының шығысы сайтты құрастыру кезінде gcc арқылы алынған. Модуль жобасын мұғалім рубрикамен бағалайды.</p></details>
+      </section>
+      <p><a href="index.html">CS Universe картасына оралу</a> · <a href="../yurt.html">Менің шаңырағым</a></p>
+    </article>
+  </div>
+  <script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>"""
+    return "academy/course.html", page("academy/course.html", "AO17 CS: Компьютерлік ғылымға кіріспе",
+                                       f"AO17 CS - 12 апталық тегін курс қазақ тілінде: логикадан жүйеге дейін. {tot_l} сабақ, {tot_t} тапсырма, комикстер және 3D зертханалар.",
+                                       body, styles=("assets/css/course.css",))
 
 
 def study_html(lessons):
@@ -727,7 +793,7 @@ def index_html(lessons, st):
       <h1>Негізден Senior деңгейіне дейін, қазақ тілінде</h1>
       <p>Курс таңдамайсыз - бағыт таңдайсыз. Әр бағыт төрт сатыдан тұрады: Негіз, Junior, Middle, Senior. Әр сатыда не үйренетініңіз, қай модульді оқитыныңыз және портфолиоға қандай жоба жасайтыныңыз алдын ала жазылған. Мазмұн AO17 үшін жаңадан жазылады, әр тапсырма автоматты тексеріледі.</p>
       <p class="ac-honest">Қазір дайын: <b>{st["complete_lessons"]}</b> толық сабақ, <b>{st["auto_checked_tasks"]}</b> автоматты тексерілетін тапсырма, <b>{st["python_examples"]}</b> тексерілген Python мысалы. Қалғаны - жоспар, ол бөлек белгіленген.</p>
-      <p class="ac-cta"><a class="btn gold" href="#tracks">Бағыт таңдау</a> <a class="btn secondary" href="m01/l01.html">Бірінші сабақтан бастау</a> <a class="btn secondary" href="comics.html">Комикс: Айша мен Бота</a> <a class="btn secondary" href="lab.html">Логика зертханасы</a> <a class="btn secondary" href="labs/index.html">CS зертханалары</a> <a class="btn secondary" href="ielts/index.html">IELTS</a> <a class="btn secondary" href="sat/index.html">Digital SAT</a> <a class="btn secondary" href="models.html">Интерактивті модельдер</a> <a class="btn secondary" href="study.html">Менің оқуым</a> <a class="btn secondary" href="map.html">Білім картасы</a></p>
+      <p class="ac-cta"><a class="btn gold" href="course.html">AO17 CS курсы: 12 апта</a> <a class="btn secondary" href="#tracks">Бағыт таңдау</a> <a class="btn secondary" href="m01/l01.html">Бірінші сабақтан бастау</a> <a class="btn secondary" href="comics.html">Комикс: Нұрай, Мустафа және Бота</a> <a class="btn secondary" href="lab.html">Логика зертханасы</a> <a class="btn secondary" href="labs/index.html">CS зертханалары</a> <a class="btn secondary" href="ielts/index.html">IELTS</a> <a class="btn secondary" href="sat/index.html">Digital SAT</a> <a class="btn secondary" href="models.html">Интерактивті модельдер</a> <a class="btn secondary" href="study.html">Менің оқуым</a> <a class="btn secondary" href="map.html">Білім картасы</a></p>
       <p><a class="ac-film" href="../film/cs/">Фильм: «Даладан жұлдызға», 36 секунд</a></p>
     </header>
     <section class="ac-sec tl-sec" id="tracks"><h2>Бес бағыт, төрт саты</h2>
@@ -920,7 +986,7 @@ def build(write=True):
         print(f"academy check: OK ({st['complete_lessons']} сабақ, {st['auto_checked_tasks']} тапсырма, {st['python_examples']} мысал)")
         return
     plan_by_id = {p["id"]: p for p in C.plan()}
-    pages = [index_html(lessons, st), lab_html(), map_html(lessons), models_html(), study_html(lessons), comics_html(lessons)] + [track_html(t) for t in TR.TRACKS]
+    pages = [index_html(lessons, st), lab_html(), map_html(lessons), models_html(), study_html(lessons), comics_html(lessons), course_html(lessons, st)] + [track_html(t) for t in TR.TRACKS]
     by_mod = {}
     for L in lessons:
         by_mod.setdefault(L["moduleId"], []).append(L)

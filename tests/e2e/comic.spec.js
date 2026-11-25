@@ -1,5 +1,5 @@
 // © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md.
-// AO17 Комикс «Айша мен Бота» (tools/academy/comic.py, comic_eps.py): хаб беті, 12 эпизод, әр сабақтағы «Тұзақ» комиксі.
+// AO17 Комикс «Нұрай, Мустафа және Бота» (tools/academy/comic.py, comic_eps.py): хаб беті, 12 эпизод, әр сабақтағы «Тұзақ» комиксі.
 // Тексереміз: хабтағы эпизодтар нақты сабақтарға апарады; эпизодта 6 кадр, мәтін - HTML (экран оқу құралына қолжетімді);
 // «Тұзақ» комиксі сол сабақтың «Жиі қателер» деректерін көрсетеді; телефонда тік нұсқа көрінеді, көлденең жылжу жоқ; axe таза.
 const { test, expect } = require("@playwright/test");
@@ -27,12 +27,12 @@ test("7-эпизод: сөз бұлттары - мәтін, сөйлеуші а�
   await page.goto("academy/m07/l01.html?nofilm");
   const sec = page.locator("#s-comic");
   await expect(sec.locator("h2")).toHaveText("print сөйлейді, return береді");
-  await expect(sec.locator(".cx-b").first()).toContainText("Айша:");
+  await expect(sec.locator(".cx-b").first()).toContainText("Мустафа:");
   await expect(sec.locator(".cx-b", { hasText: "x None болып қалды!" })).toHaveCount(1);
   // кодтың шығысы суретте (build кезінде нағыз Python-мен тексерілген)
   await expect(sec.locator('svg.cx-art[aria-label*="TypeError"]').first()).toBeAttached();
   const labels = await sec.locator("svg.cx-art").evaluateAll((s) => s.map((x) => x.getAttribute("aria-label")));
-  expect(labels.every((l) => /^\d+-кадр\. /.test(l) && /Айша|Бота/.test(l))).toBe(true);
+  expect(labels.every((l) => /^\d+-кадр\. /.test(l) && /Нұрай|Мустафа|Бота/.test(l))).toBe(true);
   await expect(sec.locator('.cx-foot a[href="../m08/l01.html#s-comic"]')).toHaveCount(1);
 });
 
@@ -42,7 +42,7 @@ test("«Тұзақ»: К бөліміндегі комикс сол сабақт
     const k = page.locator("#s-k");
     await expect(k.locator(".cx-trap .cx-p")).toHaveCount(4);
     const mistake = (await k.locator(".ac-mist li b").first().textContent()).trim();
-    const note = (await k.locator(".cx-nt").textContent()).replace(/^Айшаның жазбасы:\s*/, "").trim();
+    const note = (await k.locator(".cx-nt").textContent()).replace(/^(Нұрайдың|Мустафаның) жазбасы:\s*/, "").trim();
     expect(note, u).toBe(mistake);
     await expect(k.locator(".cx-b", { hasText: "Ереже:" })).toHaveCount(1);
   }
