@@ -33,6 +33,7 @@
         <div><b>${read}</b><span>лекция оқылды</span></div><div><b>${s.t || 0}</b><span>тапсырма орындалды</span></div>
         <div><b>🔥 ${s.s || 0}</b><span>күн қатарынан</span></div><div><b>${done.length}/${ach.length}</b><span>жетістік</span></div>
         <div><b>${plays}</b><span>ойын ойналды</span></div><div><b>${s.e == null ? "-" : s.e + "%"}</b><span>емтихан рекорды</span></div></div>
+      <p class="cab-yurt"><a class="btn gold" href="yurt.html">🏠 Менің шаңырағым</a> <span>Оқығаныңыз қазақ үйіне айналады: сурет жасап, достарыңызбен бөлісіңіз.</span></p>
       <h2>Жетістіктер</h2>
       <ul class="cab-ach">${ach.map((a) => `<li class="${a.done ? "done" : ""}" title="${esc(a.desc)}"><span aria-hidden="true">${a.ico}</span><b>${esc(a.name)}</b><small>${a.done ? "алынды" : a.cur + "/" + a.goal}</small></li>`).join("")}</ul>
       <h2>Ойындардағы жеке рекордтарым</h2>
