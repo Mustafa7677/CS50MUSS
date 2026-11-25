@@ -79,6 +79,15 @@ test("3D қолданба AO17 ішінде: қатесіз ашылады, сы
   expect(fs.statSync(path.join(ROOT, "academy/3d/app/THIRD-PARTY-NOTICES.txt")).size).toBeGreaterThan(10000);
 });
 
+test("AO17 нұсқасында Ұстаз кейіпкері жоқ: бумада, деректе және 3D комикс кітапханасында", async ({ page }) => {
+  const dec = (s) => s.replace(/\\u([0-9a-fA-F]{4})/g, (_, h) => String.fromCharCode(parseInt(h, 16))).toLowerCase();
+  for (const f of ["academy/3d/app/app.js", "academy/3d/app/ai-lab-worker.js", "academy/3d/app/index.html", "tools/academy/data/inside_lessons.json"])
+    expect(dec(fs.readFileSync(path.join(ROOT, f), "utf8")).includes("ұстаз"), f).toBe(false);
+  await page.goto("academy/3d/app/index.html#comics");
+  await expect(page.locator("button", { hasText: "Кино-комикстер" })).toBeVisible({ timeout: 20000 });
+  expect((await page.locator("body").innerText()).toLowerCase()).not.toContain("ұстаз");
+});
+
 test("AO17 CS курсы 3D сабақтарға AO17-нің ішінде апарады", async ({ page }) => {
   await page.goto("academy/course.html");
   const hrefs = await page.locator(".crs-3d a").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
