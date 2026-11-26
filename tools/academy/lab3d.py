@@ -10,10 +10,12 @@ import json
 import pathlib
 import re
 
+import inside_catalog as IC
 import lab3d_kk as KK
 
 E = lambda s: html.escape(str(s), quote=True)  # noqa: E731
 DATA = pathlib.Path(__file__).resolve().parent / "data" / "inside_lessons.json"
+SHOTS = pathlib.Path(__file__).resolve().parents[2] / "academy" / "3d" / "shots"   # tools/inside_shots.py
 LAB_KK = {"ai": "Жасанды интеллект", "web": "Веб-әзірлеу", "game": "Ойын әзірлеу", "net": "Компьютерлік желілер", "db": "Дерекқорлар",
           "arch": "Компьютер архитектурасы", "cloud": "Бұлт және DevOps", "sec": "Киберқауіпсіздік", "algo": "Алгоритмдер",
           "iot": "Робототехника және IoT", "math": "Математика"}
@@ -226,41 +228,73 @@ def lesson_page(lab, L, idx, prev_l, next_l, page):
                      scripts=("assets/js/lab3d.js",), styles=("assets/css/lab3d.css",))
 
 
+def shot(name):
+    """3D хаб суреті (tools/inside_shots.py), бар болса - academy/3d/-ге қатысты жолы."""
+    return f"shots/{name}.jpg" if (SHOTS / f"{name}.jpg").exists() else ""
+
+
+def feature_card(route, title, desc):
+    img = shot(route)
+    pic = f'<img src="{img}" alt="" width="560" height="350" loading="lazy">' if img else ""
+    return (f'<li><a class="l3-card" href="app/index.html#{E(route)}">{pic}'
+            f'<span class="l3-ct"><b>{E(title)}</b><span>{E(desc)}</span></span></a></li>')
+
+
 def hub_page(page):
+    """2-бөлімнің хабы және INSIDE TECH-тің толық порталы: зертханалар, ойындар, комикстер, оқу құралдары, мамандық, барлық сабақ."""
     labs, by_lab, _ = data()
     n_l = sum(len(v) for v in by_lab.values())
-    n_s = sum(len(L["steps"]) for v in by_lab.values() for L in v)
     n_q = sum(len(s.get("quiz", [])) for v in by_lab.values() for L in v for s in L["steps"])
-    secs = []
+    secs, tiles = [], []
     for no, lab in enumerate(labs, 1):
         ls = by_lab[lab["id"]]
+        name, color = LAB_KK.get(lab["id"], lab["title"]), LAB_COLOR.get(lab["id"], "#0a4c7a")
         items = "".join(f'<li><a href="{lab["id"]}/{E(L["id"])}.html" data-lid="{E(L["id"])}" data-q="{quiz_total(L)}"><b>{E(kk(L))}</b>' + (f'<i lang="en">{E(en(L))}</i>' if en(L) else "")
                         + f'<span>{inline(L.get("summary", ""))}</span><small>≈{L.get("estimatedMinutes", 10)} мин · {len(L["steps"])} қадам · {quiz_total(L)} сұрақ</small></a></li>' for L in ls)
         mins = sum(L.get("estimatedMinutes", 10) for L in ls)
-        secs.append(f'<section class="l3-lab" id="{lab["id"]}" style="--lc:{LAB_COLOR.get(lab["id"], "#0a4c7a")}" aria-labelledby="h-{lab["id"]}">'
-                    f'<h2 id="h-{lab["id"]}"><span class="l3-no">{no}</span>{E(LAB_KK.get(lab["id"], lab["title"]))} <small lang="en">{E(lab["title"])}</small></h2>'
+        secs.append(f'<section class="l3-lab" id="{lab["id"]}" style="--lc:{color}" aria-labelledby="h-{lab["id"]}">'
+                    f'<h3 id="h-{lab["id"]}"><span class="l3-no">{no}</span>{E(name)} <small lang="en">{E(lab["title"])}</small></h3>'
                     + (f'<p class="l3-tag">{E(lab["inside"])}</p>' if lab.get("inside") else "")
-                    + f'<p class="l3-labn">{len(ls)} сабақ · ≈{round(mins / 60, 1):g} сағат<span class="l3-labp" aria-live="polite"></span></p><ol class="l3-lessons">{items}</ol></section>')
-    games = "".join(f'<li><a href="app/index.html#{k}">{E(v)}</a></li>' for k, v in SPECIAL.items())
-    jump = "".join(f'<li><a href="#{lab["id"]}">{E(LAB_KK.get(lab["id"], lab["title"]))}</a></li>' for lab in labs)
+                    + f'<p class="l3-labn">{len(ls)} сабақ · ≈{round(mins / 60, 1):g} сағат<span class="l3-labp" aria-live="polite"></span>'
+                    f' · <a href="app/index.html#{lab["id"]}">3D беті</a></p><ol class="l3-lessons">{items}</ol></section>')
+        img = shot(f"lab-{lab['id']}")
+        tiles.append(f'<li style="--lc:{color}"><a class="l3-tile" href="#{lab["id"]}">'
+                     + (f'<img src="{img}" alt="" width="560" height="350" loading="lazy">' if img else "")
+                     + f'<span class="l3-tt"><span class="l3-no">{no}</span><b>{E(name)}</b><small>{len(ls)} сабақ · ≈{round(mins / 60):g} сағат</small></span></a></li>')
+    groups = []
+    for gid, gname, _, gdesc in IC.GROUPS:
+        cards = "".join(feature_card(r, t, d) for r, g, t, d in IC.FEATURES if g == gid)
+        groups.append(f'<section class="l3-feat" id="{gid}" aria-labelledby="h-{gid}"><h2 id="h-{gid}">{E(gname)}</h2><p class="l3-gi">{E(gdesc)}</p>'
+                      f'<ul class="l3-cards">{cards}</ul></section>')
+    home = shot("home")
+    first = f'{labs[0]["id"]}/{by_lab[labs[0]["id"]][0]["id"]}.html'
+    secnav = "".join(f'<a href="#{h}">{E(t)}</a>' for h, t in [("labs", f"{len(labs)} зертхана"), *[(g, short) for g, _, short, _ in IC.GROUPS], ("all", f"{n_l} сабақ")])
     body = f"""  <div class="layout single">
     <article class="content l3 l3-hub" id="main">
       <p class="ac-crumb"><a href="../course.html">AO17 CS курсы</a> / 2-бөлім: 3D зертхана</p>
-      <header class="l3-hero">
-        <p class="l3-k">AO17 CS курсы · 2-бөлім</p>
-        <h1>Технологияның ішінен</h1>
-        <p class="l3-lede">Курстың бірінші бөлімінде логикадан жүйеге дейін жүрдің. Енді машинаның ішіне кіресің: процессор, желі, дерекқор, нейрон желі, алгоритм - әрқайсысының ішін 3D симуляцияда көріп, параметрін өзгертіп, нәтижесін өлшейсің. Зертханалар ұсынылатын ретпен берілген, әр сабақтың толық дәрісі, тесті және шешілген мысалдары осы жерде.</p>
-        <ul class="l3-stats"><li><b>{len(labs)}</b><span>зертхана</span></li><li><b>{n_l}</b><span>сабақ</span></li><li><b>{n_s}</b><span>дәріс қадамы</span></li><li><b>{n_q}</b><span>тест сұрағы</span></li></ul>
-        <p class="l3-cta"><a class="btn gold" href="{labs[0]["id"]}/{by_lab[labs[0]["id"]][0]["id"]}.html">Бірінші сабақтан бастау</a> <a class="btn secondary" href="app/index.html">3D қолданбаны ашу</a> <a class="btn secondary" href="../course.html#part2">Курс бағдарламасы</a></p>
+      <header class="l3-hero{" l3-hero-x" if home else ""}">
+        <div class="l3-hx">
+          <p class="l3-k">AO17 CS курсы · 2-бөлім</p>
+          <h1>Технологияның ішінен</h1>
+          <p class="l3-lede">Курстың бірінші бөлімінде логикадан жүйеге дейін жүрдің. Енді машинаның ішіне кіресің: процессордың, желінің, дерекқордың, нейрон желінің ішін 3D симуляцияда көріп, өлшейсің. INSIDE TECH-тің бәрі осы жерде: {len(labs)} зертхана, ойындар, комикстер және оқу құралдары.</p>
+          <ul class="l3-stats"><li><b>{len(labs)}</b><span>зертхана</span></li><li><b>{n_l}</b><span>сабақ</span></li><li><b>{n_q}</b><span>тест сұрағы</span></li><li><b>{len(IC.FEATURES)}</b><span>ойын мен құрал</span></li></ul>
+          <p class="l3-cta"><a class="btn gold" href="{first}">Бірінші сабақтан бастау</a> <a class="btn secondary" href="app/index.html">INSIDE TECH-ті толық ашу</a> <a class="btn secondary" href="../course.html#part2">Курс бағдарламасы</a></p>
+        </div>
+        {f'<a class="l3-hshot" href="app/index.html" aria-label="INSIDE TECH басты бетін ашу"><img src="{home}" alt="INSIDE TECH басты беті: «Технологияның ішіне кір» және 3D чип" width="560" height="350"></a>' if home else ""}
       </header>
-      <nav class="l3-jump" aria-label="Зертханалар"><ul>{jump}</ul></nav>
-      <section class="l3-games" aria-labelledby="g-h"><h2 id="g-h">Ойын түріндегі зертханалар</h2><ul>{games}</ul></section>
-      {"".join(secs)}
-      <p class="l3-src">Материалдар AO17 командасының INSIDE TECH 3D платформасынан алынған. Үшінші тарап кітапханаларының лицензиялары: <a href="app/THIRD-PARTY-NOTICES.txt">THIRD-PARTY-NOTICES.txt</a>.</p>
+      <nav class="l3-secnav" aria-label="Хабтың бөлімдері">{secnav}</nav>
+      <section class="l3-labs" id="labs" aria-labelledby="h-labs"><h2 id="h-labs">{len(labs)} зертхана</h2>
+        <p class="l3-gi">Ұсынылатын рет: архитектура мен алгоритмдер қалғанының негізі. Әр зертханада 10-15 сабақ, әр сабақта дәріс, тест және 3D симуляция.</p>
+        <ol class="l3-tiles">{"".join(tiles)}</ol></section>
+      {"".join(groups)}
+      <section class="l3-all" id="all" aria-labelledby="h-all"><h2 id="h-all">Барлық {n_l} сабақ</h2>
+        <p class="l3-gi">Сабақтың беті - толық дәріс пен тест; «3D симуляцияны ашу» батырмасы сол сабақты INSIDE TECH қолданбасында ашады. Прогресс екеуінде ортақ.</p>
+        {"".join(secs)}</section>
+      <p class="l3-src">Материалдар AO17 командасының INSIDE TECH 3D платформасынан алынған. AO17 нұсқасында атаулар қазақша, Ұстаз кейіпкері жоқ. Үшінші тарап кітапханаларының лицензиялары: <a href="app/THIRD-PARTY-NOTICES.txt">THIRD-PARTY-NOTICES.txt</a>.</p>
     </article>
   </div>"""
     return "academy/3d/index.html", page("academy/3d/index.html", "Технологияның ішінен: AO17 CS курсының 2-бөлімі (3D зертхана)",
-                                         f"AO17 CS курсының 2-бөлімі: {len(labs)} зертхана, {n_l} сабақ, {n_q} тест сұрағы. Процессор, желі, дерекқор, AI ішінен 3D симуляциямен.",
+                                         f"AO17 CS курсының 2-бөлімі және INSIDE TECH-тің толық порталы: {len(labs)} зертхана, {n_l} сабақ, {n_q} тест сұрағы, ойындар, комикстер, оқу құралдары.",
                                          body, scripts=("assets/js/lab3d.js",), styles=("assets/css/lab3d.css",))
 
 

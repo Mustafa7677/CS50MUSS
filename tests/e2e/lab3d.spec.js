@@ -41,6 +41,47 @@ test("хаб: шешілген сабақтар белгіленеді, зерт
   await expect(page.locator("#algo .l3-labp")).toHaveText("");
 });
 
+
+test("INSIDE TECH-тің толық порталы: 24 бөлім скриншотпен, әрқайсысы 3D қолданбаның нақты бөлімін ашады", async ({ page }) => {
+  test.setTimeout(150000);
+  await page.goto("academy/3d/index.html");
+  const cards = page.locator(".l3-feat a.l3-card");
+  await expect(cards).toHaveCount(24);
+  const routes = await cards.evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+  for (const h of routes) expect(h, h).toMatch(/^app\/index\.html#[a-z]+$/);
+  const imgs = await page.locator(".l3-feat img, .l3-tiles img, .l3-hshot img").evaluateAll((a) => a.map((i) => i.getAttribute("src")));
+  expect(imgs.length).toBe(24 + 11 + 1);
+  for (const src of imgs) expect(fs.existsSync(path.join(ROOT, "academy/3d", src)), src).toBe(true);
+  for (const h of await page.locator(".l3-secnav a").evaluateAll((a) => a.map((x) => x.getAttribute("href")))) await expect(page.locator(h)).toHaveCount(1);
+  await expect(page.locator(".l3-tiles a.l3-tile")).toHaveCount(11);
+  // әр маршрут 3D қолданбада бар: белгісіз маршрут басты бетке түседі («Технологияның ішіне кір.»)
+  const errors = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  for (const h of routes) {
+    await page.goto("academy/3d/" + h);
+    await expect(page.locator("h1").first(), h).toBeVisible({ timeout: 20000 });
+    expect(await page.locator("h1").first().innerText(), h).not.toMatch(/Технологияның\s+ішіне кір/);
+  }
+  expect(errors).toEqual([]);
+});
+
+for (const width of [1280, 1100]) {
+  test(`3D қолданбаның тақырыбы ${width}px енде бір қатарда, беттің басын жаппайды`, async ({ browser }) => {
+    const c = await browser.newContext({ viewport: { width, height: 800 }, reducedMotion: "reduce" });
+    const p = await c.newPage();
+    await p.goto("academy/3d/app/index.html#world");
+    await expect(p.locator("h1")).toBeVisible({ timeout: 20000 });
+    const r = await p.evaluate(() => {
+      const hd = document.querySelector("header"), nav = hd.querySelector("nav");
+      return { h: hd.getBoundingClientRect().height, bottom: hd.getBoundingClientRect().bottom, kick: document.querySelector("h1").previousElementSibling.getBoundingClientRect().top, over: nav.scrollWidth > nav.clientWidth + 1 };
+    });
+    expect(r.h).toBeLessThan(80);
+    expect(r.kick).toBeGreaterThanOrEqual(r.bottom);
+    expect(r.over).toBe(false);
+    await c.close();
+  });
+}
+
 test("лекция беті: дәріс Markdown-нан, тапсырма, тест; дұрыс жауап ортақ күнделікке жазылады", async ({ browser }) => {
   const c = await browser.newContext({ reducedMotion: "reduce" });
   await blockFonts(c);
