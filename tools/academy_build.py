@@ -679,13 +679,16 @@ def comics_html(lessons):
 
 
 def course_html(lessons, st):
-    """AO17 CS: 12 апталық курс беті (CS Universe Level I + комикс + INSIDE TECH 3D зертханалары + жоба)."""
+    """AO17 CS: екі бөлімді курс беті. 1-бөлім «Негіз» - 12 апта (CS Universe Level I + комикс + 3D сабақ + жоба),
+    2-бөлім «Технологияның ішінен» - 3D зертхананың зертханалары (tools/academy/lab3d.py). Оқушы прогресі: assets/js/course.js."""
     by_mod = {}
     for L in lessons:
         by_mod.setdefault(L["moduleId"], []).append(L)
     mods = {m[0]: m for m in C.ALL_MODULES}
     eps = {e["lesson"].split(".")[1]: e for e in CXE.EPISODES}
     weeks, n3d, tot_l, tot_t, tot_min = [], set(), 0, 0, 0
+    prog = {"weeks": {}, "labs": {}}   # course.js: [id, сілтеме, атауы(, тест саны)]
+    bar = '<div class="crs-bar" aria-hidden="true"><i></i></div><p class="crs-pr"></p>'
     for n, (mid, question, labs) in enumerate(CRS.WEEKS, 1):
         ls = sorted(by_mod.get(mid, []), key=lambda x: x["slug"])
         if not ls:
@@ -693,53 +696,91 @@ def course_html(lessons, st):
         tasks = sum(len(x["exercises"]) + len(x["assessment"]) for x in ls)
         mins = sum(x["minutes"] for x in ls)
         tot_l, tot_t, tot_min = tot_l + len(ls), tot_t + tasks, tot_min + mins
+        prog["weeks"][f"w{n}"] = [[x["id"], f'{mid}/{x["slug"]}.html', x["title"]] for x in ls]
         pj = next((x for x in ls if x.get("project")), None)
         ep = eps.get(mid)
         n3d.update(h for h, _ in labs)
         lab_links = ", ".join(f'<a href="{L3.href(h, "")}">{E(t)}</a>' for h, t in labs)
         items = (f'<li class="crs-comic"><span>Комикс</span><a href="{mid}/l01.html#s-comic">{E(ep["title"])}</a></li>' if ep else "") \
             + f'<li class="crs-3d"><span>3D зертхана</span><p>{lab_links}</p></li>' \
-            + (f'<li class="crs-pj"><span>Жоба</span><a href="{mid}/{pj["slug"]}.html#project">{E(pj["project"]["title"])}</a></li>' if pj else "")
-        weeks.append(f'<li class="crs-w" id="w{n}"><p class="crs-wn"><span>Апта</span><b>{n}</b></p><div class="crs-wb">'
+            + (f'<li class="crs-pj"><span>Жоба</span><p><a href="{mid}/{pj["slug"]}.html#project">{E(CRS.PROJECT_KK.get(pj["project"]["id"], pj["project"]["title"]))}</a>'
+               + (f' <small lang="en">{E(pj["project"]["title"])}</small>' if pj["project"]["id"] in CRS.PROJECT_KK else "") + '</p></li>' if pj else "")
+        thumb = f"assets/img/posters/thumb/ao17cs-w{n:02d}.jpg"
+        cover = (f'<a class="crs-wv" href="../posters.html#cs-w{n:02d}" aria-label="{n}-аптаның комикс-мұқабасы"><img src="../{thumb}" alt="" width="240" height="360" loading="lazy"></a>'
+                 if (ROOT / thumb).exists() else "")
+        weeks.append(f'<li class="crs-w{" has-cover" if cover else ""}" id="w{n}">{cover}<p class="crs-wn"><span>Апта</span><b>{n}</b></p><div class="crs-wb">'
                      f'<h3><a href="{mid}/l01.html">{E(mods[mid][2])}</a></h3><p class="crs-wq">{E(question)}</p>'
-                     f'<p class="crs-wm">{len(ls)} сабақ · {tasks} тапсырма · ≈{round(mins / 60)} сағат</p><ul class="crs-wl">{items}</ul></div></li>')
+                     f'<p class="crs-wm">{len(ls)} сабақ · {tasks} тапсырма · ≈{round(mins / 60)} сағат</p></div><ul class="crs-wl">{items}</ul>{bar}</li>')
     final = next((x for x in sorted(by_mod.get("m12", []), key=lambda x: x["slug"]) if x.get("project")), None)
     pillars = "".join(f'<li><b>{E(a)}</b><p>{E(b)}</p></li>' for a, b in CRS.PILLARS)
+    # 2-бөлім: 3D зертханалар ұсынылатын ретпен
+    LS = L3.lab_summary()
+    n3_l = sum(len(x["lessons"]) for x in LS)
+    n3_q = sum(q["quiz"] for x in LS for q in x["lessons"])
+    n3_min = sum(x["minutes"] for x in LS)
+    labs_html = []
+    for no, x in enumerate(LS, 1):
+        first = x["lessons"][0]
+        prog["labs"][x["id"]] = [[q["id"], f'3d/{x["id"]}/{q["id"]}.html', q["kk"], q["quiz"]] for q in x["lessons"]]
+        labs_html.append(f'<li class="crs-lab" id="lab-{x["id"]}" style="--lc:{x["color"]}"><p class="crs-ln" aria-hidden="true">{no}</p><div class="crs-lb">'
+                         f'<h3><a href="3d/index.html#{x["id"]}">{E(x["kk"])}</a> <small lang="en">{E(x["en"])}</small></h3>'
+                         + (f'<p class="crs-lt">{E(x["tag"])}</p>' if x["tag"] else "")
+                         + f'<p class="crs-wm">{len(x["lessons"])} сабақ · {sum(q["quiz"] for q in x["lessons"])} тест сұрағы · ≈{round(x["minutes"] / 60)} сағат</p>'
+                         f'<p class="crs-l1">Бірінші сабақ: <a href="3d/{x["id"]}/{first["id"]}.html">{E(first["kk"])}</a></p>{bar}</div></li>')
+    hours = round((tot_min + n3_min) / 60)
     ld = {"@context": "https://schema.org", "@type": "Course", "name": "AO17 CS: Компьютерлік ғылымға кіріспе", "inLanguage": "kk",
-          "description": f"12 апталық тегін курс: логика, дәлелдеу, дискретті құрылымдар, алгоритмдер, бит, Python, функциялар, деректер құрылымы, C, жад және жүйелер. {tot_l} сабақ, {tot_t} тапсырма.",
+          "description": (f"Екі бөлімді тегін курс. 1-бөлім (12 апта): логика, дәлелдеу, дискретті құрылымдар, алгоритмдер, бит, Python, функциялар, "
+                          f"деректер құрылымы, C, жад және жүйелер. 2-бөлім: {len(LS)} 3D зертхана - архитектура, алгоритмдер, желілер, веб, дерекқор, "
+                          f"қауіпсіздік, бұлт, AI. Барлығы {tot_l + n3_l} сабақ."),
           "provider": {"@type": "Organization", "name": "AO17", "url": "https://mustafa7677.github.io/CS50MUSS/"},
           "isAccessibleForFree": True, "url": "https://mustafa7677.github.io/CS50MUSS/academy/course.html",
-          "hasCourseInstance": {"@type": "CourseInstance", "courseMode": "online", "courseWorkload": f"PT{round(tot_min / 60)}H"}}
+          "image": "https://mustafa7677.github.io/CS50MUSS/assets/img/og/course-ao17cs.jpg",
+          "hasCourseInstance": {"@type": "CourseInstance", "courseMode": "online", "courseWorkload": f"PT{hours}H"}}
     body = f"""  <div class="layout single">
     <article class="content crs" id="main">
       <header class="crs-hero">
-        <p class="crs-k">AO17 CS · Level I</p>
+        <p class="crs-k">AO17 CS</p>
         <h1>Компьютерлік ғылымға кіріспе</h1>
-        <p class="crs-lede">Он екі апта: логикадан жүйеге дейін. Қазақ тілінде, тегін, браузерде. Әр апта ұғымды түсіндіруден басталып, 3D зертханамен жалғасады да, өзің жазатын кодпен бітеді.</p>
-        <ul class="crs-stats"><li><b>12</b><span>апта</span></li><li><b>{tot_l}</b><span>сабақ</span></li><li><b>{tot_t}</b><span>тапсырма</span></li>
-          <li><b>{len(CXE.EPISODES)}</b><span>комикс эпизоды</span></li><li><b>{len(n3d)}</b><span>3D зертхана</span></li><li><b>≈{round(tot_min / 60)}</b><span>сағат</span></li></ul>
-        <p class="crs-cta"><a class="btn gold" href="m01/l01.html">1-аптадан бастау</a> <a class="btn secondary" href="comics.html">Комикстер</a> <a class="btn secondary" href="3d/index.html">3D зертхана: {sum(len(v) for v in L3.data()[1].values())} сабақ</a></p>
+        <p class="crs-lede">Екі бөлім, бір жол. Бірінші бөлімде он екі аптада логикадан жүйеге дейін жүресің: ұғымды түсіндірме мен комикстен аласың, кодты өзің жазасың. Екінші бөлімде технологияның ішіне кіресің: процессордың, желінің, дерекқордың, нейрон желінің ішін 3D симуляцияда көріп, өлшейсің. Қазақ тілінде, тегін, браузерде.</p>
+        <ul class="crs-stats"><li><b>2</b><span>бөлім</span></li><li><b>{tot_l + n3_l}</b><span>сабақ</span></li><li><b>{tot_t + n3_q}</b><span>тапсырма мен тест</span></li>
+          <li><b>{len(CXE.EPISODES)}</b><span>комикс эпизоды</span></li><li><b>{len(LS)}</b><span>3D зертхана</span></li><li><b>≈{hours}</b><span>сағат</span></li></ul>
+        <p class="crs-cta"><a class="btn gold" id="crs-go" href="m01/l01.html">1-аптадан бастау</a> <a class="btn secondary" href="#part2">2-бөлім: 3D зертхана</a> <a class="btn secondary" href="comics.html">Комикстер</a> <a class="btn secondary" href="../posters.html#ao17cs">Курс мұқабалары</a></p>
+        <p class="crs-me" id="crs-me" hidden></p>
       </header>
-      <h2>Әр апта үш қадаммен жүреді</h2>
-      <ol class="crs-pillars">{pillars}</ol>
-      <h2>Бағдарлама</h2>
-      <ol class="crs-weeks">{"".join(weeks)}</ol>
-      <section class="crs-final"><h2>Қорытынды жоба</h2>
-        <p>Он екінші аптаның жобасы{(" - «" + E(final["project"]["title"]) + "»") if final else ""}: курстың бәрін бір жүйеге жинайсың. Деректі оқитын, тексеретін, есептейтін және нәтиже шығаратын компоненттерді Python мен C-да жазып, екеуін тестпен салыстырасың. Жобаны мұғалім рубрикамен бағалайды.</p>
-        {f'<p><a class="btn secondary" href="m12/{final["slug"]}.html#project">Жобаның талаптары</a></p>' if final else ""}</section>
+      <nav class="crs-parts" aria-label="Курстың екі бөлімі">
+        <a class="crs-part" href="#part1"><span class="crs-pk">1-бөлім</span><b>Негіз</b><span>12 апта · {tot_l} сабақ · {tot_t} тапсырма. Логикадан жүйеге дейін: Python, C, жад.</span><span class="crs-pp" data-part="0"></span></a>
+        <a class="crs-part crs-part2" href="#part2"><span class="crs-pk">2-бөлім</span><b>Технологияның ішінен</b><span>{len(LS)} зертхана · {n3_l} сабақ · {n3_q} тест сұрағы. Машинаның ішін 3D симуляцияда көр.</span><span class="crs-pp" data-part="1"></span></a>
+      </nav>
+      <section class="crs-sec" id="part1" aria-labelledby="part1-h">
+        <h2 id="part1-h"><span class="crs-pk">1-бөлім</span>Негіз: 12 апта</h2>
+        <h3>Әр апта үш қадаммен жүреді</h3>
+        <ol class="crs-pillars">{pillars}</ol>
+        <ol class="crs-weeks">{"".join(weeks)}</ol>
+        <section class="crs-final"><h3>1-бөлімнің қорытынды жобасы</h3>
+          <p>Он екінші аптаның жобасы{(" - «" + E(CRS.PROJECT_KK.get(final["project"]["id"], final["project"]["title"])) + "»") if final else ""}: бөлімнің бәрін бір жүйеге жинайсың. Деректі оқитын, тексеретін, есептейтін және нәтиже шығаратын компоненттерді Python мен C-да жазып, екеуін тестпен салыстырасың. Жобаны мұғалім рубрикамен бағалайды.</p>
+          {f'<p><a class="btn secondary" href="m12/{final["slug"]}.html#project">Жобаның талаптары</a></p>' if final else ""}</section>
+      </section>
+      <section class="crs-sec" id="part2" aria-labelledby="part2-h">
+        <h2 id="part2-h"><span class="crs-pk">2-бөлім</span>Технологияның ішінен: {len(LS)} зертхана</h2>
+        <p class="crs-note">Бірінші бөлімде бит, код және жад туралы білгеніңді енді нақты жүйенің ішінде көресің. Әр сабақ: дәріс, алдымен болжау, 3D симуляциядағы тапсырма, тест, шешілген мысал және «қатені тап». Әр зертханада есептер жинағы бар: нұсқаулықсыз, тек спецификация мен автотексеруші. Зертханалар ұсынылатын ретпен тұр: архитектура мен алгоритмдер қалғанының негізі, бірақ кез келгенінен бастауға болады.</p>
+        <ol class="crs-labs">{"".join(labs_html)}</ol>
+        <p class="crs-more"><a class="btn secondary" href="3d/index.html">2-бөлімнің барлық {n3_l} сабағы</a> <a class="btn secondary" href="3d/app/index.html">3D қолданбаны ашу</a></p>
+      </section>
       <section class="crs-faq"><h2>Жиі қойылатын сұрақтар</h2>
         <details><summary>Курс кімге арналған?</summary><p>Бағдарламалауды нөлден бастағысы келетін оқушы мен студентке. Алдын ала білім керек емес: бірінші апта логикадан, «иә» мен «жоқтан» басталады.</p></details>
         <details><summary>Ақылы ма?</summary><p>Жоқ. Курс тегін, тіркеусіз ашылады. Прогресс осы құрылғыда сақталады, оны кабинеттен басқа құрылғыға көшіруге болады.</p></details>
-        <details><summary>3D зертхана деген не?</summary><p>AO17-нің ішіндегі бөлім: {len(L3.data()[0])} зертхананың {sum(len(v) for v in L3.data()[1].values())} сабағы, әрқайсысында толық дәріс, тест, шешілген мысал және 3D симуляция бар. Материалдар AO17 командасының INSIDE TECH 3D платформасынан алынған. 3D зертханадағы оқу күндері «Менің шаңырағым» бетіндегі серияға да қосылады.</p></details>
-        <details><summary>Тапсырмалар қалай тексеріледі?</summary><p>Браузерде, бірден: Python коды AO17 Judge-де нағыз тестпен тексеріледі, C мысалдарының шығысы сайтты құрастыру кезінде gcc арқылы алынған. Модуль жобасын мұғалім рубрикамен бағалайды.</p></details>
+        <details><summary>Екі бөлімнің айырмасы неде?</summary><p>Бірінші бөлім - іргетас: логика, дәлелдеу, алгоритм, Python, C және жад, әр аптада өзің жазатын код пен жоба. Екінші бөлім - {len(LS)} зертхананың {n3_l} сабағы: әрқайсысында толық дәріс, тест, шешілген мысал және 3D симуляция бар. Материалдар AO17 командасының INSIDE TECH 3D платформасынан алынған. 3D зертханадағы оқу күндері «Менің шаңырағым» бетіндегі серияға да қосылады.</p></details>
+        <details><summary>Тапсырмалар қалай тексеріледі?</summary><p>Браузерде, бірден: Python коды AO17 Judge-де нағыз тестпен тексеріледі, C мысалдарының шығысы сайтты құрастыру кезінде gcc арқылы алынған, 3D зертхананың тесттері жауапты түсіндірмесімен береді. Модуль жобасын мұғалім рубрикамен бағалайды.</p></details>
+        <details><summary>Прогресім қайда көрінеді?</summary><p>Осы беттің өзінде: әр аптаның және әр зертхананың астында аяқталған сабақтар саны шығады, ал «Жалғастыру» батырмасы тоқтаған жеріңе апарады. Деректер тек осы браузерде сақталады.</p></details>
       </section>
       <p><a href="index.html">CS Universe картасына оралу</a> · <a href="../yurt.html">Менің шаңырағым</a></p>
     </article>
   </div>
+  <script type="application/json" id="crs-data">{json.dumps(prog, ensure_ascii=False).replace("</", "<\\/")}</script>
   <script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>"""
     return "academy/course.html", page("academy/course.html", "AO17 CS: Компьютерлік ғылымға кіріспе",
-                                       f"AO17 CS - 12 апталық тегін курс қазақ тілінде: логикадан жүйеге дейін. {tot_l} сабақ, {tot_t} тапсырма, комикстер және 3D зертханалар.",
-                                       body, styles=("assets/css/course.css",))
+                                       f"AO17 CS - екі бөлімді тегін курс қазақ тілінде: 12 апта логикадан жүйеге дейін және {len(LS)} 3D зертхана. {tot_l + n3_l} сабақ, комикстер, 3D симуляциялар.",
+                                       body, scripts=("assets/js/course.js",), styles=("assets/css/course.css",))
 
 
 def study_html(lessons):

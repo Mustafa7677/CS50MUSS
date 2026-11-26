@@ -7,6 +7,10 @@ INSIDE TECH (github.com/Mustafa7677/3d-learning-) - AO17 командасыны�
   2) tools/academy/data/inside_lessons.json - 160 сабақтың дәрістері, тесттері, болжамдары, мысалдары (tools/inside_extract.mjs);
      tools/academy/lab3d.py осыдан academy/3d/<зертхана>/<сабақ>.html лекция беттерін жасайды (tools/build.py кезінде);
   3) academy/3d/app/THIRD-PARTY-NOTICES.txt - бумаға кіретін кітапханалардың (React, three.js, ...) лицензия мәтіндері.
+AO17 нұсқасында Ұстаз кейіпкері жоқ: құрастырудың алдында оның комикс жолдары баяндаушы (narrator) мәтініне айналады,
+«Нұрай, Мустафа және Ұстаз» - «Нұрай мен Мустафа», Feynman чатындағы кеңесті Нұрай береді (strip_ustaz). Құрастырған соң
+INSIDE TECH клоны бастапқы күйіне қайтарылады (git checkout), ал бумада «ұстаз» сөзі (кез келген регистрде, \\uXXXX түрінде де)
+қалмағаны тексеріледі (has_ustaz).
 
 Қолдану:  python3 tools/sync_inside.py /path/to/3d-learning-
 Керек: node 22, pnpm (INSIDE TECH-тің packageManager нұсқасы). Сосын: python3 tools/build.py
@@ -25,6 +29,37 @@ BACK = ('<a class="ao17-back" href="../index.html" title="AO17 3D зертхан
         '<style>.ao17-back{position:fixed;left:12px;bottom:12px;z-index:2147483000;padding:7px 12px;border-radius:99px;background:#f2b705;color:#1b1510;'
         'font:700 12px/1.2 Inter,system-ui,sans-serif;text-decoration:none;box-shadow:0 6px 16px rgb(0 0 0 / .35)}'
         '.ao17-back:focus-visible{outline:3px solid #fff;outline-offset:2px}</style>')
+
+
+def strip_ustaz(src):
+    """AO17 нұсқасы үшін Ұстаз кейіпкерін алып тастау (INSIDE TECH клонының жұмыс көшірмесінде; соңында git checkout)."""
+    files = [f for g in ("apps/web/src/**/*.ts", "apps/web/src/**/*.tsx", "packages/*/src/**/*.ts") for f in src.glob(g) if ".test." not in f.name]
+    changed = []
+    for f in files:
+        s = f.read_text(encoding="utf-8")
+        o = s
+        if f.name == "Teach.tsx":   # «Мустафаға түсіндір»: тәлімгердің кеңесін Нұрай береді
+            s = s.replace('<Face who={m.who === "ustaz" ? "ustaz" : "mustafa"}', '<Face who={m.who === "ustaz" ? "nuray" : "mustafa"}')
+            s = s.replace('<b>{m.who === "ustaz" ? "Ұстаз" : "Мустафа"}</b>', '<b>{m.who === "ustaz" ? "Нұрай" : "Мустафа"}</b>')
+        else:
+            s = s.replace('who: "ustaz"', 'who: "narrator"')
+            s = re.sub(r'with: \[([^\]]*)\]', lambda m: "with: [" + ", ".join(x for x in (y.strip() for y in m.group(1).split(",")) if x and x != '"ustaz"') + "]", s)
+        s = s.replace("Нұрай, Мустафа және Ұстаз", "Нұрай мен Мустафа").replace("НҰРАЙ · МУСТАФА · ҰСТАЗ", "НҰРАЙ · МУСТАФА")
+        s = s.replace(", Ұстаз?", "?")
+        s = re.sub(r'"Ұстаз, (\w)', lambda m: '"' + m.group(1).upper(), s)
+        s = s.replace('"Ұстаз <ustaz@insidetech.kz>"', '"Мұғалім <teacher@insidetech.kz>"')
+        s = s.replace('ustaz: "Ұстаз",', 'ustaz: "",')
+        s = s.replace("Ұстаз: келесі қадам", "Келесі қадам")
+        s = s.replace('first.who === "narrator" ? "ustaz" : first.who', 'first.who === "narrator" ? "nuray" : first.who')
+        if s != o:
+            f.write_text(s, encoding="utf-8")
+            changed.append(f.relative_to(src).as_posix())
+    return changed
+
+
+def has_ustaz(text):
+    """Мәтінде (JS бумасындағы \\uXXXX түрін де ашып) кез келген регистрдегі «ұстаз» бар ма."""
+    return "ұстаз" in re.sub(r"\\u([0-9a-fA-F]{4})", lambda m: chr(int(m.group(1), 16)), text).lower()
 
 
 def run(cmd, cwd, env=None):
@@ -76,10 +111,21 @@ def main():
     src = pathlib.Path(sys.argv[1]).resolve()
     web = src / "apps/web"
     run(["pnpm", "install", "--frozen-lockfile"], src)
-    run(["pnpm", "--filter", "@inside-tech/web", "build:artifact"], src, {"FULL_HTML": "1"})
-    DATA.parent.mkdir(parents=True, exist_ok=True)
-    run(["node", str(ROOT / "tools/inside_extract.mjs"), str(src), str(DATA)], src)
+    commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=src, capture_output=True, text=True, check=True).stdout.strip()
+    changed = strip_ustaz(src)
+    print("strip_ustaz:", len(changed), "файл")
+    try:
+        run(["pnpm", "--filter", "@inside-tech/web", "build:artifact"], src, {"FULL_HTML": "1"})
+        DATA.parent.mkdir(parents=True, exist_ok=True)
+        run(["node", str(ROOT / "tools/inside_extract.mjs"), str(src), str(DATA)], src)
+    finally:
+        if changed:
+            subprocess.run(["git", "checkout", "--", *changed], cwd=src, check=True)   # клон бастапқы күйіне қайтады
     art = web / "dist-artifact"
+    bundle = "".join((art / f).read_text(encoding="utf-8") for f in ("app.js", "ai-lab-worker.js", "index.html"))
+    left = [n for n, t in (("бума (app.js, ai-lab-worker.js, index.html)", bundle), ("inside_lessons.json", DATA.read_text(encoding="utf-8"))) if has_ustaz(t)]
+    if left:
+        sys.exit(f"sync_inside: Ұстаз қалды: {left}")
     if APP.exists():
         shutil.rmtree(APP)
     APP.mkdir(parents=True)
@@ -87,9 +133,9 @@ def main():
         shutil.copy2(art / f, APP / f)
     (APP / "index.html").write_text(adapt_index((art / "index.html").read_text(encoding="utf-8")), encoding="utf-8")
     (APP / "THIRD-PARTY-NOTICES.txt").write_text(notices(src), encoding="utf-8")
-    commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=src, capture_output=True, text=True, check=True).stdout.strip()
     (APP / "SOURCE.json").write_text(json.dumps({"repo": "https://github.com/Mustafa7677/3d-learning-", "commit": commit,
-                                                 "build": "FULL_HTML=1 pnpm --filter @inside-tech/web build:artifact"}, indent=1) + "\n", encoding="utf-8")
+                                                 "build": "FULL_HTML=1 pnpm --filter @inside-tech/web build:artifact",
+                                                 "ao17": "Ұстаз кейіпкері алынған (tools/sync_inside.py: strip_ustaz)"}, indent=1) + "\n", encoding="utf-8")
     print("sync_inside: дайын ->", APP.relative_to(ROOT), "және", DATA.relative_to(ROOT))
 
 

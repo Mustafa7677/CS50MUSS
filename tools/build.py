@@ -306,6 +306,39 @@ def academy_code_block():
 
 # «Бір негізгі маршрут»: CS50x → 0-лекция → бірінші тапсырма → нәтиже → келесі лекция. Статикалық нұсқа (JS-сыз да жұмыс істейді);
 # main.js initBeginnerPath() оны оқушының прогресіне қарай жаңартады (data-route, data-step, aria-current="step").
+CSH_TILT = [(-4, 6), (2, 0), (-2, 4), (3, 1), (-1, 5), (2, 0), (-3, 3), (1, 6), (-2, 1), (3, 4), (-1, 0), (2, 5)]
+
+
+def ao17cs_home_block(prefix):
+    """Басты беттегі AO17 CS бөлімі: курс туралы қысқаша және 12 аптаның комикс-мұқабалары сөресі (tools/make_course_posters.py)."""
+    import academy_build   # tools/academy_build.py (курс деректері: апталар, комикс эпизодтары, 3D зертханалар)
+    crs, cxe, l3 = academy_build.CRS, academy_build.CXE, academy_build.L3
+    eps = {e["lesson"].split(".")[1]: e["title"] for e in cxe.EPISODES}
+    labs = l3.lab_summary()
+    n3 = sum(len(x["lessons"]) for x in labs)
+    covers = []
+    for n, (mid, q, _) in enumerate(crs.WEEKS, 1):
+        img = f"assets/img/posters/thumb/ao17cs-w{n:02d}.jpg"
+        if (ROOT / img).exists():
+            r_, y_ = CSH_TILT[(n - 1) % len(CSH_TILT)]
+            covers.append(f'<li style="--r:{r_}deg;--y:{y_}px"><a href="{prefix}academy/course.html#w{n}"><img src="{prefix}{img}" '
+                          f'alt="{n}-апта: «{html.escape(eps.get(mid, ""))}». {html.escape(q)}" width="240" height="360" loading="lazy"></a></li>')
+    return f"""<!-- build:ao17cs-home -->
+  <section class="csh" id="ao17cs" aria-labelledby="csh-title">
+    <div class="csh-in">
+      <div class="csh-copy">
+        <p class="csh-kick">Біздің курс</p>
+        <h2 id="csh-title">AO17 CS: әр апта - комикс журналының жаңа нөмірі</h2>
+        <p>Компьютерлік ғылымға кіріспе екі бөлімнен тұрады. Он екі аптада логикадан жүйеге дейін жүресің: Нұрай мен Мустафа аптаның сұрағын комикспен ашады, кодты өзің жазасың. Сосын {len(labs)} зертханада технологияның ішін 3D симуляцияда көресің. Тегін, қазақ тілінде, браузерде.</p>
+        <p class="csh-acts"><a class="btn gold" href="{prefix}academy/course.html">Курсты ашу</a> <a class="btn ghost" href="{prefix}academy/3d/index.html">3D зертхана: {n3} сабақ</a> <a class="csh-more" href="{prefix}posters.html#ao17cs">Барлық мұқабалар</a></p>
+      </div>
+      <ol class="csh-shelf" aria-label="AO17 CS: 12 аптаның мұқабалары">{"".join(covers)}</ol>
+    </div>
+  </section>
+  <!-- /build:ao17cs-home -->"""
+
+
+
 def route_block(prefix, code, local=False):
     folder = "lectures/" if code == "x" else f"{code}/lectures/"
     order = ORDER if code == "x" else ALL_COURSES[code]["order"]
@@ -561,8 +594,10 @@ def process_page(path, prefix, active):
         og = f"assets/img/og/{rel.split('/')[0]}.jpg"
     if rel.split("/")[0] in ALL_COURSES and (ROOT / f"assets/img/og/course-{rel.split('/')[0]}.jpg").exists():
         og = f"assets/img/og/course-{rel.split('/')[0]}.jpg"   # курс беттерін бөліскенде - курс постерінің баннері (tools/make_posters.py)
-    if rel == "posters.html":
-        og = "assets/img/og/course-math.jpg"
+    if rel in ("posters.html", "academy/course.html", "academy/comics.html"):
+        og = "assets/img/og/course-ao17cs.jpg"   # AO17 CS курсының мұқабасы (tools/make_course_posters.py)
+    if rel.startswith("academy/3d/") and not rel.startswith("academy/3d/app/"):
+        og = "assets/img/og/ao17cs-3d.jpg"
     for code, c in ALL_COURSES.items():  # басқа курс лекцияларының баннер түсі мен нөмірі
         m = re.match(rf"{code}/lectures/week-(\d+)\.html$", rel)
         if m:
@@ -584,6 +619,8 @@ def process_page(path, prefix, active):
     if "<!-- build:courses" in s:
         skip = ("x",) if rel == "index.html" else ()
         s = re.sub(r"<!-- build:courses -->.*?<!-- /build:courses -->", lambda _: courses_block(prefix, skip), s, flags=re.S)
+    if "<!-- build:ao17cs-home -->" in s:
+        s = re.sub(r"<!-- build:ao17cs-home -->.*?<!-- /build:ao17cs-home -->", lambda _: ao17cs_home_block(prefix), s, flags=re.S)
     if "<!-- build:route -->" in s:
         rc = "x" if rel in ("index.html", "courses.html") else rel.split("/")[0]
         s = re.sub(r"<!-- build:route -->.*?<!-- /build:route -->", lambda _: route_block("" if rc != "x" else prefix, rc, rc != "x"), s, flags=re.S)
