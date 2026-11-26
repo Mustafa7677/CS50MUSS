@@ -595,7 +595,7 @@ def process_page(path, prefix, active):
         og = f"assets/img/og/{rel.split('/')[0]}.jpg"
     if rel.split("/")[0] in ALL_COURSES and (ROOT / f"assets/img/og/course-{rel.split('/')[0]}.jpg").exists():
         og = f"assets/img/og/course-{rel.split('/')[0]}.jpg"   # курс беттерін бөліскенде - курс постерінің баннері (tools/make_posters.py)
-    if rel in ("posters.html", "academy/course.html", "academy/comics.html", "academy/exam.html", "academy/certificate.html", "academy/plan.html", "academy/methods.html", "academy/oyu.html"):
+    if rel in ("posters.html", "academy/course.html", "academy/comics.html", "academy/exam.html", "academy/certificate.html", "academy/plan.html", "academy/methods.html", "academy/oyu.html", "academy/bota.html"):
         og = "assets/img/og/course-ao17cs.jpg"   # AO17 CS курсының мұқабасы (tools/make_course_posters.py)
     if rel.startswith("academy/3d/") and not rel.startswith("academy/3d/app/"):
         og = "assets/img/og/ao17cs-3d.jpg"

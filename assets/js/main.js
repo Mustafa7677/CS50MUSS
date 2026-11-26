@@ -1436,10 +1436,11 @@
           <span class="cm-txt"><b>${c.name}</b><small>${escapeHtml(c.title)}</small></span>
           <span class="cm-prog"><i style="width:${pct}%"></i></span><span class="cm-n">${read}/${c.total}</span></a>`;
       }).join("");
-      // біздің курс бірінші: AO17 CS (екі бөлім), 3D зертхана, INSIDE TECH қолданбасы, комикстер, оқу тактикалары
+      // біздің курс бірінші: AO17 CS (екі бөлім), 3D зертхана, INSIDE TECH қолданбасы, комикстер, оқу тактикалары, ою студиясы, Бота әлемі
       const ao = [["academy/course.html", "AO17 CS курсы", "Екі бөлім: 12 апта және 3D", "#b3262e"], ["academy/3d/index.html", "3D зертхана", "11 зертхана, 160 сабақ", "#1d6ea6"],
         ["academy/3d/app/index.html", "INSIDE TECH", "Архипелаг, ойындар, құралдар", "#4a67c8"], ["academy/comics.html", "Комикстер", "Нұрай мен Мустафа", "#8a1f17"],
-        ["academy/methods.html", "Оқу тактикалары", "Қалай оқыған дұрыс", "#1f7a4d"], ["academy/oyu.html", "Ою студиясы", "Python-мен қазақ оюы", "#c99a2e"]]
+        ["academy/methods.html", "Оқу тактикалары", "Қалай оқыған дұрыс", "#1f7a4d"], ["academy/oyu.html", "Ою студиясы", "Python-мен қазақ оюы", "#c99a2e"],
+        ["academy/bota.html", "Бота әлемі", "Python-мен Ботаны жүргіз", "#a8662a"]]
         .map(([h, n, d, c]) => `<a class="cm-ac" href="${ROOT_URL + h}" style="--c:${c}"><span class="cm-dot" aria-hidden="true"></span><span class="cm-txt"><b>${n}</b><small>${d}</small></span></a>`).join("");
       menu.innerHTML = `<div class="cm-head">Біздің курс</div><div class="cm-acad cm-ao">${ao}</div>
         <div class="cm-head cm-head2">Академиялар</div>${rows}
@@ -3147,6 +3148,7 @@ try{\n${code.replace(/<\/script/gi, "<\\/script")}\n}catch(e){__s("Қате: "+e
       A("ao17-focus", "⏳", "Фокус шебері", "Фокус таймерімен 4 сессия аяқтау", readJson("ao17cs:focus", {}).total || 0, 4),
       A("ao17-journal", "📓", "Журнал жүргізуші", "Оқу журналына 7 жазба қалдыру", readJson("ao17cs:journal", []).length, 7),
       A("ao17-oyu", "🌀", "Оюшы", "Ою студиясының 4 тапсырмасын орындау", Object.keys(readJson("ao17cs:oyu", {}).done || {}).length, 4),
+      A("ao17-bota", "🐫", "Керуенбасы", "Бота әлемінің 8 деңгейінен өту", Object.values(readJson("ao17cs:bota", {}).stars || {}).filter((n) => n > 0).length, 8),
       A("polyglot", "🌍", "Көпқырлы", "Кемінде 3 түрлі курстан лекция оқу", COURSE_META.filter((c) => (c.id === "x" ? read : readC(c.id)) > 0).length, 3),
     ];
   }
