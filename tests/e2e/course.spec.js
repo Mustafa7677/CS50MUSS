@@ -105,6 +105,31 @@ test("прогресс: апта мен зертхана астында шыға
   expect(v).toEqual([]);
 });
 
+test("курс картасы: 12 апта мен 11 зертхана бекеті, сілтемелері бар, прогресс бекеттерді бояйды", async ({ page }) => {
+  await page.goto("academy/course.html");
+  const st = page.locator(".crs-map .cm-st");
+  await expect(st).toHaveCount(23);
+  for (const h of await st.evaluateAll((a) => a.map((x) => x.getAttribute("href")))) await expect(page.locator(h), h).toHaveCount(1);
+  await expect(page.locator('.crs-map [data-st="w1"]')).toHaveAttribute("href", "#w1");
+  await expect(page.locator('.crs-map [data-st="arch"]')).toHaveAttribute("href", "#lab-arch");
+  await expect(page.locator(".crs-map .cm-x")).toHaveCount(13);   // аптада қолданылатын 3D зертханаға ауысулар
+  await expect(page.locator(".crs-map .st-done, .crs-map .st-on, .crs-map .st-next")).toHaveCount(0);
+  const data = JSON.parse(await page.locator("#crs-data").textContent());
+  await page.evaluate((d) => {
+    const L = {};
+    d.weeks.w1.forEach((x) => (L[x[0]] = { ex: {}, mastered: 1 }));
+    L[d.weeks.w2[0][0]] = { ex: { "exercises:0": { ok: true } }, score: 10 };
+    localStorage.setItem("cs50kz:academy", JSON.stringify({ v: 1, lessons: L }));
+    localStorage.setItem("ao17:lab3d", JSON.stringify({ [d.labs.arch[0][0]]: ["q1"] }));
+  }, data);
+  await page.reload();
+  await expect(page.locator('.crs-map [data-st="w1"]')).toHaveClass(/st-done/);
+  await expect(page.locator('.crs-map [data-st="w2"]')).toHaveClass(/st-on/);
+  await expect(page.locator('.crs-map [data-st="w2"]')).toHaveClass(/st-next/);
+  await expect(page.locator('.crs-map [data-st="arch"]')).toHaveClass(/st-on/);
+  await expect(page.locator(".crs-map .st-next")).toHaveCount(1);
+});
+
 for (const scheme of ["light", "dark"]) {
   test(`360px, ${scheme}: курс беті көлденең жылжымайды, axe таза`, async ({ browser }) => {
     const c = await browser.newContext({ viewport: { width: 360, height: 740 }, colorScheme: scheme, reducedMotion: "reduce" });
