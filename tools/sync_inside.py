@@ -57,6 +57,32 @@ def strip_ustaz(src):
     return changed
 
 
+HEADER_FIX = """
+/* AO17 нұсқасы (tools/sync_inside.py): 721-1440px енде тақырып бір қатарда қалады. Бұрын мәзір екі қатарға түсіп, биіктігі
+   70px-тен 102px-ке өсетін де, беттің басын (104px шегіністі) жауып қалатын. Жасырылған сілтемелердің бәрі «Тағы» мәзірінде бар. */
+@media (min-width: 721px) and (max-width: 1440px) {
+  .menu { flex-wrap: nowrap; gap: 4px 16px; }
+  .menuLink { font-size: 14px; white-space: nowrap; }
+}
+@media (min-width: 721px) and (max-width: 1380px) {
+  .menu > a:nth-last-child(2) { display: none; }
+}
+@media (min-width: 721px) and (max-width: 1240px) {
+  .menu > .wideOnly { display: none; }
+}
+"""
+
+
+def ao17_patches(src):
+    """AO17 нұсқасының INSIDE TECH-ке түзетулері (клонның жұмыс көшірмесінде; соңында git checkout)."""
+    changed = []
+    css = src / "apps/web/src/components/film/film.module.css"
+    if css.exists() and "AO17 нұсқасы" not in css.read_text(encoding="utf-8"):
+        css.write_text(css.read_text(encoding="utf-8") + HEADER_FIX, encoding="utf-8")
+        changed.append(css.relative_to(src).as_posix())
+    return changed
+
+
 def has_ustaz(text):
     """Мәтінде (JS бумасындағы \\uXXXX түрін де ашып) кез келген регистрдегі «ұстаз» бар ма."""
     return "ұстаз" in re.sub(r"\\u([0-9a-fA-F]{4})", lambda m: chr(int(m.group(1), 16)), text).lower()
@@ -114,6 +140,9 @@ def main():
     commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=src, capture_output=True, text=True, check=True).stdout.strip()
     changed = strip_ustaz(src)
     print("strip_ustaz:", len(changed), "файл")
+    patched = ao17_patches(src)
+    print("ao17_patches:", patched)
+    changed += [f for f in patched if f not in changed]
     try:
         run(["pnpm", "--filter", "@inside-tech/web", "build:artifact"], src, {"FULL_HTML": "1"})
         DATA.parent.mkdir(parents=True, exist_ok=True)
@@ -135,7 +164,7 @@ def main():
     (APP / "THIRD-PARTY-NOTICES.txt").write_text(notices(src), encoding="utf-8")
     (APP / "SOURCE.json").write_text(json.dumps({"repo": "https://github.com/Mustafa7677/3d-learning-", "commit": commit,
                                                  "build": "FULL_HTML=1 pnpm --filter @inside-tech/web build:artifact",
-                                                 "ao17": "Ұстаз кейіпкері алынған (tools/sync_inside.py: strip_ustaz)"}, indent=1) + "\n", encoding="utf-8")
+                                                 "ao17": "Ұстаз кейіпкері алынған (strip_ustaz); тақырып 721-1440px-те бір қатарда (ao17_patches)"}, indent=1) + "\n", encoding="utf-8")
     print("sync_inside: дайын ->", APP.relative_to(ROOT), "және", DATA.relative_to(ROOT))
 
 
