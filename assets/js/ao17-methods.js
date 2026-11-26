@@ -174,6 +174,58 @@
     load();
   })();
 
+  // ------------------------------------------------------------------ Өзіңді бағала: сенімділік таразысы (ao17-exam.js жинайды) және оқу журналы
+  (function () {
+    var w = $("[data-mt-reflect]");
+    if (!w) return;
+    var cal = obj(J("ao17cs:calib", {})), NM = { sure: "Білемін", guess: "Шамалаймын", no: "Білмеймін" }, rows = "";
+    ["sure", "guess", "no"].forEach(function (k) {
+      var c = obj(cal[k]);
+      if (!(c.n > 0)) return;
+      var f = Math.round((Math.min(c.ok || 0, c.n) / c.n) * 100);
+      rows += '<li class="cal-' + k + '"><span>' + NM[k] + '</span><span class="cal-bar"><i style="width:' + f + '%"></i></span><b>' + f + "% дұрыс</b><small>" + c.n + " сұрақ</small></li>";
+    });
+    $("[data-cal-out]", w).innerHTML = rows ? '<ul class="cal-list">' + rows + '</ul><p class="mt-note">«Білемін» деген жерде дұрыс жауап көп болса, өзіңді дәл бағалайсың. «Білмеймін» деген жерде де жиі дұрыс тапсаң, өзіңе көбірек сен.</p>'
+      : '<p class="mt-note">Таразы әлі бос. <a href="exam.html?w=1">Апта сынағында</a> жауап бермес бұрын «Білемін», «Шамалаймын» не «Білмеймін» деп белгіле: нәтиже осында жиналады.</p>';
+    var form = $("[data-jr-form]", w), list = $("[data-jr-list]", w), stat = $("[data-jr-stat]", w);
+    function entries() { var e = J("ao17cs:journal", []); return Array.isArray(e) ? e.filter(function (x) { return x && typeof x.a === "string" && /^\d{4}-\d{2}-\d{2}$/.test(x.d); }) : []; }
+    function streak(es) {
+      var days = {}; es.forEach(function (x) { days[x.d] = 1; });
+      var d = new Date(), n = 0;
+      if (!days[today()]) d.setDate(d.getDate() - 1);   // бүгін әлі жазбасаң да, кешегі тізбек сақталады
+      for (;;) { var k = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); if (!days[k]) break; n++; d.setDate(d.getDate() - 1); }
+      return n;
+    }
+    function render() {
+      var es = entries();
+      stat.textContent = es.length ? "Журналда " + es.length + " жазба · қатарынан " + streak(es) + " күн." : "Әр оқу кешінен соң үш сұраққа қысқа жауап жаз: бір аптадан кейін өсуіңді өзің көресің.";
+      list.innerHTML = es.slice(-5).reverse().map(function (x) {
+        return '<li><time>' + esc(x.d) + "</time><p><b>Түсіндім:</b> " + esc(x.a) + "</p>" + (x.b ? "<p><b>Түсініксіз:</b> " + esc(x.b) + "</p>" : "") + (x.c ? "<p><b>Келесі:</b> " + esc(x.c) + "</p>" : "") + "</li>";
+      }).join("");
+    }
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var a = form.elements.a.value.trim();
+      if (!a) { form.elements.a.focus(); return; }
+      var es = entries();
+      es.push({ d: today(), a: a.slice(0, 2000), b: form.elements.b.value.trim().slice(0, 2000), c: form.elements.c.value.trim().slice(0, 2000), at: Date.now() });
+      S("ao17cs:journal", es.slice(-365));
+      form.reset();
+      render();
+      if (typeof K().check === "function") K().check();   // «Журнал жүргізуші» жетістігі
+    });
+    $("[data-jr-export]", w).addEventListener("click", function () {
+      var es = entries();
+      var txt = "AO17 CS - оқу журналы\n\n" + es.map(function (x) { return x.d + "\nТүсіндім: " + x.a + (x.b ? "\nТүсініксіз: " + x.b : "") + (x.c ? "\nКелесі: " + x.c : ""); }).join("\n\n") + "\n";
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([txt], { type: "text/plain;charset=utf-8" }));
+      a.download = "ao17-cs-journal.txt";
+      document.body.appendChild(a); a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    });
+    render();
+  })();
+
   // ------------------------------------------------------------------ Ұқсастық карточкалары: ашу/жабу
   $$(".an-b").forEach(function (b) {
     b.addEventListener("click", function () {
