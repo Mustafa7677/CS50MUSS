@@ -44,7 +44,8 @@ ACADEMY_PUBLIC = {"academy/index.html", "academy/map.html", "academy/models.html
                   "academy/methods.html",   # оқу тактикалары: түпнұсқа мәтін мен құралдар, сабақтардың тек атаулары
                   "academy/oyu.html",   # ою студиясы: түпнұсқа тапсырмалар мен галерея
                   "academy/bota.html",   # Бота әлемі: түпнұсқа деңгейлер (Python-мен Ботаны жүргізу)
-                  "academy/xray.html"}   # AO17 X-RAY: кодтың рентгені (түпнұсқа құрал мен мысалдар)
+                  "academy/xray.html",   # AO17 X-RAY: кодтың рентгені (түпнұсқа құрал мен мысалдар)
+                  "academy/morph.html"}   # AO17 MORPH: математиканың пішінге айналуы (түпнұсқа сахналар)
 ACADEMY_TESTS = {"academy/exam.html"}   # AO17 CS емтиханы: 1-бөлімнің сұрақтары жабық сабақтардан, сондықтан бет те жабық
 # IELTS, Digital SAT және CS зертханалары - ашық жаттығу орталары (деректері браузерде): жария
 ACADEMY_PUBLIC_DIRS = ("academy/tracks/", "academy/ielts/", "academy/sat/", "academy/labs/", "academy/3d/")   # 3D зертхана: ашық лекциялар мен симуляция

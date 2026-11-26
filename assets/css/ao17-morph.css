@@ -1,0 +1,57 @@
+/* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
+/* AO17 MORPH (academy/morph.html, assets/js/ao17-morph.js). Математикалық қағаз: жарық режимде - кремді тор, қараңғыда - түнгі
+   сызба. Түстер canvas-қа CSS айнымалылары арқылы беріледі (JS оларды оқиды): î - Алаш қызылы, ĵ - көк, ою - алтын. */
+.mo { --mo-bg: #fbf8ef; --mo-grid0: rgb(20 33 61 / .07); --mo-grid: rgb(20 33 61 / .36); --mo-axis: rgb(20 33 61 / .55); --mo-i: #b3262e; --mo-j: #1d6ea6;
+  --mo-gold: #c08a14; --mo-pos: #1f7a4d; --mo-neg: #b3262e; --mo-ink: #14213d; --mo-dim: rgb(20 33 61 / .62); --mo-r: rgb(179 38 46 / .5); --mo-b: rgb(29 110 166 / .5); }
+:root[data-theme="dark"] .mo { --mo-bg: #0f1726; --mo-grid0: rgb(243 234 214 / .06); --mo-grid: rgb(191 230 255 / .36); --mo-axis: rgb(243 234 214 / .5); --mo-i: #ff8a8a; --mo-j: #7fd3ff;
+  --mo-gold: #f2d36b; --mo-pos: #7fdca6; --mo-neg: #ff8a8a; --mo-ink: #f3ead6; --mo-dim: rgb(243 234 214 / .66); --mo-r: rgb(255 138 138 / .5); --mo-b: rgb(127 211 255 / .5); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .mo { --mo-bg: #0f1726; --mo-grid0: rgb(243 234 214 / .06); --mo-grid: rgb(191 230 255 / .36); --mo-axis: rgb(243 234 214 / .5);
+  --mo-i: #ff8a8a; --mo-j: #7fd3ff; --mo-gold: #f2d36b; --mo-pos: #7fdca6; --mo-neg: #ff8a8a; --mo-ink: #f3ead6; --mo-dim: rgb(243 234 214 / .66); --mo-r: rgb(255 138 138 / .5); --mo-b: rgb(127 211 255 / .5); } }
+
+.mo-head { max-width: 80ch; margin: 6px 0 22px; }
+.content .mo-head h1 { margin: 0 0 10px; font-size: clamp(2rem, 4.8vw, 3rem); line-height: 1.08; }
+.mo-brand { display: block; margin-bottom: 4px; color: var(--mo-i); font: 800 clamp(.95rem, 1.6vw, 1.1rem)/1.2 Unbounded, Inter, sans-serif; letter-spacing: .02em; }
+.mo-lede { margin: 0; color: var(--muted); font-size: 1.04rem; line-height: 1.62; }
+
+.mo-scene { margin: 0 0 40px; scroll-margin-top: 80px; }
+.content .mo-scene > h2 { display: grid; gap: 2px; margin: 0 0 12px; }
+.mo-k { color: var(--muted); font: 600 .86rem/1.3 Inter, system-ui, sans-serif; }
+.mo-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 18px 24px; align-items: start; }
+.mo-grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 10px 0 0; }
+.mo-fig { margin: 0; }
+.mo-fig canvas { display: block; width: 100%; height: auto; aspect-ratio: 1; border: 1px solid var(--border); border-radius: 16px; background: var(--mo-bg); touch-action: none; cursor: crosshair; }
+.mo-fig canvas:focus-visible { outline: 3px solid #c99a2e; outline-offset: 3px; }
+/* Фурье canvas-ы тек сурет салғанда бетті жылжытуды тоқтатады: телефонда онымен бетті айналдыруға болады */
+.mo-fig canvas[data-mo-fcv] { touch-action: auto; cursor: default; }
+.mo-fig canvas[data-mo-fcv].is-draw { touch-action: none; cursor: crosshair; }
+.mo-fig figcaption { margin-top: 8px; color: var(--muted); font-size: .86rem; line-height: 1.5; }
+.content .mo-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+.mo-chip { min-height: 38px; padding: 6px 12px; border: 1.5px solid var(--border); border-radius: 99px; background: var(--surface); color: var(--text); font: 600 .88rem/1.2 Inter, system-ui, sans-serif; cursor: pointer; }
+.mo-chip:hover { border-color: #c99a2e; }
+.mo-chip:focus-visible { outline: 3px solid #c99a2e; outline-offset: 2px; }
+.mo-chip[aria-pressed="true"] { border-color: var(--mo-ink); box-shadow: inset 0 0 0 1px var(--mo-ink); }
+.mo-sls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px; margin: 0 0 12px; }
+.mo-sl { display: grid; grid-template-columns: 1.4em minmax(0, 1fr) 4.6em; align-items: center; gap: 8px; font-weight: 700; }
+.mo-sl span { color: var(--text); font-family: "JetBrains Mono", ui-monospace, monospace; }
+.mo-sl input[type="range"] { width: 100%; accent-color: #c99a2e; }
+.mo-sl input[type="number"] { width: 100%; min-height: 36px; box-sizing: border-box; padding: 4px 6px; border: 1.5px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); font: 600 .9rem "JetBrains Mono", ui-monospace, monospace; }
+.mo-t, .mo-k2 { grid-template-columns: auto minmax(0, 1fr) auto; }
+.mo-t span, .mo-k2 span { font-family: Inter, system-ui, sans-serif; font-size: .88rem; color: var(--muted); }
+.mo-k2 output { min-width: 2.4em; font: 700 .95rem "JetBrains Mono", ui-monospace, monospace; text-align: right; }
+.mo-formula { margin: 0 0 10px; color: var(--text); line-height: 1.6; }
+.mo-mtx { display: inline-grid; grid-template-columns: repeat(2, auto); gap: 2px 14px; margin-left: 6px; padding: 4px 10px; border-left: 2px solid var(--text); border-right: 2px solid var(--text); border-radius: 6px;
+  vertical-align: middle; font: 700 1rem "JetBrains Mono", ui-monospace, monospace; text-align: right; }
+.mo-read { display: grid; gap: 6px; margin: 0 0 12px; }
+.mo-read div { padding: 8px 10px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+.mo-read dt { color: var(--muted); font-size: .78rem; font-weight: 700; }
+.mo-read dd { margin: 2px 0 0; line-height: 1.5; }
+.mo-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: 0 0 10px; }
+.mo-row .mo-t { flex: 1 1 220px; }
+.mo-note { color: var(--muted); font-size: .9rem; line-height: 1.55; }
+.mo-links { color: var(--muted); font-size: .88rem; line-height: 1.7; }
+.mo-links a { margin-right: 8px; }
+
+@media (max-width: 900px) {
+  .mo-grid, .mo-grid2 { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 420px) { .mo-sls { grid-template-columns: minmax(0, 1fr); } }
