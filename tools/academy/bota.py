@@ -145,6 +145,47 @@ LEVELS = [
      "for _ in range(3):\n    алға()\n    ал()\n"),
 ]
 
+# «Болжап көр» (PRIMM: алдымен болжа, сосын іске қос): код пен әлем беріледі, оқушы Бота тоқтайтын шаршыны болжайды.
+# (id, атауы, ұғымы, әлем, код, түсіндірме). Соңғы орын мен әрекеттер build кезінде CPython-да есептеледі: бет Python-сыз жұмыс істейді.
+PUZZLES = [
+    ("seq", "Екі қадам, бір бұрылыс", "тізбек", [".....", ".....", ".....", ">...."],
+     "алға()\nалға()\nсолға()\nалға()\n",
+     "Бота екі шаршы оңға жүрді, солға бұрылды (енді жоғары қарайды) және бір шаршы жоғары көтерілді."),
+    ("square", "Төрт бұрылыс", "цикл", [".....", ".....", ".....", ".>...", "....."],
+     "for _ in range(4):\n    алға()\n    алға()\n    солға()\n",
+     "Цикл төрт рет: екі қадам және солға бұрылу. Төрт рет солға бұрылу - толық айналым, сондықтан Бота шаршыны айналып, бастаған жеріне және бастаған бағытына оралды."),
+    ("indent", "Шегініс", "цикл денесі", ["......", "......", "......", ">....."],
+     "for _ in range(3):\n    алға()\nсолға()\nалға()\n",
+     "Циклге тек шегінісі бар жол кіреді: алға() үш рет орындалды. солға() мен соңғы алға() циклден кейін бір-ақ рет орындалады."),
+    ("wall", "Тауға дейін", "while", [".......", ">....#.", "......."],
+     "while алды_бос():\n    алға()\nсолға()\nсолға()\nалға()\n",
+     "while Ботаны тауға дейін жүргізді (5-баған). Екі рет солға - кері бұрылу, сосын бір қадам кейін: 4-баған."),
+    ("ifapple", "Алма - белгі", "if", ["......", "......", "......", "..a...", "......", ">.a..."],
+     "for _ in range(5):\n    алға()\n    if алма_бар():\n        солға()\n",
+     "Бота алманы алмайды, тек тексереді. Бірінші алмада жоғары бұрылды, екінші алмада батысқа бұрылды. Цикл 5 қадам жасады."),
+    ("func", "Функция реті", "функция", [".....", ".....", ".....", ".>...", "....."],
+     "def қадам():\n    алға()\n    солға()\n\nалға()\nқадам()\nқадам()\n",
+     "def функцияны тек анықтайды, ештеңе істемейді. Алдымен бір алға(), сосын қадам() екі рет: әр шақырған сайын оның денесі толық орындалады - алға және солға."),
+    ("nested", "Ішкі цикл", "цикл ішінде цикл", [".....", ".....", ".....", ".....", ">...."],
+     "for _ in range(2):\n    for _ in range(3):\n        алға()\n    солға()\n",
+     "Сыртқы цикл 2 рет, ішкісі әр жолы 3 қадам: 3 қадам оңға, солға бұрылу, 3 қадам жоғары, тағы солға бұрылу. Бота батысқа қарап тұр."),
+    ("brk", "break", "циклді тоқтату", ["........", ">...a.#.", "........"],
+     "while алды_бос():\n    алға()\n    if алма_бар():\n        break\nсолға()\nалға()\n",
+     "Цикл тауға дейін жүрер еді, бірақ алмаға жеткенде break оны бірден тоқтатты. Сосын солға бұрылып, бір қадам жоғары."),
+]
+
+
+def puzzles():
+    W, out = _world(), []
+    for pid, title, concept, rows, code, why in PUZZLES:
+        r = W.run_one(code, rows, [])
+        w = W.World(rows)
+        last = r["log"][-1] if r["log"] else ["", w.x, w.y, w.d, 0]
+        out.append({"id": pid, "title": title, "concept": concept, "worlds": [rows], "code": code, "log": r["log"], "err": r["err"],
+                    "fx": last[1], "fy": last[2], "fd": last[3], "why": why})
+    return out
+
+
 # Командалар анықтамасы: (қазақша, ағылшынша, мағынасы)
 COMMANDS = [("алға()", "move()", "бір шаршы алға"), ("солға()", "turn_left()", "орнында 90° солға бұрылу"),
             ("ал()", "pick()", "тұрған шаршыдан бір алма алу"), ("қой()", "put()", "себеттен бір алма қою"),
@@ -168,7 +209,8 @@ def _level_json(lv, s3):
 def data():
     W = _world()
     return {"chapters": [{"id": c, "title": t, "note": n, "week": w} for c, t, n, w in CHAPTERS],
-            "levels": [_level_json(lv, W.size(lv[9])) for lv in LEVELS]}
+            "levels": [_level_json(lv, W.size(lv[9])) for lv in LEVELS],
+            "puzzles": [{k: v for k, v in z.items() if k != "err"} for z in puzzles()]}
 
 
 def validate():
@@ -206,7 +248,29 @@ def validate():
         sr = json.loads(W.run(starter, lvj))
         if sr["ok"]:
             errs.append(f"бота әлемі: «{lid}» деңгейінің бастапқы коды бірден өтіп кетеді")
+    for z in puzzles():   # «Болжап көр»: қатесіз, тек жүру мен бұрылу, Бота тордан шықпайды
+        if z["err"] or not z["log"] or {a[0] for a in z["log"]} - {"m", "t"}:
+            errs.append(f"бота әлемі: «{z['id']}» болжау тапсырмасы қате ({z['err']})")
+    if len({z[0] for z in PUZZLES}) != len(PUZZLES):
+        errs.append("бота әлемі: болжау тапсырмасының id қайталанады")
     return errs
+
+
+def puzzle_list():
+    return "".join(f'<li><button type="button" class="bw-pz" data-pz="{pid}" aria-pressed="false"><b>{i}</b> {E(t)}<span class="sr-only" data-sr></span></button></li>'
+                   for i, (pid, t, *_rest) in enumerate(PUZZLES, 1))
+
+
+TOOLS = [("grass", "Шөп", "өшіру"), ("wall", "Тау", ""), ("apple", "Алма", "қайта басса +1"), ("home", "Киіз үй", ""), ("bota", "Бота", "қайта басса бұрылады")]
+
+
+def tool_html():
+    return "".join(f'<label class="bw-tl"><input type="radio" name="bw-tool" value="{v}" data-bw-tool{" checked" if v == "wall" else ""}>'
+                   f'<span>{E(t)}{f" <small>{E(n)}</small>" if n else ""}</span></label>' for v, t, n in TOOLS)
+
+
+def size_opts(a, b):
+    return "".join(f'<option value="{i}">{i}</option>' for i in range(a, b + 1))
 
 
 def chip_html():
@@ -282,6 +346,46 @@ def bota_html(page):
             <label class="bw-sp"><span>Жылдамдығы</span><select data-bw-speed><option value="1">қалыпты</option><option value="2">баяу</option><option value="3">жылдам</option><option value="0">бірден</option></select></label>
           </p>
           <div class="bw-verdict" data-bw-verdict aria-live="polite" hidden></div>
+        </div>
+      </section>
+      <section class="bw-pred" aria-labelledby="bw-p-h" data-bw-pred>
+        <h2 id="bw-p-h">Болжап көр</h2>
+        <p class="bw-note">Кодты оқы да, Бота қай шаршыда тоқтайтынын болжа: сол шаршыны бас. Сосын «Тексеру» Ботаны жүргізеді. Кодты іске қоспай-ақ оның не істейтінін көру - бағдарламашының басты дағдысы.</p>
+        <ol class="bw-plist">{puzzle_list()}</ol>
+        <div class="bw-pgrid">
+          <div class="bw-pleft">
+            <h3 class="bw-ptitle" data-bw-ptitle></h3>
+            <div class="bw-pcode" data-bw-pcode aria-label="Тапсырманың коды" role="region"></div>
+            <p class="bw-prow"><button class="btn gold" type="button" data-bw-pcheck disabled>Тексеру</button> <button class="btn secondary" type="button" data-bw-pagain>Қайта болжау</button> <button class="btn secondary" type="button" data-bw-pstage>Сахнада қадамдап ашу</button></p>
+            <p class="bw-pmsg" data-bw-pmsg role="status"></p>
+          </div>
+          <figure class="bw-world bw-pworld">
+            <svg data-bw-psvg viewBox="0 0 320 256" role="application" aria-roledescription="болжау торы" tabindex="0" aria-describedby="bw-phelp"><g data-bw-pboard></g></svg>
+            <figcaption id="bw-phelp">Бота тоқтайтын шаршыны бас. Пернетақтамен: көрсеткілер - жылжу, Enter не бос орын - таңдау.</figcaption>
+          </figure>
+        </div>
+      </section>
+      <section class="bw-build" aria-labelledby="bw-b-h" data-bw-builder>
+        <h2 id="bw-b-h">Өз әлемің</h2>
+        <p class="bw-note">Әлемді өзің сал: тау, алма, киіз үй және Бота. Мақсатын таңда да, сол әлемде ойна не досыңа сілтемемен жібер. Сілтемені ашқан адам сол әлемде өз кодын жазады.</p>
+        <div class="bw-bgrid">
+          <div class="bw-bleft">
+            <fieldset class="bw-tools"><legend>Құрал</legend>{tool_html()}</fieldset>
+            <p class="bw-size"><label>Ені <select data-bw-bw>{size_opts(3, 10)}</select></label> <label>Биіктігі <select data-bw-bh>{size_opts(1, 8)}</select></label></p>
+            <fieldset class="bw-goals"><legend>Мақсат</legend>
+              <label><input type="checkbox" value="home" data-bw-goal-k checked> Киіз үйге жет</label>
+              <label><input type="checkbox" value="clean" data-bw-goal-k checked> Далада алма қалдырма</label>
+              <label><input type="checkbox" value="deliver" data-bw-goal-k> Алманы киіз үйге жеткіз</label>
+            </fieldset>
+            <p class="bw-brow"><button class="btn gold" type="button" data-bw-bplay>Осы әлемде ойнау</button> <button class="btn secondary" type="button" data-bw-bshare>Сілтемемен бөлісу</button> <button class="btn secondary" type="button" data-bw-bclear>Тазалау</button></p>
+            <p class="bw-bmsg" data-bw-bmsg role="status"></p>
+            <p class="bw-bshare" data-bw-bsharebox hidden><input type="text" readonly data-bw-blink aria-label="Бөлісу сілтемесі"></p>
+          </div>
+          <figure class="bw-world bw-bworld">
+            <svg data-bw-bsvg viewBox="0 0 384 256" role="application" aria-roledescription="әлем құрастырушы" tabindex="0" aria-describedby="bw-bhelp"><g data-bw-bboard></g></svg>
+            <figcaption id="bw-bhelp">Шаршыны бас: таңдалған құрал сонда қойылады, тау мен шөпті сүйреп салуға болады. Ботаны қайта бассаң, ол бұрылады. Пернетақтамен: көрсеткілер - жылжу, Enter не бос орын - қою.</figcaption>
+            <p class="sr-only" aria-live="polite" data-bw-blive></p>
+          </figure>
         </div>
       </section>
       <section class="bw-ref" aria-labelledby="bw-r-h">
