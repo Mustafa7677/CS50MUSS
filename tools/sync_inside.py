@@ -10,7 +10,8 @@ INSIDE TECH (github.com/Mustafa7677/3d-learning-) - AO17 командасыны�
 AO17 нұсқасында Ұстаз кейіпкері жоқ: құрастырудың алдында оның комикс жолдары баяндаушы (narrator) мәтініне айналады,
 «Нұрай, Мустафа және Ұстаз» - «Нұрай мен Мустафа», Feynman чатындағы кеңесті Нұрай береді (strip_ustaz). Құрастырған соң
 INSIDE TECH клоны бастапқы күйіне қайтарылады (git checkout), ал бумада «ұстаз» сөзі (кез келген регистрде, \\uXXXX түрінде де)
-қалмағаны тексеріледі (has_ustaz).
+қалмағаны тексеріледі (has_ustaz). Сондай-ақ AO17 нұсқасында 3D қолданбадағы 11 зертхана мен 150 сабақтың атауы қазақша (kazakh_titles),
+ал тақырып мәзірі 721-1440px енде бір қатарда қалады (ao17_patches).
 
 Қолдану:  python3 tools/sync_inside.py /path/to/3d-learning-
 Керек: node 22, pnpm (INSIDE TECH-тің packageManager нұсқасы). Сосын: python3 tools/build.py
@@ -54,6 +55,64 @@ def strip_ustaz(src):
         if s != o:
             f.write_text(s, encoding="utf-8")
             changed.append(f.relative_to(src).as_posix())
+    return changed
+
+
+HEADER_FIX = """
+/* AO17 нұсқасы (tools/sync_inside.py): 721-1440px енде тақырып бір қатарда қалады. Бұрын мәзір екі қатарға түсіп, биіктігі
+   70px-тен 102px-ке өсетін де, беттің басын (104px шегіністі) жауып қалатын. Жасырылған сілтемелердің бәрі «Тағы» мәзірінде бар. */
+@media (min-width: 721px) and (max-width: 1440px) {
+  .menu { flex-wrap: nowrap; gap: 4px 16px; }
+  .menuLink { font-size: 14px; white-space: nowrap; }
+}
+@media (min-width: 721px) and (max-width: 1380px) {
+  .menu > a:nth-last-child(2) { display: none; }
+}
+@media (min-width: 721px) and (max-width: 1240px) {
+  .menu > .wideOnly { display: none; }
+}
+"""
+
+
+def ao17_patches(src):
+    """AO17 нұсқасының INSIDE TECH-ке түзетулері (клонның жұмыс көшірмесінде; соңында git checkout)."""
+    changed = []
+    css = src / "apps/web/src/components/film/film.module.css"
+    if css.exists() and "AO17 нұсқасы" not in css.read_text(encoding="utf-8"):
+        css.write_text(css.read_text(encoding="utf-8") + HEADER_FIX, encoding="utf-8")
+        changed.append(css.relative_to(src).as_posix())
+    return changed
+
+
+LESSON_TITLE = re.compile(r'(\bid: "([a-z0-9-]+)",(?:\n(?![ \t]*id: )[^\n]*){0,8}?\n[ \t]*title: )"((?:[^"\\]|\\.)*)"')
+LAB_TITLE = re.compile(r'(\bid: "([a-z]+)",(?:\n(?![ \t]*id: )[^\n]*){0,4}?\n[ \t]*title: )"((?:[^"\\]|\\.)*)"')
+
+
+def kazakh_titles(src):
+    """AO17 нұсқасында 3D қолданбадағы зертхана мен сабақ атаулары қазақша (tools/academy/lab3d_kk.py, lab3d.LAB_KK).
+    Дерек (inside_lessons.json) бұдан БҰРЫН шығарылады: AO17 лекция беттері ағылшынша атауды қазақшаның астында көрсетеді."""
+    sys.path.insert(0, str(ROOT / "tools/academy"))
+    import lab3d as L3   # noqa: E402
+    import lab3d_kk as KK   # noqa: E402
+    changed, seen = [], set()
+
+    def put(table, m):
+        key = m.group(2)
+        if key not in table:
+            return m.group(0)
+        seen.add(key)
+        return m.group(1) + json.dumps(table[key], ensure_ascii=False)
+    files = [f for f in src.glob("packages/*/src/**/*.ts") if ".test." not in f.name] + [src / "apps/web/src/lib/catalog.ts"]
+    for f in files:
+        s = f.read_text(encoding="utf-8")
+        o = s
+        s = LESSON_TITLE.sub(lambda m: put(KK.TITLE_KK, m), s) if f.name != "catalog.ts" else LAB_TITLE.sub(lambda m: put(L3.LAB_KK, m), s)
+        if s != o:
+            f.write_text(s, encoding="utf-8")
+            changed.append(f.relative_to(src).as_posix())
+    missing = [k for k in [*KK.TITLE_KK, *L3.LAB_KK] if k not in seen]
+    if missing:
+        sys.exit(f"sync_inside: қазақша атау қойылмады: {missing}")
     return changed
 
 
@@ -115,9 +174,14 @@ def main():
     changed = strip_ustaz(src)
     print("strip_ustaz:", len(changed), "файл")
     try:
-        run(["pnpm", "--filter", "@inside-tech/web", "build:artifact"], src, {"FULL_HTML": "1"})
+        # дерек ағылшынша атаулармен шығады (AO17 лекция беттеріндегі ағылшынша қосымша атау үшін), сосын қолданба қазақша атаулармен құрастырылады
         DATA.parent.mkdir(parents=True, exist_ok=True)
         run(["node", str(ROOT / "tools/inside_extract.mjs"), str(src), str(DATA)], src)
+        for f in ao17_patches(src) + kazakh_titles(src):
+            if f not in changed:
+                changed.append(f)
+        print("ao17_patches + kazakh_titles:", len(changed), "файл барлығы")
+        run(["pnpm", "--filter", "@inside-tech/web", "build:artifact"], src, {"FULL_HTML": "1"})
     finally:
         if changed:
             subprocess.run(["git", "checkout", "--", *changed], cwd=src, check=True)   # клон бастапқы күйіне қайтады
@@ -135,7 +199,7 @@ def main():
     (APP / "THIRD-PARTY-NOTICES.txt").write_text(notices(src), encoding="utf-8")
     (APP / "SOURCE.json").write_text(json.dumps({"repo": "https://github.com/Mustafa7677/3d-learning-", "commit": commit,
                                                  "build": "FULL_HTML=1 pnpm --filter @inside-tech/web build:artifact",
-                                                 "ao17": "Ұстаз кейіпкері алынған (tools/sync_inside.py: strip_ustaz)"}, indent=1) + "\n", encoding="utf-8")
+                                                 "ao17": "Ұстаз кейіпкері алынған (strip_ustaz); тақырып 721-1440px-те бір қатарда (ao17_patches); зертхана мен сабақ атаулары қазақша (kazakh_titles)"}, indent=1) + "\n", encoding="utf-8")
     print("sync_inside: дайын ->", APP.relative_to(ROOT), "және", DATA.relative_to(ROOT))
 
 

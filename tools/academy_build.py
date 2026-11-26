@@ -678,6 +678,42 @@ def comics_html(lessons):
     return "academy/comics.html", page("academy/comics.html", "Комикс: Нұрай, Мустафа және Бота", "AO17 комиксі: Нұрай, Мустафа және Бота бағдарламалау, логика және компьютер негіздерін күнделікті өмір мысалдарымен түсіндіреді. Әр сабақта жиі қате туралы комикс.", body)
 
 
+def course_map(weeks, labs):
+    """AO17 CS курсының метро картасы (SVG). Жоғарғы қызыл желі - 1-бөлімнің апталары, оң жақта бұрылып төменгі көк желіге -
+    2-бөлімнің зертханаларына жалғасады. Үзік сызық - аптада қолданылатын 3D зертханаға ауысу (бекетті нұсқағанда жанады).
+    Бекет - сілтеме (апта не зертхана карточкасына); прогресті course.js бояйды (st-on, st-done, st-next).
+    weeks: [(n, бекет id, қысқа атауы, [зертхана id])], labs: [(n, зертхана id, қысқа атауы)]."""
+    top, bot, x0, x1 = 96, 284, 58, 938
+    xw = {sid: x0 + i * (x1 - x0) / (len(weeks) - 1) for i, (_, sid, _, _) in enumerate(weeks)}
+    xl = {lid: x1 - j * (x1 - x0) / (len(labs) - 1) for j, (_, lid, _) in enumerate(labs)}
+    mid = (top + bot) / 2
+    g = [f'<path class="cm-l1" d="M{x0} {top} H{x1} C976 {top} 982 {top + 26} 982 {top + 56} V{mid}"/>',
+         f'<path class="cm-l2" d="M982 {mid} V{bot - 56} C982 {bot - 26} 976 {bot} {x1} {bot} H{x0}"/>']
+    rules = []
+    for _, sid, _, lids in weeks:
+        for lid in dict.fromkeys(lids):
+            if lid in xl:
+                a, b = xw[sid], xl[lid]
+                g.append(f'<path class="cm-x cx-{sid} cx-{lid}" d="M{a:.1f} {top + 16} C{a:.1f} {mid}, {b:.1f} {mid}, {b:.1f} {bot - 16}"/>')
+    def station(cls, sid, x, y, n, label, href, above):
+        ly = y - 24 if above else y + 36
+        rules.append(sid)
+        return (f'<a class="cm-st {cls}" href="{href}" data-st="{sid}" aria-label="{E(label)}">'
+                f'<circle class="cm-ring" cx="{x:.1f}" cy="{y}" r="19"/><circle class="cm-dot" cx="{x:.1f}" cy="{y}" r="13"/>'
+                f'<text class="cm-n" x="{x:.1f}" y="{y + 4}">{n}</text><text class="cm-lb" x="{x:.1f}" y="{ly}">{E(label.split(": ", 1)[1])}</text></a>')
+    for i, (n, sid, short, _) in enumerate(weeks):
+        g.append(station("cm-w", sid, xw[sid], top, n, f"{n}-апта: {short}", f"#{sid}", i % 2 == 0))
+    for j, (n, lid, short) in enumerate(labs):
+        g.append(station("cm-lab", lid, xl[lid], bot, n, f"{n}-зертхана: {short}", f"#lab-{lid}", j % 2 == 1))
+    g.append(f'<text class="cm-ln" x="{x0 - 14}" y="30">1-бөлім · Негіз: 12 апта</text>'
+             f'<text class="cm-ln cm-ln2" x="{x0 - 14}" y="{bot + 76}">2-бөлім · Технологияның ішінен: {len(labs)} зертхана</text>')
+    css = "".join(f'.crs-map:has([data-st="{r}"]:is(:hover,:focus-visible)) .cx-{r}{{opacity:1;stroke:#c98a00;stroke-dasharray:none}}' for r in rules)
+    return (f'<section class="crs-map" aria-labelledby="map-h"><h2 id="map-h">Курс картасы</h2>'
+            f'<p class="crs-note">Курс - бір жол: 12 аптадан кейін 3D зертханаларға өтесің. Бекетті басса, сол апта не зертхана ашылады; үзік сызық - аптада қолданылатын 3D зертхана (бекетті нұсқағанда жанады).</p>'
+            f'<style>{css}</style><div class="crs-map-sc"><svg class="crs-map-svg" viewBox="0 0 1000 380" role="group" aria-label="AO17 CS курсының картасы: 12 апта және {len(labs)} зертхана">{"".join(g)}</svg></div>'
+            '<p class="crs-map-lg"><span class="cml cml-done">аяқталды</span><span class="cml cml-on">басталды</span><span class="cml cml-next">келесі қадам</span></p></section>')
+
+
 def course_html(lessons, st):
     """AO17 CS: екі бөлімді курс беті. 1-бөлім «Негіз» - 12 апта (CS Universe Level I + комикс + 3D сабақ + жоба),
     2-бөлім «Технологияның ішінен» - 3D зертхананың зертханалары (tools/academy/lab3d.py). Оқушы прогресі: assets/js/course.js."""
@@ -751,6 +787,8 @@ def course_html(lessons, st):
         <a class="crs-part" href="#part1"><span class="crs-pk">1-бөлім</span><b>Негіз</b><span>12 апта · {tot_l} сабақ · {tot_t} тапсырма. Логикадан жүйеге дейін: Python, C, жад.</span><span class="crs-pp" data-part="0"></span></a>
         <a class="crs-part crs-part2" href="#part2"><span class="crs-pk">2-бөлім</span><b>Технологияның ішінен</b><span>{len(LS)} зертхана · {n3_l} сабақ · {n3_q} тест сұрағы. Машинаның ішін 3D симуляцияда көр.</span><span class="crs-pp" data-part="1"></span></a>
       </nav>
+      {course_map([(n, f"w{n}", CRS.WEEK_SHORT.get(mid, mid), [L3.data()[2].get(h) for h, _ in labs if L3.data()[2].get(h)]) for n, (mid, _, labs) in enumerate(CRS.WEEKS, 1)],
+                  [(no, x["id"], CRS.LAB_SHORT.get(x["id"], x["kk"])) for no, x in enumerate(LS, 1)])}
       <section class="crs-sec" id="part1" aria-labelledby="part1-h">
         <h2 id="part1-h"><span class="crs-pk">1-бөлім</span>Негіз: 12 апта</h2>
         <h3>Әр апта үш қадаммен жүреді</h3>

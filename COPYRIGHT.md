@@ -12,7 +12,7 @@
 |---|---|
 | A1 · Harvard CS50 түпнұсқасы | 141 |
 | A2 · Harvard материалының аудармасы/бейімдеуі | 52 |
-| B · AO17 командасының дербес әзірлемесі | 2059 |
+| B · AO17 командасының дербес әзірлемесі | 2097 |
 | C · Үшінші тарап | 94 |
 | R · Тексеруді қажет етеді (лицензия тағайындалмаған) | 56 |
 
@@ -20,7 +20,7 @@
 
 | Файл / жол | Компонент | Құқық иесі | Лицензия | Статус |
 |---|---|---|---|---|
-| `academy/3d/**`<br>`tools/academy/lab3d.py`<br>`tools/academy/data/**`<br>`tools/sync_inside.py`<br>`tools/inside_extract.mjs`<br>`assets/css/lab3d.css`<br>`assets/js/lab3d.js`<br>`docs/LAB3D.md` | **B-lab3d** AO17 · 3D зертхана: INSIDE TECH-тің 3D симуляциялары және 160 сабақтың лекция беттері (173 файл) | AO17 командасы | © 2026 AO17 командасы. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
+| `academy/3d/**`<br>`tools/academy/lab3d.py`<br>`tools/academy/data/**`<br>`tools/sync_inside.py`<br>`tools/inside_shots.py`<br>`tools/academy/inside_catalog.py`<br>`tools/inside_extract.mjs`<br>`assets/css/lab3d.css`<br>`assets/js/lab3d.js`<br>`docs/LAB3D.md` | **B-lab3d** AO17 · 3D зертхана: INSIDE TECH-тің 3D симуляциялары және 160 сабақтың лекция беттері (211 файл) | AO17 командасы | © 2026 AO17 командасы. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `academy/**`<br>`assets/js/academy-logic.js`<br>`assets/js/academy-arith.js`<br>`assets/js/academy-disc.js`<br>`assets/js/academy-pseudo.js`<br>`assets/js/academy-bits.js`<br>`assets/js/academy-cine.js`<br>`assets/js/ao-tutor.js`<br>`assets/js/ao-guide.js`<br>`assets/js/ao-reality.js`<br>`assets/js/rl-*.js`<br>`assets/data/rl-*.js`<br>`assets/css/rl-*.css`<br>`tests/e2e/reality*.spec.js`<br>`tools/guide_build.py`<br>`tools/guide_film.py`<br>`tools/guides/**`<br>`assets/js/ao-study.js`<br>`assets/css/ao-labs.css`<br>`assets/js/sat-*.js`<br>`assets/js/ielts-*.js`<br>`assets/js/cslab-*.js`<br>`assets/data/sat-*.js`<br>`assets/data/ielts-*.js`<br>`assets/css/sat*.css`<br>`assets/css/ielts*.css`<br>`assets/css/cslab*.css`<br>`assets/py/**`<br>`assets/js/academy.js`<br>`assets/css/academy.css`<br>`assets/css/comic.css`<br>`assets/css/course.css`<br>`assets/js/course.js`<br>`docs/COMICS.md`<br>`assets/js/ao-viz.js`<br>`assets/js/ao-viz2.js`<br>`tools/viz_links.py`<br>`assets/css/ao-viz.css`<br>`tests/e2e/academy-cine.spec.js`<br>`tests/e2e/visual-alash.spec.js`<br>`tests/e2e/visual-alash.spec.js-snapshots/**`<br>`tests/e2e/sat*.spec.js`<br>`tests/e2e/ielts*.spec.js`<br>`tests/e2e/cslabs*.spec.js`<br>`tests/e2e/academy-lesson.spec.js`<br>`tests/e2e/academy-tracks.spec.js`<br>`tests/e2e/viz.spec.js`<br>`tools/academy/**`<br>`tools/academy_build.py`<br>`docs/academy/**`<br>`tests/academy/**` | **B-academy** AO17 CS Universe: авторлық академия (оқу картасы, сабақтар, логика қозғалтқышы, зертханалар, тексерушілер, тесттер, құжаттар) (546 файл) | AO17 командасы | © 2026 AO17 командасы. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `cpp/**` | **B-course-cpp** C++ бағдарламалау: дербес авторлық курс (cpp/ лекциялары, курс беті) (10 файл) | AO17 командасы | © 2026 AO17 командасы. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `java/**` | **B-course-java** Java бағдарламалау: дербес авторлық курс (java/ лекциялары, курс беті) (10 файл) | AO17 командасы | © 2026 AO17 командасы. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |

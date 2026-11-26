@@ -97,7 +97,7 @@ test("курс беті: 25 пән 3 топта, ескерту, дайын/жо
   await expect(page.locator("body")).toHaveAttribute("data-license", "B");
   await expect(page.locator(".course-pill .cp-label")).toHaveText("Математика");
   await expect(page.locator("#ai-note")).toContainText("жауапкершілікті автор");
-  await expect(page.locator("#ai-note")).toContainText("Sagid Mustafa");
+  await expect(page.locator("#ai-note")).toContainText("AO17 командасы");   // авторлық жол командаға ауыстырылған (team_build, 0dcb0b7)
   await expect(page.locator("#ai-note")).toContainText("сертификат берілмейді");
   await expect(page.locator(".mx-group-h")).toHaveText(["Foundations", "Higher Mathematics", "Advanced Mathematics"]);
   await expect(page.locator(".mx-subj")).toHaveCount(25);

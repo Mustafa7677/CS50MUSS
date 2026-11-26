@@ -1436,7 +1436,12 @@
           <span class="cm-txt"><b>${c.name}</b><small>${escapeHtml(c.title)}</small></span>
           <span class="cm-prog"><i style="width:${pct}%"></i></span><span class="cm-n">${read}/${c.total}</span></a>`;
       }).join("");
-      menu.innerHTML = `<div class="cm-head">Академиялар</div>${rows}
+      // біздің курс бірінші: AO17 CS (екі бөлім), 3D зертхана, INSIDE TECH қолданбасы, комикстер
+      const ao = [["academy/course.html", "AO17 CS курсы", "Екі бөлім: 12 апта және 3D", "#b3262e"], ["academy/3d/index.html", "3D зертхана", "11 зертхана, 160 сабақ", "#1d6ea6"],
+        ["academy/3d/app/index.html", "INSIDE TECH", "Архипелаг, ойындар, құралдар", "#4a67c8"], ["academy/comics.html", "Комикстер", "Нұрай мен Мустафа", "#8a1f17"]]
+        .map(([h, n, d, c]) => `<a class="cm-ac" href="${ROOT_URL + h}" style="--c:${c}"><span class="cm-dot" aria-hidden="true"></span><span class="cm-txt"><b>${n}</b><small>${d}</small></span></a>`).join("");
+      menu.innerHTML = `<div class="cm-head">Біздің курс</div><div class="cm-acad cm-ao">${ao}</div>
+        <div class="cm-head cm-head2">Академиялар</div>${rows}
         <div class="cm-head cm-head2">Терең информатика және емтихан дайындығы</div>
         <div class="cm-acad">${[["academy/index.html", "CS Universe", "Информатика: Негізден Senior-ға", "#2f7d68"], ["academy/labs/index.html", "CS зертханалары", "BFS, Дейкстра, Python, желі, ДҚ", "#173e35"], ["academy/ielts/index.html", "IELTS", "Төрт дағды, толық сынақтар", "#733c3c"], ["academy/sat/index.html", "Digital SAT", "Math, R&W, емтихан тренажері", "#8a6a2f"], ["academy/study.html", "Менің оқуым", "Меңгеру, қателер, қайталау", "#56627a"]]
           .map(([h, n, d, c]) => `<a class="cm-ac" href="${ROOT_URL + h}" style="--c:${c}"><span class="cm-dot" aria-hidden="true"></span><span class="cm-txt"><b>${n}</b><small>${d}</small></span></a>`).join("")}</div>

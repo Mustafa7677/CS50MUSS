@@ -33,11 +33,16 @@
     }
     return d;
   }
+  // курс картасының бекеті (academy_build.course_map): басталған - st-on, аяқталған - st-done, келесі қадам - st-next
+  function station(sid) { return document.querySelector('.crs-map [data-st="' + sid + '"]'); }
   function walk(group, part, idOf, state) {
     Object.keys(group).forEach(function (k) {
       var items = group[k], st = items.map(state);
-      items.forEach(function (x, i) { order[part].push({ href: x[1], title: x[2], st: st[i] }); });
-      done[part] += paint(document.getElementById(idOf(k)), items, st);
+      items.forEach(function (x, i) { order[part].push({ href: x[1], title: x[2], st: st[i], sid: k }); });
+      var d = paint(document.getElementById(idOf(k)), items, st), s = st.some(function (v) { return v; });
+      var el = station(k);
+      if (el && s) el.classList.add(d === items.length ? "st-done" : "st-on");
+      done[part] += d;
       all[part] += items.length;
     });
   }
@@ -68,5 +73,6 @@
   var next = s1 && done[0] < all[0] ? nextIn(order[0]) : nextIn(order[1]) || nextIn(order[0]);
   var go = document.getElementById("crs-go");
   if (go && next) { go.href = next.href; go.textContent = "Жалғастыру: " + next.title; }
+  if (next && station(next.sid)) station(next.sid).classList.add("st-next");
   else if (go) { go.href = "#part2"; go.textContent = "Курс аяқталды: құттықтаймыз!"; }
 })();
