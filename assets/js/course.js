@@ -67,6 +67,16 @@
   var pe = document.querySelector('.crs-pp[data-part="exam"]');
   if (pe && (passed || fin != null)) pe.textContent = "Өткен апта сынағы: " + passed + " / 12" + (fin != null ? " · емтихан: " + fin + "%" : "");
 
+  // Python алаңы: Бота әлемі («ao17cs:bota» - деңгей жұлдыздары) және Ою студиясы («ao17cs:oyu» - орындалған тапсырмалар)
+  (function () {
+    var bt = document.querySelector('[data-play="bota"]'), oy = document.querySelector('[data-play="oyu"]');
+    var stars = J("ao17cs:bota").stars, n = 0, sum = 0;
+    Object.keys(stars && typeof stars === "object" ? stars : {}).forEach(function (k) { var v = Number(stars[k]); if (v > 0) { n++; sum += Math.min(3, v); } });
+    if (bt && n) bt.textContent = "Өткен деңгей: " + n + " / 16 · жұлдыз: " + sum + " / 48";
+    var done = J("ao17cs:oyu").done, m = Object.keys(done && typeof done === "object" ? done : {}).length;
+    if (oy && m) oy.textContent = "Орындалған тапсырма: " + m + " / 8";
+  })();
+
   // оқу кестесі (ao17-plan.js: «ao17cs:plan-dates»): келесі оқу кеші мен аяқталу күні
   (function () {
     var pc = J("ao17cs:plan-dates"), chip = document.querySelector("[data-plan-chip]");

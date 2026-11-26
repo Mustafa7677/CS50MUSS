@@ -78,7 +78,29 @@ test("Python қатесі жол нөмірімен, шексіз цикл то�
   await open(page);
   await runCode(page, "forward(50)\nleft(90\n");
   await expect(page.locator("[data-oy-out]")).toHaveText(/^Қате \(2-жол\): Синтаксис қатесі/);
+  await expect(page.locator("[data-oy-out]")).toContainText("Кеңес: Жақша сәйкес емес");
   await expect(page.locator("[data-oy-status]")).toHaveText("Қате бар");
+  // ортақ редактор: жол нөмірлері, қате жолы қызылмен белгіленген (2-жол: 14 + 24 px)
+  await expect(page.locator(".ae-gut")).toHaveText(/^1\n2\n3\n$/);
+  await expect(page.locator(".ae-hl")).toHaveClass(/bad/);
+  expect(await page.locator(".ae-hl").evaluate((e) => e.style.transform)).toBe("translateY(38px)");
+  // Enter шегіністі сақтайды, Esc + Tab редактордан шығарады
+  const ta = page.locator("[data-oy-code]");
+  await ta.fill("");
+  await ta.focus();
+  await page.keyboard.type("for i in range(4):");
+  await page.keyboard.press("Enter");
+  await expect(ta).toHaveValue("for i in range(4):\n    ");
+  await expect(page.locator(".ae-hl")).toBeHidden();   // код өзгерді: белгі алынды
+  await page.keyboard.press("Escape");
+  await page.keyboard.press("Tab");
+  expect(await page.evaluate(() => document.activeElement && document.activeElement.matches("[data-oy-code]"))).toBe(false);
+  await runCode(page, "forwad(100)\n");
+  await expect(page.locator("[data-oy-out]")).toContainText("Кеңес: «forwad» деген атау жоқ");
+  await runCode(page, "for _ in range(4.5):\n    forward(10)\n");
+  await expect(page.locator("[data-oy-out]")).toContainText("Кеңес: range() бүтін сан қабылдайды");
+  await runCode(page, "forward(50)\nleft\nforward(50)\n");
+  await expect(page.locator("[data-oy-out]")).toHaveText("Ескерту (2-жол): «left» жақшасыз жазылған: команда орындалмады. left(...) деп жаз.");
   await runCode(page, "x = 0\nwhile True:\n    x += 1\n");
   await expect(page.locator("[data-oy-out]")).toContainText("шексіз цикл болуы мүмкін");
   await runCode(page, "while True:\n    forward(1)\n");

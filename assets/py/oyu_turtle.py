@@ -150,8 +150,62 @@ NAMES = ["forward", "fd", "back", "bk", "backward", "left", "lt", "right", "rt",
          "ht", "st", "done", "mainloop", "exitonclick", "tracer", "update"]
 
 
+def hint(e):
+    """Python қатесіне қазақша кеңес (Бота әлеміндегі bota_world.explain сияқты). Хабардың өзі өзгермейді, кеңес қосылады."""
+    import re
+    m = str(e.msg if isinstance(e, SyntaxError) else e)
+    if isinstance(e, NameError):
+        name = getattr(e, "name", None) or (re.findall(r"'([^']+)'", m) or ["?"])[0]
+        return "«%s» деген атау жоқ. Жазылуын тексер (forward, left, circle, color...); функция болса, алдымен def-пен анықта." % name
+    if isinstance(e, IndentationError):
+        if "expected an indented block" in m:
+            return "Шегініс керек: for, def, if жолынан кейінгі жолдар 4 бос орынмен басталады."
+        if "unexpected indent" in m:
+            return "Артық шегініс: бұл жол алдыңғы жолмен бір деңгейде басталуы керек."
+        return "Шегініс сәйкес емес: бос орын санын тексер (4, 8, ...)."
+    if isinstance(e, SyntaxError):
+        if "expected ':'" in m:
+            return "Қос нүкте жетпейді: for, def, if жолы «:» белгісімен аяқталады."
+        if "was never closed" in m or "unmatched" in m or "does not match" in m:
+            return "Жақша сәйкес емес: әр «(» белгісіне «)» керек."
+        if "Missing parentheses" in m or "Perhaps you forgot a comma" in m:
+            return "Команданың мәні жақша ішінде жазылады: forward(100), left(90)."
+        return "Жолды мұқият тексер: жақша, қос нүкте, тырнақша, шегініс."
+    if isinstance(e, TypeError):
+        if "missing" in m and "required positional argument" in m:
+            return "Командаға мән жетпейді: мысалы, forward(100), circle(50)."
+        if "interpreted as an integer" in m:
+            return "range() бүтін сан қабылдайды: range(4), range(4.5) емес."
+        if "unsupported operand" in m or "can't multiply" in m or "must be real number" in m:
+            return "Мұнда сан керек, мәтін емес: forward(100), forward(\"100\") емес."
+        if "positional argument" in m:
+            return "Командаға тым көп мән берілді: жақша ішіндегі сандарды тексер."
+    if isinstance(e, RecursionError):
+        return "Функция өзін-өзі шексіз шақырып жатыр: рекурсияның тоқтау шарты (if n == 0: return) бар ма?"
+    if isinstance(e, ZeroDivisionError):
+        return "Нөлге бөлуге болмайды."
+    return ""
+
+
+def lint(code):
+    """Жақшасыз команда (forward, turtle.left): Python оны қате демейді, бірақ ештеңе салынбайды."""
+    import ast
+    try:
+        tree = ast.parse(code)
+    except SyntaxError:
+        return []
+    names = set(NAMES) | {n.name for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)}   # тек командалар мен функциялар
+    out = []
+    for n in ast.walk(tree):
+        v = n.value if isinstance(n, ast.Expr) else None
+        name = v.id if isinstance(v, ast.Name) else v.attr if isinstance(v, ast.Attribute) else None
+        if name in names:
+            out.append({"line": n.lineno, "msg": "«%s» жақшасыз жазылған: команда орындалмады. %s(...) деп жаз." % (name, name)})
+    return sorted(out, key=lambda x: x["line"])[:5]
+
+
 def run(code):
-    """Кодты орындайды: {"items": [...], "out": "...", "err": null | {"msg": ..., "line": n}} (JSON мәтін)."""
+    """Кодты орындайды: {"items": [...], "out": "...", "err": null | {"msg": ..., "line": n, "hint": кеңес}} (JSON мәтін)."""
     import io
     T.reset()
     mod = types.ModuleType("turtle")
@@ -175,15 +229,16 @@ def run(code):
     try:
         exec(compile(code, "<ою>", "exec"), ns)
     except SyntaxError as e:
-        err = {"msg": "Синтаксис қатесі: " + str(e.msg), "line": e.lineno or 0}
+        err = {"msg": "Синтаксис қатесі: " + str(e.msg), "line": e.lineno or 0, "hint": hint(e)}
     except BaseException as e:  # noqa: BLE001 - оқушы кодының кез келген қатесін көрсетеміз
         tb, line = e.__traceback__, 0
         while tb is not None:
             if tb.tb_frame.f_code.co_filename == "<ою>":
                 line = tb.tb_lineno
             tb = tb.tb_next
-        err = {"msg": ("%s: %s" % (type(e).__name__, e)) if not isinstance(e, OyuError) else str(e), "line": line}
+        err = {"msg": ("%s: %s" % (type(e).__name__, e)) if not isinstance(e, OyuError) else str(e), "line": line,
+               "hint": "" if isinstance(e, OyuError) else hint(e)}
     finally:
         sys.settrace(None)
         sys.stdout = old_out
-    return json.dumps({"items": T.items, "out": out.getvalue()[:4000], "err": err, "moves": T.moves}, ensure_ascii=False)
+    return json.dumps({"items": T.items, "out": out.getvalue()[:4000], "err": err, "moves": T.moves, "warn": lint(code)}, ensure_ascii=False)

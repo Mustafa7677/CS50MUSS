@@ -831,6 +831,18 @@ def course_html(lessons, st):
         </ol>
         <p class="crs-me" data-exam-me hidden></p>
       </section>
+      <section class="crs-sec crs-play" id="play" aria-labelledby="play-h">
+        <h2 id="play-h"><span class="crs-pk">Python алаңы</span>Кодпен ойна</h2>
+        <p class="crs-note">Сабақтағы Python бірден көрінетін нәтижеге айналатын екі орта. Бота әлемінде код Ботаны жүргізеді, Ою студиясында қазақ оюын салады. Екеуінде де код браузерде нағыз Python-да орындалады: қате жолы белгіленеді, себебі қазақша түсіндіріледі.</p>
+        <ul class="crs-play-l" role="list">
+          <li class="crs-pl"><img src="../assets/img/bota-happy.svg" alt="" width="84" height="84"><div><h3><a href="bota.html">Бота әлемі</a></h3>
+            <p>{len(BT.LEVELS)} деңгей: тізбек, функция, for, while, if және лабиринт алгоритмі. Кей деңгейде код бірнеше әлемде өтуі керек: жаттап жазған шешім өтпейді.</p>
+            <p class="crs-plp" data-play="bota">Бірінші деңгейден баста</p></div></li>
+          <li class="crs-pl">{OY.svg(OY.data()["examples"][0]["items"], "crs-pl-oyu", fit=True)}<div><h3><a href="oyu.html">Ою студиясы</a></h3>
+            <p>{len(OY.TASKS)} тапсырма: цикл, функция, симметрия және рекурсия суретке айналады. Галерея, PNG мен SVG, сілтемемен бөлісу.</p>
+            <p class="crs-plp" data-play="oyu">Шаршыдан баста</p></div></li>
+        </ul>
+      </section>
       <section class="crs-sec crs-how" aria-labelledby="how-h">
         <h2 id="how-h"><span class="crs-pk">Оқу тактикалары</span>Қалай оқыған дұрыс</h2>
         <p class="crs-note">Көп оқу мен дұрыс оқу - екі бөлек нәрсе. Оқу ғылымы тексерген сегіз тактика: еске түсіру, аралық қайталау, араластыру, түсіндіру, ұқсастық, сөз бен сурет, фокус және өзіңді бағалау. Әрқайсысын бірден жаттықтыратын құрал бар: ми төккіш, ұмыту қисығы, жаргон детекторы, 24 ұқсастық, фокус таймері.</p>

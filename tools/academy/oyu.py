@@ -69,8 +69,9 @@ def render(items):
     return json.loads(_turtle().run(items)) if isinstance(items, str) else items
 
 
-def svg(items, cls="oy-thumb"):
-    """Build кезінде: тасбақа жазбасынан SVG (галерея суреті). y осі жоғары, SVG-де төмен - сондықтан y теріс."""
+def svg(items, cls="oy-thumb", fit=False):
+    """Build кезінде: тасбақа жазбасынан SVG (галерея суреті). y осі жоғары, SVG-де төмен - сондықтан y теріс.
+    fit=True - кадр оюдың өз шекарасына қарай (кішкене белгіше үшін: ою бүкіл суретті толтырады)."""
     out = []
     for it in items:
         if it["t"] == "s":
@@ -83,7 +84,15 @@ def svg(items, cls="oy-thumb"):
             out.append(f'<circle cx="{it["x"]:g}" cy="{-it["y"]:g}" r="{it["r"]:g}" fill="{E(it["c"])}"/>')
     # бояу (fill) астында тұрсын: алдымен полигондар
     out.sort(key=lambda s: 0 if s.startswith("<polygon") else 1)
-    return f'<svg class="{cls}" viewBox="-220 -220 440 440" aria-hidden="true">{"".join(out)}</svg>'
+    box = "-220 -220 440 440"
+    if fit:
+        xs = [x for it in items if it["t"] in "sf" for x, _ in it["p"]] + [it["x"] for it in items if it["t"] == "d"]
+        ys = [-y for it in items if it["t"] in "sf" for _, y in it["p"]] + [-it["y"] for it in items if it["t"] == "d"]
+        if xs and ys:
+            side = max(max(xs) - min(xs), max(ys) - min(ys)) * 1.24 + 10
+            cx, cy = (max(xs) + min(xs)) / 2, (max(ys) + min(ys)) / 2
+            box = f"{cx - side / 2:g} {cy - side / 2:g} {side:g} {side:g}"
+    return f'<svg class="{cls}" viewBox="{box}" aria-hidden="true">{"".join(out)}</svg>'
 
 
 def data():
@@ -140,7 +149,7 @@ def oyu_html(page):
           </div>
           <label class="sr-only" for="oy-code">Python коды</label>
           <textarea id="oy-code" class="oy-code" data-oy-code spellcheck="false" autocapitalize="off" autocomplete="off" rows="16"></textarea>
-          <p class="oy-hint">Ctrl + Enter - іске қосу. Tab - шегініс.</p>
+          <p class="oy-hint">Ctrl + Enter - іске қосу. Tab - шегініс; Esc, сосын Tab - редактордан шығу.</p>
           <pre class="oy-out" data-oy-out aria-live="polite"></pre>
         </div>
         <div class="oy-right">
@@ -187,4 +196,5 @@ def oyu_html(page):
   <script type="application/json" id="oy-data">{payload}</script>"""
     return "academy/oyu.html", page("academy/oyu.html", "Ою студиясы: Python-мен қазақ оюы",
                                     "Python кодымен қазақ ою-өрнегін сал: цикл, функция, симметрия, рекурсия. Сегіз тапсырма, автоматты тексеру, галерея және сілтемемен бөлісу.",
-                                    body, scripts=("assets/js/ao17-motion.js", "assets/js/ao17-oyu.js"), styles=("assets/css/ao17-oyu.css", "assets/css/ao17-motion.css"))
+                                    body, scripts=("assets/js/ao17-motion.js", "assets/js/ao17-editor.js", "assets/js/ao17-oyu.js"),
+                                    styles=("assets/css/ao17-editor.css", "assets/css/ao17-oyu.css", "assets/css/ao17-motion.css"))

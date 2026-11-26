@@ -92,25 +92,20 @@
     } catch (e) { r = { items: [], out: "", err: { msg: String(e && e.message ? e.message : e).split("\n").slice(-2).join(" "), line: 0 } }; }
     draw(r.items || []);
     var txt = r.out || "";
-    if (r.err) txt += (txt ? "\n" : "") + "Қате" + (r.err.line ? " (" + r.err.line + "-жол)" : "") + ": " + r.err.msg;
+    if (r.err) txt += (txt ? "\n" : "") + "Қате" + (r.err.line ? " (" + r.err.line + "-жол)" : "") + ": " + r.err.msg + (r.err.hint ? "\nКеңес: " + r.err.hint : "");
+    (r.warn || []).forEach(function (w) { txt += (txt ? "\n" : "") + "Ескерту (" + w.line + "-жол): " + w.msg; });
     out.textContent = txt;
     out.className = "oy-out" + (r.err ? " bad" : "");
+    ed.mark(r.err && r.err.line ? r.err.line : 0, true);   // қате жолы редакторда қызылмен
     setStatus(r.err ? "Қате бар" : "Дайын: " + (r.moves || 0) + " қозғалыс", r.err ? "bad" : "ok");
     $("[data-oy-verdict]").textContent = "";
   }
   runB.addEventListener("click", run);
 
-  // ------------------------------------------------------------------ редактор: Tab - шегініс, Ctrl+Enter - іске қосу
-  ta.addEventListener("keydown", function (e) {
-    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); run(); return; }
-    if (e.key === "Tab" && !e.shiftKey && !e.altKey && !e.ctrlKey) {
-      e.preventDefault();
-      var s = ta.selectionStart, en = ta.selectionEnd;
-      ta.value = ta.value.slice(0, s) + "    " + ta.value.slice(en);
-      ta.selectionStart = ta.selectionEnd = s + 4;
-    }
-  });
-  ta.addEventListener("input", function () { st.code[mode] = ta.value; save(); });
+  // ------------------------------------------------------------------ редактор: ортақ AO17 редакторы (assets/js/ao17-editor.js)
+  // жол нөмірлері, қате жолы, Python шегінісі (Enter, Tab, Backspace), Esc + Tab - шығу, Ctrl+Enter - іске қосу
+  var ed = window.AO17Editor ? window.AO17Editor.attach(ta, { onRun: run, onInput: function () { st.code[mode] = ta.value; save(); } })
+    : { mark: function () {}, refresh: function () {} };
 
   // ------------------------------------------------------------------ тапсырмалар
   var tcard = $("[data-oy-tcard]");
@@ -125,6 +120,7 @@
       paint(targetG, $("[data-oy-showt]").checked ? t.target : [], true);
     } else paint(targetG, [], true);
     ta.value = code != null ? code : (st.code[m] != null ? st.code[m] : t ? t.starter : EX.koshkar.code);
+    ed.refresh(); ed.mark(0);
     st.task = m; save();
     $("[data-oy-verdict]").textContent = "";
   }
@@ -133,7 +129,7 @@
     b.addEventListener("click", function () { var id = b.getAttribute("data-task"); setMode(mode === id ? "free" : id); run(); });
   });
   $("[data-oy-showt]").addEventListener("change", function () { paint(targetG, this.checked && TASK[mode] ? TASK[mode].target : [], true); });
-  $("[data-oy-reset]").addEventListener("click", function () { ta.value = TASK[mode] ? TASK[mode].starter : EX.koshkar.code; st.code[mode] = ta.value; save(); run(); });
+  $("[data-oy-reset]").addEventListener("click", function () { ta.value = TASK[mode] ? TASK[mode].starter : EX.koshkar.code; ed.refresh(); st.code[mode] = ta.value; save(); run(); });
 
   // суретті мақсатпен салыстыру: екеуі де растрға, қабаттасу үлесі (IoU)
   function raster(items) {

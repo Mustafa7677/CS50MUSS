@@ -106,8 +106,8 @@ test("бірнеше әлем: бір әлемге жаттанды код ба�
   await expect(page.locator('[data-bw-w="2"]')).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator("[data-bw-verdict]")).toContainText("3-әлемде өтпеді");
   await expect(page.locator("[data-bw-verdict]")).toContainText("3-жолда: Бота тауға не шекараға соқтығысты");
-  await expect(page.locator("[data-bw-hl]")).toHaveClass(/bad/);
-  await expect(page.locator("[data-bw-hl]")).toBeVisible();
+  await expect(page.locator(".ae-hl")).toHaveClass(/bad/);
+  await expect(page.locator(".ae-hl")).toBeVisible();
   await run(page, SOL.until);
   await expect(page.locator("[data-bw-verdict]")).toContainText("Барлық 3 әлемде өтті!");
   for (const j of [0, 1, 2]) await expect(page.locator(`[data-bw-w="${j}"]`)).toHaveClass(/is-ok/);
@@ -117,6 +117,8 @@ test("қателер қазақша түсіндіріледі, жол нөмі�
   test.setTimeout(150_000);
   await open(page, "academy/bota.html#l=right");
   const v = page.locator("[data-bw-verdict]");
+  await run(page, "алға()\nалға\n");   // жақшасыз команда: Python үнсіз өткізеді, біз ескертеміз
+  await expect(v).toContainText("Ескерту (2-жол): «алға» жақшасыз жазылған: команда орындалмады. алға() деп жаз.");
   await run(page, "алға()\nоңға()\n");
   await expect(v).toContainText("2-жолда: «оңға» командасы жоқ: оны өзің функция етіп жаз");
   await expect(v.locator(".bw-v-py")).toContainText("NameError: name 'оңға' is not defined");
@@ -148,12 +150,12 @@ test("анимация: қадамдап режимі әр әрекетте ко
   const start = await bota.evaluate((e) => e.style.transform);
   await page.locator("[data-bw-step]").click();
   await expect(page.locator("[data-bw-n]")).toHaveText("1");
-  await expect(page.locator("[data-bw-hl]")).toBeVisible();
-  expect(await page.locator("[data-bw-hl]").evaluate((e) => e.style.transform)).toBe("translateY(14px)");   // 1-жол
+  await expect(page.locator(".ae-hl")).toBeVisible();
+  expect(await page.locator(".ae-hl").evaluate((e) => e.style.transform)).toBe("translateY(14px)");   // 1-жол
   expect(await bota.evaluate((e) => e.style.transform)).not.toBe(start);
   await page.locator("[data-bw-step]").click();
   await expect(page.locator("[data-bw-n]")).toHaveText("2");
-  expect(await page.locator("[data-bw-hl]").evaluate((e) => e.style.transform)).toBe("translateY(38px)");   // 2-жол
+  expect(await page.locator(".ae-hl").evaluate((e) => e.style.transform)).toBe("translateY(38px)");   // 2-жол
   await expect(page.locator("[data-bw-verdict]")).toBeHidden();
   // толық ойнату: батырма «Соңына өту» болады, басқанда нәтиже бірден
   await page.locator("[data-bw-speed]").selectOption("2");
@@ -187,7 +189,7 @@ test("редактор: Enter шегіністі сақтайды, түйме к
   await expect(ta).toHaveValue("while not үйде():\n    алға()\n    солға()");
   await page.locator('.bw-chip', { hasText: /^if$/ }).click();
   await expect(ta).toHaveValue("while not үйде():\n    алға()\n    солға()\n    if алма_бар():\n        ");
-  await expect(page.locator("[data-bw-gut]")).toHaveText(/^1\n2\n3\n4\n5\n$/);
+  await expect(page.locator(".ae-gut")).toHaveText(/^1\n2\n3\n4\n5\n$/);
   await ta.focus();
   await page.keyboard.press("Escape");
   await page.keyboard.press("Tab");
@@ -200,12 +202,20 @@ test("редактор: Enter шегіністі сақтайды, түйме к
   await expect(ta).toHaveValue(DATA.levels.find((l) => l.id === "until").starter);
 });
 
-test("курс бетінде 4, 6, 7, 9-апталарда Бота сілтемесі; мәзірде бар; бет ережесі: жария", async ({ page }) => {
+test("курс бетінде 4, 6, 7, 9-апталарда Бота сілтемесі, «Python алаңы» прогресі; бет ережесі: жария", async ({ page }) => {
   await blockFonts(page.context());
   await page.goto("academy/course.html");
   const want = { 4: "first", 6: "long", 7: "right", 9: "deliver" };
   for (const [w, id] of Object.entries(want)) await expect(page.locator(`#w${w} .crs-bota a`)).toHaveAttribute("href", `bota.html#l=${id}`);
   await expect(page.locator(".crs-bota")).toHaveCount(4);
+  // «Python алаңы» бөлімі: Бота әлемі мен Ою студиясы, оқушының прогресімен
+  await expect(page.locator("#play .crs-pl")).toHaveCount(2);
+  await expect(page.locator('[data-play="bota"]')).toHaveText("Бірінші деңгейден баста");
+  await page.evaluate(() => { localStorage.setItem("ao17cs:bota", JSON.stringify({ stars: { first: 3, turn: 2, apples: 0 } })); localStorage.setItem("ao17cs:oyu", JSON.stringify({ done: { square: 1 } })); });
+  await page.reload();
+  await expect(page.locator('[data-play="bota"]')).toHaveText("Өткен деңгей: 2 / 16 · жұлдыз: 5 / 48");
+  await expect(page.locator('[data-play="oyu"]')).toHaveText("Орындалған тапсырма: 1 / 8");
+  await expect(page.locator("#play .crs-pl-oyu polyline")).not.toHaveCount(0);
   await page.locator(`#w7 .crs-bota a`).click();
   await expect(page).toHaveURL(/academy\/bota\.html#l=right$/);
   await expect(page.locator("[data-bw-title]")).toHaveText("4. Оңға бұрылу");
