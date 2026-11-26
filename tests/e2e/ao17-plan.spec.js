@@ -210,7 +210,8 @@ test("курс беті: «Оқу кестесі» батырмасы, кест�
 test("жетістіктер: AO17 CS белгілері сынақ, зертхана және емтихан нәтижесінен есептеледі", async ({ page }) => {
   await open(page, "index.html");
   const get = () => page.evaluate(() => Object.fromEntries(window.CS50KZ.achievements().filter((a) => a.id.startsWith("ao17-")).map((a) => [a.id, [a.done, a.cur, a.goal]])));
-  expect(Object.keys(await get()).sort()).toEqual(["ao17-final", "ao17-lab", "ao17-plan", "ao17-quiz", "ao17-weeks"]);
+  // «Түсіндіруші» мен «Фокус шебері» - оқу тактикалары бетінен (ao17-methods.spec.js тексереді)
+  expect(Object.keys(await get()).sort()).toEqual(["ao17-explain", "ao17-final", "ao17-focus", "ao17-lab", "ao17-plan", "ao17-quiz", "ao17-weeks"]);
   expect(Object.values(await get()).every((x) => !x[0])).toBe(true);
   await page.evaluate(() => {
     localStorage.setItem("ao17cs:exam", JSON.stringify({ w1: { best: 80 }, w2: { best: 60 }, final: { best: 91 } }));
