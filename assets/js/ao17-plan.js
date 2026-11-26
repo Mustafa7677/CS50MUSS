@@ -180,7 +180,7 @@
       var nx = order[order.indexOf(ui) + 1];
       var x1 = X(sp.a), x2 = nx != null ? X(pl.span[nx].a) : X(add(sp.b, 1)), w = Math.max(2, x2 - x1 - 1.5);
       var ls = lessons.filter(function (it) { return it.u === ui; }), f = ls.filter(function (it) { return it.done; }).length / ls.length;
-      out.push('<g class="pl-seg p' + u.part + (f === 1 ? " full" : "") + '"><title>' + esc(u.label + ": " + u.name + ", " + range(sp.a, sp.b)) + "</title>"
+      out.push('<g class="pl-seg p' + u.part + (f === 1 ? " full" : "") + '" style="--i:' + ui + '"><title>' + esc(u.label + ": " + u.name + ", " + range(sp.a, sp.b)) + "</title>"
         + '<rect class="bg" x="' + x1.toFixed(1) + '" y="' + y + '" width="' + w.toFixed(1) + '" height="' + h + '" rx="3"/>'
         + (f > 0 ? '<rect class="fg" x="' + x1.toFixed(1) + '" y="' + y + '" width="' + Math.max(2, w * f).toFixed(1) + '" height="' + h + '" rx="3"/>' : "")
         + (w >= 17 ? '<text class="pl-sn" x="' + (x1 + w / 2).toFixed(1) + '" y="' + (y + h / 2 + 4) + '">' + u.n + "</text>" : "") + "</g>");
@@ -190,7 +190,7 @@
       s2.items.forEach(function (it) {
         if (it.k !== "x") return;
         var x = Math.min(W - R - 8, Math.max(L + 8, X(s2.date) + 3));
-        out.push('<g class="pl-ex' + (it.done ? " done" : "") + '"><title>' + esc(it.t + ": " + fmt(s2.date)) + '</title><rect x="' + (x - 5).toFixed(1) + '" y="' + (y - 7) + '" width="10" height="10" transform="rotate(45 ' + x.toFixed(1) + " " + (y - 2) + ')"/></g>');
+        out.push('<g class="pl-ex' + (it.done ? " done" : "") + '" style="--i:' + it.u + '"><title>' + esc(it.t + ": " + fmt(s2.date)) + '</title><rect x="' + (x - 5).toFixed(1) + '" y="' + (y - 7) + '" width="10" height="10" transform="rotate(45 ' + x.toFixed(1) + " " + (y - 2) + ')"/></g>');
       });
     });
     // бүгін
@@ -309,6 +309,9 @@
     if (window.CS50KZ && typeof window.CS50KZ.mark === "function") window.CS50KZ.mark("ao17plan");   // «Жоспарлы оқушы» жетістігі
   });
 
+  // бірінші сурет: таспа солдан оңға өседі (ao17-motion.css), кейінгі өзгерістерде қайталанбайды
+  var rib = root.querySelector("[data-plan-rib]");
+  if (rib && window.AO17Motion && !window.AO17Motion.still) { rib.classList.add("ao-first"); setTimeout(function () { rib.classList.remove("ao-first"); }, 3200); }
   var rt = null;
   window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(function () { ribbon(build(st)); }, 150); });
   save();

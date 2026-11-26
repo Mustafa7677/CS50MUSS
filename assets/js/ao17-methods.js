@@ -32,7 +32,7 @@
       v.className = "my-v";
       v.textContent = (ok ? "Дұрыс таптың: " : "Шындығында: ") + (truth ? "шын." : "аңыз.");
       x.insertBefore(v, x.firstChild);
-      if (!keep) { saved[c.getAttribute("data-my")] = ans; S("ao17cs:myths", saved); }
+      if (!keep) { saved[c.getAttribute("data-my")] = ans; S("ao17cs:myths", saved); c.classList.add("just"); }
       score();
     }
     function score() {
@@ -104,7 +104,9 @@
       }
       return pts;
     }
+    var anim = false, cur = "spaced";
     function draw(k) {
+      cur = k;
       $$("[data-cv]", w).forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-cv") === k)); });
       var W = 600, H = 260, L = 44, R = 12, T = 16, B = 34;
       function X(t) { return L + (W - L - R) * t / DAYS; }
@@ -115,15 +117,18 @@
       function path(pts) { return pts.map(function (p, i) { return (i ? "L" : "M") + X(p[0]).toFixed(1) + " " + Y(p[1]).toFixed(1); }).join(""); }
       if (k !== "once") s += '<path class="base" d="' + path(curve(PLANS.once)) + '"/>';
       var pts = curve(PLANS[k]);
-      s += '<path class="cv" d="' + path(pts) + '"/>';
-      PLANS[k].forEach(function (d) { s += '<circle class="rv" cx="' + X(d) + '" cy="' + Y(1) + '" r="4"/>'; });
+      s += '<path class="cv" pathLength="1" d="' + path(pts) + '"/>';
+      PLANS[k].forEach(function (d, j) { s += '<circle class="rv" style="--i:' + j + '" cx="' + X(d) + '" cy="' + Y(1) + '" r="4"/>'; });
       s += "</svg>";
       $("[data-cv-svg]", w).innerHTML = s;
+      if (anim) $("[data-cv-svg] svg", w).classList.add("cv-anim");
       var end = Math.round(pts[pts.length - 1][1] * 100);
       $("[data-cv-cap]", w).innerHTML = "<b>" + esc(NAMES[k]) + "</b>: 30-күні есте қалғаны ≈ <b data-cv-end>" + end + "%</b>" + (k === "once" ? "" : " (сұр сызық - бір рет оқығанда)") + ".";
     }
-    $$("[data-cv]", w).forEach(function (b) { b.addEventListener("click", function () { draw(b.getAttribute("data-cv")); }); });
+    $$("[data-cv]", w).forEach(function (b) { b.addEventListener("click", function () { anim = true; draw(b.getAttribute("data-cv")); }); });
     draw("spaced");
+    // экранға алғаш кіргенде қисық көз алдында сызылады
+    if (window.AO17Motion && !window.AO17Motion.still) window.AO17Motion.onView(w, function () { anim = true; draw(cur); });
   })();
 
   // ------------------------------------------------------------------ Жаргон детекторы (Фейнман әдісі)
@@ -165,7 +170,7 @@
       var ok = C.filter(function (c) { return c[1]; }).length;
       var marked = esc(text).replace(/[a-zа-яәіңғүұқөһё0-9]+/gi, function (wd) { var t2 = term(wd); return t2 ? '<mark class="' + (found[t2] && found[t2].ok ? "ok" : "no") + '">' + wd + "</mark>" : wd; });
       out.innerHTML = '<p class="fy-score"><b>' + ok + " / 5</b> " + (ok === 5 ? "Тамаша түсіндірме! Енді оны досыңа айтып бер." : "Түзетіп, қайта тексер.") + '</p><ul class="fy-crit">'
-        + C.map(function (c) { return '<li class="' + (c[1] ? "ok" : "no") + '"><b>' + esc(c[0]) + "</b>" + (c[1] ? "" : "<span>" + esc(c[2]) + "</span>") + "</li>"; }).join("") + "</ul>"
+        + C.map(function (c, k) { return '<li class="' + (c[1] ? "ok" : "no") + '" style="--i:' + k + '"><b>' + esc(c[0]) + "</b>" + (c[1] ? "" : "<span>" + esc(c[2]) + "</span>") + "</li>"; }).join("") + "</ul>"
         + (terms.length ? '<p class="mt-q">Мәтінің: <span class="fy-key"><mark class="ok">түсіндірілген термин</mark> <mark class="no">түсіндірілмеген</mark></span></p><blockquote class="fy-text">' + marked.replace(/\n/g, "<br>") + "</blockquote>" : "");
       saved[sel.value] = { text: ta.value, at: Date.now(), ok: Math.max(ok, obj(saved[sel.value]).ok || 0) };
       S("ao17cs:explain", saved);
@@ -224,6 +229,33 @@
       setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
     });
     render();
+  })();
+
+  // ------------------------------------------------------------------ Араластыру: блоктардан аралас ретке (FLIP)
+  (function () {
+    var mix = $(".mt-mix");
+    if (!mix || !window.AO17Motion || window.AO17Motion.still) return;
+    window.AO17Motion.onView(mix, function () {
+      var rows = $$(".mt-mixrow", mix);
+      if (rows.length < 2) return;
+      var src = $$("i", rows[0]), dst = $$("i", rows[1]), used = {};
+      dst.forEach(function (t) {
+        for (var j = 0; j < src.length; j++) {
+          if (!used[j] && src[j].className === t.className) {
+            used[j] = 1;
+            var a = src[j].getBoundingClientRect(), b = t.getBoundingClientRect();
+            t.style.transition = "none";
+            t.style.transform = "translate(" + Math.round(a.left - b.left) + "px," + Math.round(a.top - b.top) + "px)";
+            break;
+          }
+        }
+      });
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          dst.forEach(function (t, k) { t.style.transition = "transform .75s var(--e-out) " + (k * 80 + 150) + "ms"; t.style.transform = ""; });
+        });
+      });
+    });
   })();
 
   // ------------------------------------------------------------------ Ұқсастық карточкалары: ашу/жабу

@@ -283,6 +283,7 @@
       if (v == null || v === "") return;
       if (M.fb && run.ans[run.i] != null) return;
       run.ans[run.i] = v; save(); draw();
+      var qc = stage.querySelector(".xm-q"); if (qc) qc.classList.add("just");   // жауап берілген сәт: мөр не шайқалу (ao17-motion.css)
     }
     function go(d) {
       run.i = Math.max(0, Math.min(run.qs.length - 1, run.i + d)); save(); draw();
@@ -364,7 +365,7 @@
       var C = 2 * Math.PI * 52;
       card.innerHTML = '<div class="xm-score ' + (pass ? "ok" : "bad") + '"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" class="tr"/>'
         + (pct > 0 ? '<circle cx="60" cy="60" r="52" class="va" stroke-dasharray="' + (C * pct / 100).toFixed(1) + " " + C.toFixed(1) + '"/>' : "") + "</svg>"
-        + "<p><b>" + pct + "%</b><span>" + ok + " / " + run.qs.length + "</span></p></div>"
+        + "<p><b data-ao-count>" + pct + "%</b><span>" + ok + " / " + run.qs.length + "</span></p></div>"
         + '<p class="xm-verdict ' + (pass ? "ok" : "bad") + '">' + (pct >= 90 ? "Үздік нәтиже!" : pass ? "Өттің!" : "Өту шегі " + B.pass + "%: тақырыптарды қайталап, қайта тапсыр.") + "</p>"
         + '<p class="xm-meta">Уақыт: ' + mmss(run.limit ? Math.min(run.doneAt - run.start, run.limit) : run.doneAt - run.start) + " · ең жақсы нәтижең: " + best + "%</p>";
       var topics = el("ul", "xm-topics");
@@ -373,7 +374,7 @@
         var li = el("li", f === 100 ? "full" : f === 0 ? "zero" : "");
         var a = el("a"); a.href = B.topics[t].href; a.textContent = B.topics[t].name;
         li.appendChild(a);
-        li.appendChild(el("span", "xm-tb" + (B.topics[t].part === 2 ? " p2" : ""), '<i style="width:' + f + '%"></i>'));
+        li.appendChild(el("span", "xm-tb" + (B.topics[t].part === 2 ? " p2" : ""), '<i style="width:' + f + '%"></i>')).style.setProperty("--i", String(topics.children.length));
         li.appendChild(el("b", "", p.ok + " / " + p.n));
         topics.appendChild(li);
       });
@@ -421,6 +422,7 @@
       card.appendChild(acts);
       stage.innerHTML = "";
       stage.appendChild(card);
+      if (window.AO17Motion) window.AO17Motion.count(card);   // пайыз 0-ден өседі
       card.setAttribute("tabindex", "-1");
       card.focus({ preventScroll: true });
       if (stage.getBoundingClientRect().top < 0) stage.scrollIntoView({ block: "start" });

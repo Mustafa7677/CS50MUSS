@@ -230,7 +230,7 @@ def methods_html(lessons, page):
     srcs = "".join(f"<li>{E(s)}</li>" for s in SOURCES)
     data = json.dumps({"weeks": weeks_data(lessons), "jargon": JARGON, "topics": EXPLAIN}, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     body = f"""  <div class="layout single">
-    <article class="content mt" id="main" data-methods>
+    <article class="content mt" id="main" data-methods data-ao-progress>
       <p class="ac-crumb"><a href="course.html">AO17 CS курсы</a> / Қалай оқыған дұрыс</p>
       <header class="mt-head">
         <h1>Қалай оқыған дұрыс</h1>
@@ -242,7 +242,7 @@ def methods_html(lessons, page):
         <ol class="my-list">{myths}</ol>
         <p class="my-score" data-my-score aria-live="polite"></p>
       </section>
-      <nav class="mt-index" aria-label="Тактикалар"><ul>{index}</ul></nav>
+      <nav class="mt-index" aria-label="Тактикалар" data-ao-spy><ul>{index}</ul></nav>
 {chr(10).join(secs)}
       <section class="mt-rhythm" aria-labelledby="rh-h">
         <h2 id="rh-h">Бір апта қалай өтеді</h2>
@@ -259,4 +259,4 @@ def methods_html(lessons, page):
   <script type="application/json" id="mt-data">{data}</script>"""
     return "academy/methods.html", page("academy/methods.html", "Қалай оқыған дұрыс: 8 оқу тактикасы",
                                         "Оқу ғылымына сүйенген сегіз тактика: еске түсіру, аралық қайталау, араластыру, түсіндіру, ұқсастық, сөз бен сурет, фокус және өзін бағалау. Бетте бірден жаттығатын құралдармен.",
-                                        body, scripts=("assets/js/ao17-methods.js",), styles=("assets/css/ao17-methods.css",))
+                                        body, scripts=("assets/js/ao17-motion.js", "assets/js/ao17-methods.js"), styles=("assets/css/ao17-methods.css", "assets/css/ao17-motion.css"))

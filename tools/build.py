@@ -321,7 +321,7 @@ def ao17cs_home_block(prefix):
         img = f"assets/img/posters/thumb/ao17cs-w{n:02d}.jpg"
         if (ROOT / img).exists():
             r_, y_ = CSH_TILT[(n - 1) % len(CSH_TILT)]
-            covers.append(f'<li style="--r:{r_}deg;--y:{y_}px"><a href="{prefix}academy/course.html#w{n}"><img src="{prefix}{img}" '
+            covers.append(f'<li style="--r:{r_}deg;--y:{y_}px;--k:{len(covers)}"><a href="{prefix}academy/course.html#w{n}"><img src="{prefix}{img}" '
                           f'alt="{n}-апта: «{html.escape(eps.get(mid, ""))}». {html.escape(q)}" width="240" height="360" loading="lazy"></a></li>')
     return f"""<!-- build:ao17cs-home -->
   <section class="csh" id="ao17cs" aria-labelledby="csh-title">
@@ -332,9 +332,10 @@ def ao17cs_home_block(prefix):
         <p>Компьютерлік ғылымға кіріспе екі бөлімнен тұрады. Он екі аптада логикадан жүйеге дейін жүресің: Нұрай мен Мустафа аптаның сұрағын комикспен ашады, кодты өзің жазасың. Сосын {len(labs)} зертханада технологияның ішін 3D симуляцияда көресің. Тегін, қазақ тілінде, браузерде.</p>
         <p class="csh-acts"><a class="btn gold" href="{prefix}academy/course.html">Курсты ашу</a> <a class="btn ghost" href="{prefix}academy/3d/index.html">3D зертхана: {n3} сабақ</a> <a class="csh-more" href="{prefix}posters.html#ao17cs">Барлық мұқабалар</a></p>
       </div>
-      <ol class="csh-shelf" aria-label="AO17 CS: 12 аптаның мұқабалары">{"".join(covers)}</ol>
+      <ol class="csh-shelf" aria-label="AO17 CS: 12 аптаның мұқабалары" data-ao-in>{"".join(covers)}</ol>
     </div>
   </section>
+  <script src="{prefix}assets/js/ao17-motion.js" defer></script>
   <!-- /build:ao17cs-home -->"""
 
 
