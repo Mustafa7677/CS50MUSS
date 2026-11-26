@@ -132,6 +132,39 @@ test("сілтемемен бөлісу: код сілтемеде, ашқанд
   await expect(p2.locator("[data-oy-draw] polyline")).toHaveCount(1);
 });
 
+test("«Суретті болжа»: нұсқа таңдау, тексеру, түсіндірме, студияда ашу - Python-сыз", async ({ page }) => {
+  await blockFonts(page.context());
+  await page.route(/pyodide/, (r) => r.abort());   // үш сурет build кезінде салынған
+  const errs = collectErrors(page);
+  await page.goto("academy/oyu.html");
+  await expect(page.locator("[data-opz]")).toHaveCount(6);
+  expect(DATA.pred.map((z) => z.ans)).toEqual([1, 0, 2, 1, 2, 0]);   // дұрыс жауап әр орында кездеседі
+  await expect(page.locator("[data-oy-ptitle]")).toHaveText("1. Үшбұрыш па, шаршы ма? · бұрыш");
+  await expect(page.locator(".oy-pln")).toHaveCount(3);
+  for (let i = 0; i < 3; i++) expect(await page.locator(`[data-oy-og="${i}"] polyline`).count()).toBeGreaterThan(0);
+  const chk = page.locator("[data-oy-pcheck]"), msg = page.locator("[data-oy-pmsg]");
+  await expect(chk).toBeDisabled();
+  await page.locator(".oy-popt").nth(1).click();
+  await expect(page.locator(".oy-popt").nth(1)).toHaveClass(/is-sel/);
+  await chk.click();
+  await expect(msg).toHaveText(/^Дұрыс! Үш рет 120 градусқа бұрылу - толық айналым/);
+  await expect(page.locator(".oy-popt").nth(1)).toHaveClass(/is-ok/);
+  await expect(page.locator('[data-opz="angle"]')).toHaveClass(/is-ok/);
+  // қате таңдау: дұрысы жасыл, таңдалғаны қызыл, түсіндірме
+  await page.locator('[data-opz="dir"]').click();
+  await expect(chk).toBeDisabled();
+  await page.locator(".oy-popt").nth(0).click();
+  await chk.click();
+  await expect(msg).toHaveText(/^Дұрыс жауап - Б\. right\(\) сағат тілімен бұрады/);
+  await expect(page.locator(".oy-popt").nth(2)).toHaveClass(/is-ok/);
+  await expect(page.locator(".oy-popt").nth(0)).toHaveClass(/is-bad/);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("ao17cs:oyu")).pred)).toEqual({ angle: 1, dir: 0 });
+  // студияда ашу: код редакторға түседі
+  await page.locator("[data-oy-pstudio]").click();
+  await expect(page.locator("[data-oy-code]")).toHaveValue(DATA.pred.find((z) => z.id === "dir").code);
+  expect(errs).toEqual([]);
+});
+
 test("курс бетінде Python апталарында студия сілтемесі; бет ережесі: жария", async ({ page }) => {
   await blockFonts(page.context());
   await page.goto("academy/course.html");

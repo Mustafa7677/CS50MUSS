@@ -211,14 +211,20 @@ test("курс бетінде 4, 6, 7, 9-апталарда Бота сілте�
   // «Python алаңы» бөлімі: Бота әлемі мен Ою студиясы, оқушының прогресімен
   await expect(page.locator("#play .crs-pl")).toHaveCount(2);
   await expect(page.locator('[data-play="bota"]')).toHaveText("Бірінші деңгейден баста");
-  await page.evaluate(() => { localStorage.setItem("ao17cs:bota", JSON.stringify({ stars: { first: 3, turn: 2, apples: 0 } })); localStorage.setItem("ao17cs:oyu", JSON.stringify({ done: { square: 1 } })); });
+  await page.evaluate(() => { localStorage.setItem("ao17cs:bota", JSON.stringify({ stars: { first: 3, turn: 2, apples: 0 }, pred: { seq: 1, func: 0, brk: 1 } })); localStorage.setItem("ao17cs:oyu", JSON.stringify({ done: { square: 1 }, pred: { angle: 1, dir: 0 } })); });
   await page.reload();
-  await expect(page.locator('[data-play="bota"]')).toHaveText("Өткен деңгей: 2 / 16 · жұлдыз: 5 / 48");
-  await expect(page.locator('[data-play="oyu"]')).toHaveText("Орындалған тапсырма: 1 / 8");
+  await expect(page.locator('[data-play="bota"]')).toHaveText("Өткен деңгей: 2 / 16 · жұлдыз: 5 / 48 · дұрыс болжам: 2 / 8");
+  await expect(page.locator('[data-play="oyu"]')).toHaveText("Орындалған тапсырма: 1 / 8 · дұрыс болжам: 1 / 6");
   await expect(page.locator("#play .crs-pl-oyu polyline")).not.toHaveCount(0);
   await page.locator(`#w7 .crs-bota a`).click();
   await expect(page).toHaveURL(/academy\/bota\.html#l=right$/);
   await expect(page.locator("[data-bw-title]")).toHaveText("4. Оңға бұрылу");
+  // CS Universe хабы мен «Өзіңді бағала» тактикасы Python алаңына апарады
+  await page.goto("academy/index.html");
+  await expect(page.locator('.ac-cta a[href="bota.html"]')).toHaveText("Бота әлемі");
+  await expect(page.locator('.ac-cta a[href="oyu.html"]')).toHaveText("Ою студиясы");
+  await page.goto("academy/methods.html");
+  await expect(page.locator('#t-reflect a[href="bota.html#bw-p-h"]')).toHaveText("«Болжап көр»");
   const out = execFileSync("python3", ["-c", "import sys; sys.path.insert(0, 'tools'); import gate; print(gate.page_rule('academy/bota.html'))"], { cwd: ROOT, encoding: "utf8" }).trim();
   expect(out).toBe("None");
 });
@@ -254,6 +260,7 @@ test("«Болжап көр»: болжам, тексеру, түсіндірм�
   await expect(pmsg).toHaveText(/^Бота 4-баған, 3-жолда тоқтады, ал сенің болжамың - 1-баған, 1-жол\. def функцияны тек анықтайды/);
   await expect(page.locator('[data-pz="func"]')).toHaveClass(/is-bad/);
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem("ao17cs:bota")).pred)).toEqual({ seq: 1, func: 0 });
+  expect(await page.evaluate(() => window.CS50KZ.achievements().find((a) => a.id === "ao17-pred").cur)).toBe(1);   // «Болжампаз»: 6-ның 1-і
   await page.locator("[data-bw-pagain]").click();
   await expect(chk).toBeDisabled();
   await expect(pmsg).toHaveText("");

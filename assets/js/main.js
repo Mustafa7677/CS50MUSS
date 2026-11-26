@@ -3149,6 +3149,7 @@ try{\n${code.replace(/<\/script/gi, "<\\/script")}\n}catch(e){__s("Қате: "+e
       A("ao17-journal", "📓", "Журнал жүргізуші", "Оқу журналына 7 жазба қалдыру", readJson("ao17cs:journal", []).length, 7),
       A("ao17-oyu", "🌀", "Оюшы", "Ою студиясының 4 тапсырмасын орындау", Object.keys(readJson("ao17cs:oyu", {}).done || {}).length, 4),
       A("ao17-bota", "🐫", "Керуенбасы", "Бота әлемінің 8 деңгейінен өту", Object.values(readJson("ao17cs:bota", {}).stars || {}).filter((n) => n > 0).length, 8),
+      A("ao17-pred", "🔮", "Болжампаз", "«Болжап көр» бөлімінде 6 болжамды дұрыс табу", Object.values(readJson("ao17cs:bota", {}).pred || {}).filter((n) => n === 1).length, 6),
       A("polyglot", "🌍", "Көпқырлы", "Кемінде 3 түрлі курстан лекция оқу", COURSE_META.filter((c) => (c.id === "x" ? read : readC(c.id)) > 0).length, 3),
     ];
   }
