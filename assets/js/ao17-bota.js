@@ -24,12 +24,15 @@
   var LV = {}, ORDER = [];
   D.levels.forEach(function (l, i) { l.n = i + 1; LV[l.id] = l; ORDER.push(l.id); });
   var CH = {}; D.chapters.forEach(function (c) { CH[c.id] = c; });
-  var ta = $("[data-bw-code]"), gut = $("[data-bw-gut]"), hl = $("[data-bw-hl]"), runB = $("[data-bw-run]"), stepB = $("[data-bw-step]");
+  var ta = $("[data-bw-code]"), runB = $("[data-bw-run]"), stepB = $("[data-bw-step]");
   var status = $("[data-bw-status]"), out = $("[data-bw-out]"), svg = $("[data-bw-svg]"), board = $("[data-bw-board]");
   var verdict = $("[data-bw-verdict]"), tabs = $("[data-bw-tabs]"), speedSel = $("[data-bw-speed]"), bagEl = $("[data-bw-bag]"), nEl = $("[data-bw-n]");
   var still = !!(window.AO17Reveal && window.AO17Reveal.still) || document.documentElement.classList.contains("reduce-motion")
     || !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
   var cur = null, wi = 0, result = null, play = null, py = null, B = null;
+  // ортақ редактор (assets/js/ao17-editor.js): жол нөмірлері, белгіленген жол, Python шегінісі
+  var ed = window.AO17Editor ? window.AO17Editor.attach(ta, { onRun: function () { go(); }, onInput: changed })
+    : { mark: function () {}, refresh: function () {}, insert: function (t) { ta.value += t; changed(); } };
   if (st.speed != null && speedSel.querySelector('option[value="' + st.speed + '"]')) speedSel.value = String(st.speed);
 
   // ------------------------------------------------------------------ әлем: карта жолдарын талдау (bota_world.World сияқты)
@@ -129,7 +132,7 @@
   // бір әрекетті қолдану (ms = 0 - анимациясыз)
   function apply(a, ms) {
     var w = B.w, kind = a[0], k = a[1] + "," + a[2];
-    hilite(a[4], /^(bump|nopick|noput)$/.test(kind));
+    ed.mark(a[4], /^(bump|nopick|noput)$/.test(kind));
     if (kind === "m") {
       w.x = a[1]; w.y = a[2]; place(ms);
       anim(B.body, [{ transform: "translateY(0)" }, { transform: "translateY(-6px)" }, { transform: "translateY(0)" }], ms);
@@ -156,8 +159,9 @@
       bagEl.textContent = String(w.bag);
       if (ms) anim(bagEl, [{ transform: "scale(1)" }, { transform: "scale(1.45)" }, { transform: "scale(1)" }], Math.max(ms, 200));
     } else if (kind === "bump") {
-      var dx = DIRS[a[3]][0], dy = DIRS[a[3]][1];
-      flash(a[1] + dx, a[2] + dy, ms);
+      var dx = DIRS[a[3]][0], dy = DIRS[a[3]][1], tx = a[1] + dx, ty = a[2] + dy;
+      if (tx < 0 || ty < 0 || tx >= w.w || ty >= w.h) { tx = a[1]; ty = a[2]; }   // шекараға соқтығысса - өз шаршысы жарқылдайды
+      flash(tx, ty, ms);
       anim(B.body, [{ transform: "translate(0,0)" }, { transform: "translate(" + dx * 12 + "px," + dy * 12 + "px)" }, { transform: "translate(0,0)" },
         { transform: "translate(" + dx * 6 + "px," + dy * 6 + "px)" }, { transform: "translate(0,0)" }], Math.max(ms, 380));
     } else if (kind === "nopick" || kind === "noput") {
@@ -196,77 +200,18 @@
     if (!play) return;
     var res = play.res;
     clearTimeout(play.timer); play = null; runB.textContent = "Іске қосу";
-    if (res.err && res.err.line) hilite(res.err.line, true);
+    if (res.err && res.err.line) ed.mark(res.err.line, true);
     describe();
     if (res.out) out.textContent = res.out;
     showVerdict();
   }
 
-  // ------------------------------------------------------------------ редактор: жол нөмірлері, белгіленген жол, шегініс
-  var LH = 24, PAD = 14, escTab = false;
-  function gutter() {
-    var n = ta.value.split("\n").length, s = "";
-    for (var i = 1; i <= n; i++) s += i + "\n";
-    gut.textContent = s;
-    gut.scrollTop = ta.scrollTop;
-    posHl();
-  }
-  var hlLine = 0;
-  function hilite(line, bad) {
-    hlLine = line || 0;
-    hl.hidden = !hlLine;
-    hl.classList.toggle("bad", !!bad);
-    posHl();
-  }
-  function posHl() { if (hlLine) hl.style.transform = "translateY(" + (PAD + (hlLine - 1) * LH - ta.scrollTop) + "px)"; }
-  function edit(text, s, e) {   // undo тарихы сақталсын: execCommand, болмаса тікелей
-    ta.focus();
-    ta.setSelectionRange(s, e);
-    var ok = false;
-    try { ok = document.execCommand("insertText", false, text); } catch (err) { ok = false; }
-    if (!ok) { ta.value = ta.value.slice(0, s) + text + ta.value.slice(e); changed(); }   // execCommand өзі input оқиғасын шығарады
-    ta.selectionStart = ta.selectionEnd = s + text.length;   // курсор әрдайым енгізілген мәтіннің соңында (жол соңындағы «\n» маңында да)
-  }
-  ta.addEventListener("keydown", function (e) {
-    if (e.isComposing) return;
-    if (e.key === "Escape") { escTab = true; return; }
-    var s = ta.selectionStart, en = ta.selectionEnd, v = ta.value, ls = v.lastIndexOf("\n", s - 1) + 1, line = v.slice(ls, s);
-    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); go(); return; }
-    if (e.key === "Tab" && !e.altKey && !e.ctrlKey && !e.metaKey) {
-      if (escTab) { escTab = false; return; }   // Esc, сосын Tab - редактордан шығу
-      e.preventDefault();
-      if (e.shiftKey) { var m = /^ {1,4}/.exec(v.slice(ls)); if (m) edit("", ls, ls + m[0].length); }
-      else edit("    ", s, en);
-      return;
-    }
-    escTab = false;
-    if (e.key === "Enter" && !e.shiftKey && !e.altKey) {   // шегіністі сақтау, «:»-дан кейін +4
-      e.preventDefault();
-      var ind = /^ */.exec(line)[0];
-      edit("\n" + ind + (/:\s*(#.*)?$/.test(line) ? "    " : ""), s, en);
-      return;
-    }
-    if (e.key === "Backspace" && s === en && s > ls && /^ +$/.test(line) && line.length % 4 === 0) { e.preventDefault(); edit("", s - 4, s); }
-  });
+  // ------------------------------------------------------------------ код өзгерді: нәтиже ескірді
   function changed() {
-    gutter();
     if (cur) { st.code[cur.id] = ta.value; save(); }
     if (result || play) { stopPlay(); result = null; marksTabs(); verdict.hidden = true; drawBoard(cur.worlds[wi]); }
-    hilite(0);
   }
-  ta.addEventListener("input", changed);
-  ta.addEventListener("scroll", function () { gut.scrollTop = ta.scrollTop; posHl(); });
-  var coarse = window.matchMedia && matchMedia("(pointer: coarse)").matches;
-  $$("[data-ins]").forEach(function (b) {
-    b.addEventListener("click", function () {
-      var txt = b.getAttribute("data-ins"), s = ta.selectionStart, en = ta.selectionEnd, v = ta.value;
-      var ls = v.lastIndexOf("\n", s - 1) + 1, line = v.slice(ls, s), ind = /^ */.exec(line)[0];
-      var t = (line.trim() ? "\n" + ind : "") + txt.replace(/\n/g, "\n" + ind);
-      if (coarse) {   // телефонда пернетақта ашылмасын: тікелей қоямыз
-        ta.value = v.slice(0, s) + t + v.slice(en); ta.selectionStart = ta.selectionEnd = s + t.length; changed();
-      } else edit(t, s, en);
-    });
-  });
+  $$("[data-ins]").forEach(function (b) { b.addEventListener("click", function () { ed.insert(b.getAttribute("data-ins")); }); });
 
   // ------------------------------------------------------------------ Python
   function setStatus(t, cls) { status.textContent = t; status.className = "bw-status" + (cls ? " " + cls : ""); }
@@ -350,6 +295,7 @@
         + (otherBad.length ? '<p class="bw-v-row">' + otherBad.map(function (j) { return '<button class="btn secondary" type="button" data-bw-world="' + j + '">' + (j + 1) + "-әлемді көрсету</button>"; }).join(" ") + "</p>" : "");
       verdict.className = "bw-verdict bad";
     }
+    if (r.lint && r.lint.length) h += '<ul class="bw-lint">' + r.lint.map(function (x) { return "<li>Ескерту (" + x.line + "-жол): " + esc(x.msg) + "</li>"; }).join("") + "</ul>";
     verdict.innerHTML = h;
     var nb = verdict.querySelector("[data-bw-next]");
     if (nb) nb.addEventListener("click", function () { select(nb.getAttribute("data-bw-next"), true); });
@@ -366,7 +312,7 @@
     });
   }
   function showWorld(j, replay) {
-    stopPlay(); wi = j; marksTabs(); hilite(0);
+    stopPlay(); wi = j; marksTabs(); ed.mark(0);
     if (result && replay) { begin(result.worlds[wi]); runB.textContent = "Соңына өту"; tick(); }
     else { drawBoard(cur.worlds[wi]); if (result) showVerdict(); }
   }
@@ -410,14 +356,14 @@
     ta.value = st.code[id] != null ? st.code[id] : lv.starter;
     ta.scrollTop = 0;
     out.textContent = ""; verdict.hidden = true;
-    buildTabs(); marksTabs(); levelMarks(); gutter(); hilite(0);
+    buildTabs(); marksTabs(); levelMarks(); ed.refresh(); ed.mark(0);
     drawBoard(lv.worlds[0]);
     if (py) setStatus("Python дайын", "ok");
     if (scroll && history.replaceState) history.replaceState(null, "", "#l=" + id);
     if (scroll) { var stg = root.querySelector(".bw-stage"); if (stg && stg.scrollIntoView) stg.scrollIntoView({ block: "start", behavior: still ? "auto" : "smooth" }); }
   }
   $$("[data-level]").forEach(function (b) { b.addEventListener("click", function () { select(b.getAttribute("data-level"), true); }); });
-  $("[data-bw-reset]").addEventListener("click", function () { if (!cur) return; ta.value = cur.starter; changed(); });
+  $("[data-bw-reset]").addEventListener("click", function () { if (!cur) return; ta.value = cur.starter; ed.refresh(); ed.mark(0); changed(); });
   window.addEventListener("hashchange", function () { var m = /^#l=([\w-]+)$/.exec(location.hash); if (m && LV[m[1]] && (!cur || cur.id !== m[1])) select(m[1], true); });
 
   // ------------------------------------------------------------------ бастау: сілтемедегі деңгей > сақталған > бірінші өтілмеген

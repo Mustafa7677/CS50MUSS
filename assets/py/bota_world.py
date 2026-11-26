@@ -185,6 +185,20 @@ def run_one(code, rows, goal):
     return {"log": w.log, "err": err, "why": why, "ok": not err and not why, "out": out.getvalue()[:2000]}
 
 
+def lint(code):
+    """Жаңа бастаушының үнсіз қатесі: команда жақшасыз жазылған (алға) - Python оны қате демейді, бірақ ештеңе орындалмайды."""
+    try:
+        tree = ast.parse(code)
+    except SyntaxError:
+        return []
+    names = set(_api(World(["."])).keys()) | {n.name for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)}   # тек командалар мен функциялар
+    out = []
+    for n in ast.walk(tree):
+        if isinstance(n, ast.Expr) and isinstance(n.value, ast.Name) and n.value.id in names:
+            out.append({"line": n.lineno, "msg": "«%s» жақшасыз жазылған: команда орындалмады. %s() деп жаз." % (n.value.id, n.value.id)})
+    return sorted(out, key=lambda x: x["line"])[:5]
+
+
 def size(code):
     """Жұлдыз үшін: командалар саны (AST-тегі нұсқаулар). Бір жолға «;» арқылы тығыздау ұтыс бермейді."""
     try:
@@ -202,4 +216,4 @@ def run(code, level_json):
     res = [run_one(code, rows, lv["goal"]) for rows in lv["worlds"]]
     ok = all(r["ok"] for r in res)
     n = size(code)
-    return json.dumps({"worlds": res, "ok": ok, "size": n, "stars": stars(ok, n, lv["s3"])}, ensure_ascii=False)
+    return json.dumps({"worlds": res, "ok": ok, "size": n, "stars": stars(ok, n, lv["s3"]), "lint": lint(code)}, ensure_ascii=False)

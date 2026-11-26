@@ -259,14 +259,10 @@ def bota_html(page):
             <button class="btn secondary" type="button" data-bw-reset>Бастапқы код</button>
             <span class="bw-status" data-bw-status role="status">Python жүктелуде...</span>
           </div>
-          <div class="bw-ed">
-            <div class="bw-gut" data-bw-gut aria-hidden="true"></div>
-            <div class="bw-hl" data-bw-hl aria-hidden="true" hidden></div>
-            <label class="sr-only" for="bw-code">Python коды</label>
-            <textarea id="bw-code" class="bw-code" data-bw-code spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off" rows="14"></textarea>
-          </div>
+          <label class="sr-only" for="bw-code">Python коды</label>
+          <textarea id="bw-code" class="bw-code" data-bw-code spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off" rows="14"></textarea>
           <p class="bw-chips" aria-label="Команданы енгізу">{chip_html()}</p>
-          <p class="bw-hint">Ctrl + Enter - іске қосу. Tab - шегініс. Түйме команданы курсор тұрған жерге қояды.</p>
+          <p class="bw-hint">Ctrl + Enter - іске қосу. Tab - шегініс; Esc, сосын Tab - редактордан шығу. Түйме команданы курсор тұрған жерге қояды.</p>
           <div class="bw-out" data-bw-out aria-live="polite"></div>
         </div>
         <div class="bw-right">
@@ -304,4 +300,5 @@ def bota_html(page):
   <script type="application/json" id="bw-data">{payload}</script>"""
     return "academy/bota.html", page("academy/bota.html", "Бота әлемі: Python-мен Ботаны жүргіз",
                                      f"Ботаны Python кодымен жүргіз: алға жүр, бұрыл, алма жина, киіз үйге жет. {n_lv} деңгей: тізбек, функция, for, while, if және лабиринт алгоритмі.",
-                                     body, scripts=("assets/js/ao17-motion.js", "assets/js/ao17-bota.js"), styles=("assets/css/ao17-bota.css", "assets/css/ao17-motion.css"))
+                                     body, scripts=("assets/js/ao17-motion.js", "assets/js/ao17-editor.js", "assets/js/ao17-bota.js"),
+                                     styles=("assets/css/ao17-editor.css", "assets/css/ao17-bota.css", "assets/css/ao17-motion.css"))
