@@ -2,7 +2,7 @@
 // AO17 CS бағалау жүйесі (tools/academy/ao17exam.py, assets/js/ao17-exam.js): апта сынағы, бөлім емтихандары,
 // қорытынды емтихан және сертификат. Тексереміз: апта сынағының сұрақтары сол аптадан және сол аптаның 3D зертханасынан,
 // дұрыс жауап - 100% және нәтиже сақталады; қорытынды емтихан 36 сұрақ, таймер, бет жаңартылса жалғасады, ескі сақталған
-// сынақ ұсынылмайды; сертификат 70%-дан бастап ашылады; курс беті нәтижелерді көрсетеді; бет ережесі (емтихан жабық,
+// сынақ ұсынылмайды, уақыты біткені бағаланады; сертификат 70%-дан бастап ашылады; курс беті нәтижелерді көрсетеді; бет ережесі (емтихан жабық,
 // сертификат жария); телефонда көлденең жылжу жоқ, axe таза.
 const { test, expect } = require("@playwright/test");
 const fs = require("fs");
@@ -197,6 +197,30 @@ test("сертификат жабық: емтихан тапсырылмаса �
   await expect(page.locator("[data-ax-rules]")).toContainText("60%");
   await page.click("[data-ax-start]");
   await expect(page.locator(".xm-count")).toHaveText("1 / 36");
+  expect(errs).toEqual([]);
+});
+
+test("уақыты біткен емтихан: жауаптар жоғалмайды, берілген жауаптар бойынша бағаланады", async ({ page, context }) => {
+  await blockFonts(context);
+  const errs = collectErrors(page);
+  await page.goto("academy/exam.html?part=1");
+  await page.click("[data-ax-start]");
+  await expect(page.locator(".xm-dot")).toHaveCount(24);
+  const run = await page.evaluate(RUN);
+  expect(run.limit).toBe(30 * 60000);
+  // 12 сұраққа дұрыс жауап, уақыт бір сағат бұрын басталған
+  for (let k = 0; k < 12; k++) run.ans[k] = correct(run.qs[k]);
+  run.start = Date.now() - 60 * 60000;
+  await page.evaluate((r) => localStorage.setItem("ao17cs:exam-run", JSON.stringify(r)), run);
+  await page.reload();
+  const over = page.locator(".xm-intro .btn.gold");
+  await expect(over).toHaveText("Уақыт бітті: нәтижесін көру (12 / 24 жауап)");
+  await over.click();
+  await expect(page.locator(".xm-score b")).toHaveText("50%");
+  await expect(page.locator(".xm-wrong > li")).toHaveCount(12);
+  const res = await page.evaluate(() => JSON.parse(localStorage.getItem("ao17cs:exam")));
+  expect(res.p1).toMatchObject({ best: 50, last: 50, runs: 1 });
+  expect(await page.evaluate(() => localStorage.getItem("ao17cs:exam-run"))).toBeNull();
   expect(errs).toEqual([]);
 });
 

@@ -59,8 +59,11 @@
     }
     var run = obj(J(RUN, null));
     var startBtn = root.querySelector("[data-ax-start]");
-    if (run.mode === mode && fresh(run) && !expired(run)) {
-      var cont = el("button", "btn gold", "Жалғастыру (" + (Object.keys(obj(run.ans)).length) + " / " + run.qs.length + ")");
+    // тоқтаған сынақ: уақыты бітпесе - жалғастыру; бітсе - берілген жауаптар бойынша бағалау (жауаптар жоғалмайды)
+    if (run.mode === mode && fresh(run)) {
+      var done = Object.keys(obj(run.ans)).length;
+      var cont = el("button", "btn gold", expired(run) ? "Уақыт бітті: нәтижесін көру (" + done + " / " + run.qs.length + " жауап)"
+        : "Жалғастыру (" + done + " / " + run.qs.length + ")");
       cont.type = "button";
       cont.addEventListener("click", function () { show(run); });
       startBtn.parentNode.insertBefore(cont, startBtn);
@@ -241,7 +244,7 @@
         + (pct > 0 ? '<circle cx="60" cy="60" r="52" class="va" stroke-dasharray="' + (C * pct / 100).toFixed(1) + " " + C.toFixed(1) + '"/>' : "") + "</svg>"
         + "<p><b>" + pct + "%</b><span>" + ok + " / " + run.qs.length + "</span></p></div>"
         + '<p class="xm-verdict ' + (pass ? "ok" : "bad") + '">' + (pct >= 90 ? "Үздік нәтиже!" : pass ? "Өттің!" : "Өту шегі " + B.pass + "%: тақырыптарды қайталап, қайта тапсыр.") + "</p>"
-        + '<p class="xm-meta">Уақыт: ' + mmss(run.doneAt - run.start) + " · ең жақсы нәтижең: " + best + "%</p>";
+        + '<p class="xm-meta">Уақыт: ' + mmss(run.limit ? Math.min(run.doneAt - run.start, run.limit) : run.doneAt - run.start) + " · ең жақсы нәтижең: " + best + "%</p>";
       var topics = el("ul", "xm-topics");
       Object.keys(per).sort(function (a, b) { return (B.topics[a].part - B.topics[b].part) || (weeks.indexOf(a) - weeks.indexOf(b)) || (labs.indexOf(a) - labs.indexOf(b)); }).forEach(function (t) {
         var p = per[t], f = Math.round((p.ok / p.n) * 100);
