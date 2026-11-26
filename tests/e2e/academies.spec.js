@@ -161,7 +161,7 @@ test("мәзір мен витрина: курстар үш академия б�
   expect(await page.locator(".course-menu .cm-sep").evaluateAll((as) => as.map((a) => a.getAttribute("href").replace(/^https?:\/\/[^/]+\//, "")))).toEqual(["programming.html", "en/", "math/"]);
   await expect(page.locator(".course-menu .cm-row")).toHaveCount(9);
   // мәзірдің басында біздің курс: AO17 CS, 3D зертхана, INSIDE TECH, комикстер
-  expect(await page.locator(".course-menu .cm-ao .cm-ac").evaluateAll((as) => as.map((a) => a.getAttribute("href").replace(/^https?:\/\/[^/]+\//, "")))).toEqual(["academy/course.html", "academy/3d/index.html", "academy/3d/app/index.html", "academy/comics.html", "academy/methods.html"]);
+  expect(await page.locator(".course-menu .cm-ao .cm-ac").evaluateAll((as) => as.map((a) => a.getAttribute("href").replace(/^https?:\/\/[^/]+\//, "")))).toEqual(["academy/course.html", "academy/3d/index.html", "academy/3d/app/index.html", "academy/comics.html", "academy/methods.html", "academy/oyu.html"]);
   await expect(page.locator(".course-menu .cm-head").first()).toHaveText("Біздің курс");
   expect(await page.locator(".course-menu .cm-acad:not(.cm-ao) .cm-ac").evaluateAll((as) => as.map((a) => a.getAttribute("href").replace(/^https?:\/\/[^/]+\//, "")))).toEqual(["academy/index.html", "academy/labs/index.html", "academy/ielts/index.html", "academy/sat/index.html", "academy/study.html"]);
   await expect(page.locator('.footer .ft-col h4:text-is("Академиялар")')).toHaveCount(1);

@@ -1,0 +1,84 @@
+/* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
+/* Ою студиясы (academy/oyu.html, assets/js/ao17-oyu.js). Сол жақта - сия түсті код тақтасы, оң жақта - киіз сияқты ашық кенеп:
+   ою екі режимде де ашық түсті фонда салынады (түстері Алаш палитрасынан). */
+.oy { --oy-paper: #f7f0df; --oy-ink: #14213d; }
+.oy-head { max-width: 68ch; margin: 6px 0 20px; }
+.content .oy-head h1 { margin: 0 0 10px; font-size: clamp(2.1rem, 5.2vw, 3.2rem); line-height: 1.05; }
+.oy-lede { margin: 0; color: var(--muted); font-size: 1.06rem; line-height: 1.6; }
+.oy-note { color: var(--muted); font-size: .92rem; line-height: 1.55; }
+
+.oy-studio { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px 24px; align-items: start; margin: 0 0 30px; }
+.oy-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: 0 0 10px; }
+.oy-status { padding: 4px 10px; border-radius: 99px; background: var(--surface-2); color: var(--muted); font-size: .85rem; font-weight: 600; }
+.oy-status.ok { background: color-mix(in srgb, #1f7a4d 14%, var(--surface)); color: var(--text); }
+.oy-status.bad { background: color-mix(in srgb, #b3262e 14%, var(--surface)); color: var(--text); }
+.oy-code { display: block; width: 100%; min-height: 360px; box-sizing: border-box; padding: 14px 16px; border: 1px solid #2b3a5c; border-radius: 14px;
+  background: var(--oy-ink); color: #f3ead6; caret-color: #f2d36b; font: 500 15px/1.6 "JetBrains Mono", ui-monospace, monospace; tab-size: 4; resize: vertical; white-space: pre; overflow: auto; }
+.oy-code:focus-visible { outline: 3px solid #c99a2e; outline-offset: 2px; }
+.oy-code::selection { background: rgb(242 211 107 / .35); }
+.oy-hint { margin: 6px 0 8px; color: var(--muted); font-size: .84rem; }
+.oy-out { min-height: 2.6em; margin: 0; padding: 10px 12px; border-radius: 10px; background: var(--surface-2); color: var(--text); font: 500 .88rem/1.5 "JetBrains Mono", ui-monospace, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+.oy-out:empty { display: none; }
+.oy-out.bad { background: color-mix(in srgb, #b3262e 12%, var(--surface)); }
+
+.oy-canvas { margin: 0; }
+.oy-canvas svg { display: block; width: 100%; height: auto; aspect-ratio: 1; border: 1px solid var(--border); border-radius: 16px; background: var(--oy-paper);
+  box-shadow: inset 0 0 0 8px var(--oy-paper), inset 0 0 0 9px rgb(184 145 63 / .35), 0 18px 40px -30px rgb(0 0 0 / .5); }
+.oy-grid path, .oy-grid circle { fill: none; stroke: rgb(27 21 16 / .07); stroke-width: 1; }
+.oy-target { color: rgb(122 134 153 / .3); }
+.oy-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 12px 0 0; }
+.oy-sp { display: inline-flex; align-items: center; gap: 6px; font-size: .88rem; font-weight: 600; color: var(--muted); }
+.oy-sp select { min-height: 38px; padding: 4px 8px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--text); font: inherit; }
+.oy-share input { width: 100%; box-sizing: border-box; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--text); font: 500 .9rem/1.4 Inter, system-ui, sans-serif; }
+
+/* тапсырмалар: шынымен реттілік - нөмірлі */
+.content .oy-tlist { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 12px 0; padding: 0; list-style: none; }
+.oy-task { position: relative; display: grid; grid-template-columns: 30px minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 10px; align-items: center; width: 100%; height: 100%;
+  padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--text); text-align: left; font: inherit; cursor: pointer; }
+.oy-task:hover { border-color: #c99a2e; }
+.oy-task:focus-visible { outline: 3px solid #c99a2e; outline-offset: 2px; }
+.oy-tn { grid-row: 1 / span 2; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--surface-2); font: 800 .8rem/1 Unbounded, Inter, sans-serif; }
+.oy-task b { font-size: .95rem; line-height: 1.25; }
+.oy-task small { color: var(--muted); font-size: .8rem; }
+.oy-task[aria-pressed="true"] { border-color: var(--oy-ink); box-shadow: inset 0 0 0 1px var(--oy-ink); }
+.oy-task[aria-pressed="true"] .oy-tn { background: var(--oy-ink); color: #f2d36b; }
+:root[data-theme="dark"] .oy-task[aria-pressed="true"] { border-color: #f2d36b; box-shadow: inset 0 0 0 1px #f2d36b; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .oy-task[aria-pressed="true"] { border-color: #f2d36b; box-shadow: inset 0 0 0 1px #f2d36b; } }
+.oy-task.is-done .oy-tn { background: #1f7a4d; color: #fff; }
+.oy-task.is-done .oy-ok::before { content: "✓"; position: absolute; top: 8px; right: 10px; color: #1f7a4d; font-weight: 800; font-style: normal; }
+:root[data-theme="dark"] .oy-task.is-done .oy-ok::before { color: #7fdca6; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .oy-task.is-done .oy-ok::before { color: #7fdca6; } }
+.oy-tcard { padding: 14px 16px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+.content .oy-tcard h3 { margin: 0 0 6px; }
+.oy-tcard p { margin: 0 0 8px; line-height: 1.55; }
+.oy-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.oy-sw { display: inline-flex; align-items: center; gap: 6px; font-size: .9rem; }
+.oy-verdict { font-weight: 700; }
+.oy-verdict.ok { color: #1f7a4d; }
+.oy-verdict.bad { color: #a3202a; }
+:root[data-theme="dark"] .oy-verdict.ok { color: #7fdca6; }
+:root[data-theme="dark"] .oy-verdict.bad { color: #ff9a9a; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .oy-verdict.ok { color: #7fdca6; } :root:not([data-theme="light"]) .oy-verdict.bad { color: #ff9a9a; } }
+
+/* галерея */
+.oy-gallery, .oy-ref { margin-top: 28px; }
+.content .oy-glist { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 170px), 1fr)); gap: 12px; margin: 12px 0 0; padding: 0; list-style: none; }
+.oy-ex button { display: grid; gap: 4px; width: 100%; padding: 8px 8px 12px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); color: var(--text); text-align: left; font: inherit; cursor: pointer; }
+.oy-ex button:hover { border-color: #c99a2e; }
+.oy-ex button:focus-visible { outline: 3px solid #c99a2e; outline-offset: 2px; }
+.oy-thumb { display: block; width: 100%; height: auto; aspect-ratio: 1; border-radius: 10px; background: var(--oy-paper); }
+.oy-ex b { padding: 0 4px; font: 700 1rem/1.3 "PT Serif", Georgia, serif; }
+.oy-ex span { padding: 0 4px; color: var(--muted); font-size: .85rem; }
+
+/* командалар */
+.oy-cmds { width: 100%; border-collapse: collapse; font-size: .92rem; }
+.oy-cmds td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.oy-cmds td:first-child { width: 42%; }
+
+@media (max-width: 900px) {
+  .oy-studio { grid-template-columns: minmax(0, 1fr); }
+  .oy-right { order: -1; }
+  .content .oy-tlist { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .oy-code { min-height: 260px; }
+}
+@media (max-width: 560px) { .oy-cmds td:first-child { width: auto; } .oy-cmds code { overflow-wrap: anywhere; } }
