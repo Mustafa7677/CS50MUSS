@@ -209,7 +209,7 @@ test("курс бетінде 4, 6, 7, 9-апталарда Бота сілте�
   for (const [w, id] of Object.entries(want)) await expect(page.locator(`#w${w} .crs-bota a`)).toHaveAttribute("href", `bota.html#l=${id}`);
   await expect(page.locator(".crs-bota")).toHaveCount(4);
   // «Python алаңы» бөлімі: Бота әлемі мен Ою студиясы, оқушының прогресімен
-  await expect(page.locator("#play .crs-pl")).toHaveCount(2);
+  await expect(page.locator("#play .crs-pl")).toHaveCount(3);
   await expect(page.locator('[data-play="bota"]')).toHaveText("Бірінші деңгейден баста");
   await page.evaluate(() => { localStorage.setItem("ao17cs:bota", JSON.stringify({ stars: { first: 3, turn: 2, apples: 0 }, pred: { seq: 1, func: 0, brk: 1 } })); localStorage.setItem("ao17cs:oyu", JSON.stringify({ done: { square: 1 }, pred: { angle: 1, dir: 0 } })); });
   await page.reload();
