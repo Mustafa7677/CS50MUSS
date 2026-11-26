@@ -93,7 +93,7 @@ def exam_html(lessons, page):
         <p class="xm-lede" data-ax-lede>Курстың екі бөлімінен 36 сұрақ: әр аптадан екі, әр зертханадан бір. 45 минут. Өту шегі {PASS}%, ал нәтижең сертификатты ашады.</p>
       </header>
       <nav class="xm-modes" aria-label="Сынақ түрлері">
-        <a href="exam.html" data-mode="final">Қорытынды емтихан</a><a href="exam.html?part=1" data-mode="p1">1-бөлім</a><a href="exam.html?part=2" data-mode="p2">2-бөлім</a>
+        <a href="exam.html" data-mode="final">Қорытынды емтихан</a><a href="exam.html?part=1" data-mode="p1">1-бөлім</a><a href="exam.html?part=2" data-mode="p2">2-бөлім</a><a href="exam.html?mix=1" data-mode="mix">Аралас жаттығу</a>
         <label class="xm-week"><span>Апта сынағы</span><select data-ax-week aria-label="Апта сынағын таңдау"><option value="">таңда</option>{"".join(f'<option value="{n}">{E(b["topics"][f"w{n}"]["name"])}</option>' for n in range(1, 13) if f"w{n}" in b["topics"])}</select></label>
       </nav>
       <section class="xm-stage" data-ax-stage aria-live="polite">

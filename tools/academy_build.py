@@ -33,6 +33,7 @@ import course as CRS  # noqa: E402
 import lab3d as L3  # noqa: E402
 import ao17exam as AX  # noqa: E402
 import ao17plan as AP  # noqa: E402
+import ao17methods as AM  # noqa: E402
 sys.path.insert(0, str(ROOT / "assets" / "py"))
 import ao_judge as JG  # noqa: E402
 import math  # noqa: E402,F401  (number.check өрнектері үшін)
@@ -820,6 +821,11 @@ def course_html(lessons, st):
         </ol>
         <p class="crs-me" data-exam-me hidden></p>
       </section>
+      <section class="crs-sec crs-how" aria-labelledby="how-h">
+        <h2 id="how-h"><span class="crs-pk">Оқу тактикалары</span>Қалай оқыған дұрыс</h2>
+        <p class="crs-note">Көп оқу мен дұрыс оқу - екі бөлек нәрсе. Оқу ғылымы тексерген сегіз тактика: еске түсіру, аралық қайталау, араластыру, түсіндіру, ұқсастық, сөз бен сурет, фокус және өзіңді бағалау. Әрқайсысын бірден жаттықтыратын құрал бар: ми төккіш, ұмыту қисығы, жаргон детекторы, 24 ұқсастық, фокус таймері.</p>
+        <p class="crs-cta2"><a class="btn gold" href="methods.html">Тактикаларды ашу</a> <a class="btn secondary" href="exam.html?mix=1">Аралас жаттығу</a></p>
+      </section>
       <section class="crs-faq"><h2>Жиі қойылатын сұрақтар</h2>
         <details><summary>Курс кімге арналған?</summary><p>Бағдарламалауды нөлден бастағысы келетін оқушы мен студентке. Алдын ала білім керек емес: бірінші апта логикадан, «иә» мен «жоқтан» басталады.</p></details>
         <details><summary>Ақылы ма?</summary><p>Жоқ. Курс тегін, тіркеусіз ашылады. Прогресс осы құрылғыда сақталады, оны кабинеттен басқа құрылғыға көшіруге болады.</p></details>
@@ -1068,7 +1074,7 @@ def map_html(lessons):
 def build(write=True):
     lessons = load_lessons()
     titles = {m[0]: m[2] for m in C.ALL_MODULES}   # оқу кестесі: аптаның толық атауы
-    errs = validate(lessons) + validate_comics(lessons) + L3.validate() + AX.validate(lessons) + AP.validate(lessons, titles)
+    errs = validate(lessons) + validate_comics(lessons) + L3.validate() + AX.validate(lessons) + AP.validate(lessons, titles) + AM.validate(lessons)
     if errs:
         print("academy: ТЕКСЕРУДЕН ӨТПЕДІ:", *errs, sep="\n  ")
         sys.exit(1)
@@ -1085,7 +1091,7 @@ def build(write=True):
         return
     plan_by_id = {p["id"]: p for p in C.plan()}
     pages = [index_html(lessons, st), lab_html(), map_html(lessons), models_html(), study_html(lessons), comics_html(lessons), course_html(lessons, st),
-             AX.exam_html(lessons, page), AX.cert_html(lessons, page), AP.plan_html(lessons, titles, page)] + L3.pages(page) + [track_html(t) for t in TR.TRACKS]
+             AX.exam_html(lessons, page), AX.cert_html(lessons, page), AP.plan_html(lessons, titles, page), AM.methods_html(lessons, page)] + L3.pages(page) + [track_html(t) for t in TR.TRACKS]
     by_mod = {}
     for L in lessons:
         by_mod.setdefault(L["moduleId"], []).append(L)

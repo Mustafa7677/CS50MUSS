@@ -31,12 +31,14 @@
     var labs = Object.keys(B.topics).filter(function (t) { return B.topics[t].part === 2; });
     var qs = new URLSearchParams(location.search);
     var w = parseInt(qs.get("w"), 10), part = qs.get("part");
-    var mode = B.topics["w" + w] ? "w" + w : part === "1" ? "p1" : part === "2" ? "p2" : "final";
+    var mode = B.topics["w" + w] ? "w" + w : qs.get("mix") ? "mix" : part === "1" ? "p1" : part === "2" ? "p2" : "final";
     var M = {
       final: { title: "Қорытынды емтихан", kicker: "AO17 CS · бағалау", min: 45, fb: false,
         lede: "Курстың екі бөлімінен 36 сұрақ: әр аптадан екі, әр зертханадан бір. 45 минут. Өту шегі " + B.pass + "%, ал нәтижең сертификатты ашады." },
       p1: { title: "1-бөлім емтиханы", kicker: "AO17 CS · 1-бөлім", min: 30, fb: false, lede: "12 аптаның әрқайсысынан екі сұрақ, 24 сұрақ, 30 минут. Өту шегі " + B.pass + "%." },
-      p2: { title: "2-бөлім емтиханы", kicker: "AO17 CS · 2-бөлім", min: 30, fb: false, lede: "11 зертхананың әрқайсысынан екі сұрақ, 22 сұрақ, 30 минут. Өту шегі " + B.pass + "%." }
+      p2: { title: "2-бөлім емтиханы", kicker: "AO17 CS · 2-бөлім", min: 30, fb: false, lede: "11 зертхананың әрқайсысынан екі сұрақ, 22 сұрақ, 30 минут. Өту шегі " + B.pass + "%." },
+      mix: { title: "Аралас жаттығу", kicker: "AO17 CS · араластыру", min: 0, fb: true,
+        lede: "Сен бастаған апталардан 10 сұрақ кезектесіп беріледі: әр сұрақта қай әдіс керек екенін өзің таңдайсың. Уақыт шектелмейді, түсіндірме бірден шығады." }
     }[mode] || { title: B.topics[mode].name.replace(":", " сынағы:"), kicker: "AO17 CS · апта сынағы", min: 0, fb: true,
       lede: "Аптаның сабақтарынан алты сұрақ және сол аптада қолданылатын 3D зертханадан екі сұрақ. Уақыт шектелмейді, әр жауаптан кейін түсіндірмесі шығады." };
     var stage = root.querySelector("[data-ax-stage]");
@@ -76,7 +78,28 @@
       show(run);
     });
 
-    function count() { return mode === "final" ? weeks.length * 2 + labs.length + 1 : mode === "p1" ? weeks.length * 2 : mode === "p2" ? labs.length * 2 : 8; }
+    function count() { return mode === "final" ? weeks.length * 2 + labs.length + 1 : mode === "p1" ? weeks.length * 2 : mode === "p2" ? labs.length * 2 : mode === "mix" ? 10 : 8; }
+    // аралас жаттығу: оқушы бастаған апталар (кемінде екеуі болмаса - барлық апта), сұрақтар апталар арасында кезектеседі
+    function started() {
+      var acad = obj(obj(J("cs50kz:academy", {})).lessons), on = {};
+      B.items.forEach(function (it) {
+        if (B.topics[it.t] && B.topics[it.t].part === 1) {
+          var m = /^(m\d+)\/(l\d+)\.html$/.exec(it.h), r = m ? obj(acad["ao17-foundation." + m[1] + "." + m[2]]) : {};
+          if (r.mastered || r.score || (r.ex && Object.keys(r.ex).length)) on[it.t] = 1;
+        }
+      });
+      var ws = weeks.filter(function (t) { return on[t]; });
+      return ws.length >= 2 ? ws : weeks;
+    }
+    function interleave() {
+      var ws = shuffle(started().slice()), pools = {}, list = [], used = {}, guard = 0;
+      ws.forEach(function (t) { pools[t] = shuffle((byTopic[t] || []).slice()); });
+      for (var k = 0; list.length < 10 && guard < 400; k++, guard++) {
+        var t = ws[k % ws.length], it = pools[t].pop();
+        if (it && !used[it.id] && (!list.length || byId[list[list.length - 1].id].t !== t)) { used[it.id] = 1; list.push(it); }
+      }
+      return list;
+    }
     function expired(r) { return r.limit && Date.now() - r.start > r.limit + 60000; }
     // сақталған сынақтың әр сұрағы қазіргі қорда бар және нұсқа саны сол күйі (сайт жаңарғанда қор өзгеруі мүмкін)
     function fresh(r) {
@@ -98,6 +121,7 @@
         list = list.concat(pick([].concat.apply([], labs.map(function (t) { return byTopic[t]; })), 1, used));
       } else if (mode === "p1") weeks.forEach(function (t) { list = list.concat(pick(byTopic[t], 2, used)); });
       else if (mode === "p2") labs.forEach(function (t) { list = list.concat(pick(byTopic[t], 2, used)); });
+      else if (mode === "mix") return interleave().map(function (it) { return { id: it.id, p: it.k === "mc" ? shuffle(it.o.map(function (_, i) { return i; })) : null }; });
       else {
         list = pick(byTopic[mode], 6, used);
         var wl = B.weekLabs[mode] || [];
@@ -278,7 +302,7 @@
       var again = el("a", "btn " + (pass ? "secondary" : "gold"), "Қайта тапсыру"); again.href = location.pathname + location.search;
       acts.appendChild(again);
       if (mode === "final" && best >= B.pass) { var c = el("a", "btn gold", "Сертификатты алу"); c.href = "certificate.html"; acts.insertBefore(c, again); }
-      var back = el("a", "btn secondary", "Курс бетіне"); back.href = "course.html" + (mode.charAt(0) === "w" ? "#" + mode : "");
+      var back = el("a", "btn secondary", "Курс бетіне"); back.href = "course.html" + (/^w\d+$/.test(mode) ? "#" + mode : "");
       acts.appendChild(back);
       card.appendChild(acts);
       stage.innerHTML = "";
