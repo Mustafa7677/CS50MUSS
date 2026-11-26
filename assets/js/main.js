@@ -1440,7 +1440,8 @@
       const ao = [["academy/course.html", "AO17 CS курсы", "Екі бөлім: 12 апта және 3D", "#b3262e"], ["academy/3d/index.html", "3D зертхана", "11 зертхана, 160 сабақ", "#1d6ea6"],
         ["academy/3d/app/index.html", "INSIDE TECH", "Архипелаг, ойындар, құралдар", "#4a67c8"], ["academy/comics.html", "Комикстер", "Нұрай мен Мустафа", "#8a1f17"],
         ["academy/methods.html", "Оқу тактикалары", "Қалай оқыған дұрыс", "#1f7a4d"], ["academy/oyu.html", "Ою студиясы", "Python-мен қазақ оюы", "#c99a2e"],
-        ["academy/bota.html", "Бота әлемі", "Python-мен Ботаны жүргіз", "#a8662a"], ["academy/xray.html", "AO17 X-RAY", "Кодтың рентгені", "#1d6ea6"]]
+        ["academy/bota.html", "Бота әлемі", "Python-мен Ботаны жүргіз", "#a8662a"], ["academy/xray.html", "AO17 X-RAY", "Кодтың рентгені", "#1d6ea6"],
+        ["academy/morph.html", "AO17 MORPH", "Математиканың пішінге айналуы", "#7a3aa6"]]
         .map(([h, n, d, c]) => `<a class="cm-ac" href="${ROOT_URL + h}" style="--c:${c}"><span class="cm-dot" aria-hidden="true"></span><span class="cm-txt"><b>${n}</b><small>${d}</small></span></a>`).join("");
       menu.innerHTML = `<div class="cm-head">Біздің курс</div><div class="cm-acad cm-ao">${ao}</div>
         <div class="cm-head cm-head2">Академиялар</div>${rows}

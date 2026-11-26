@@ -13,6 +13,7 @@
 Іске қосу: python3 tools/math_pedagogy.py [--check]   (--check: оқу жолы алғышарттарға қайшы емес пе, тексереді)
 """
 import html
+import importlib.util
 import json
 import re
 import sys
@@ -192,6 +193,23 @@ def meta_html(mins):
             f'<span>Тест ≈ {q} мин</span><span><b>Барлығы ≈ {fmt_min(t)}</b></span></p>')
 
 
+def _morph_links():
+    """AO17 MORPH сахналарына сілтеме алатын сабақтар (tools/academy/morph.py: LINKS - жалғыз дереккөз)."""
+    spec = importlib.util.spec_from_file_location("ao17_morph", ROOT / "tools" / "academy" / "morph.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m.lesson_links()
+
+
+MORPH = _morph_links()
+
+
+def morph_link_html(n):
+    scene, text = MORPH[n]
+    return (f'<p class="callout note mx-morphlink"><span class="callout-title">AO17 MORPH</span>{html.escape(text, quote=False)} '
+            f'<a href="../../academy/morph.html#{scene}">MORPH-та ашу</a></p>')
+
+
 def exam_link_html(n):
     slug, k = ref(n)
     last = k == len(SUBJ[slug][7])
@@ -275,6 +293,8 @@ def apply_lesson(n, ready, minutes):
             s = put_block(s, "mmeta", meta_html(mins), r'<div class="lecture-head"[^>]*>.*?</h1>\s*<p>.*?</p>')
         s = put_block(s, "mpre", pre_html(n, ready), r'<p class="math-prereq">.*?</p>')
         s = put_block(s, "mexam", exam_link_html(n), r'\s*<nav class="pager">', after=False)
+        if n in MORPH:   # формула мен пішін: сабақтан кейін MORPH сахнасында өзің түрлендіріп көр
+            s = put_block(s, "mmorph", morph_link_html(n), r'<!-- build:mexam -->', after=False)
     if s != s0:
         p.write_text(s, encoding="utf-8")
 

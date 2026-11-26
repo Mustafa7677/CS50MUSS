@@ -37,6 +37,7 @@ import ao17methods as AM  # noqa: E402
 import oyu as OY  # noqa: E402
 import bota as BT  # noqa: E402
 import xray as XR  # noqa: E402
+import morph as MO  # noqa: E402
 sys.path.insert(0, str(ROOT / "assets" / "py"))
 import ao_judge as JG  # noqa: E402
 import math  # noqa: E402,F401  (number.check өрнектері үшін)
@@ -923,7 +924,7 @@ def index_html(lessons, st):
       <h1>Негізден Senior деңгейіне дейін, қазақ тілінде</h1>
       <p>Курс таңдамайсыз - бағыт таңдайсыз. Әр бағыт төрт сатыдан тұрады: Негіз, Junior, Middle, Senior. Әр сатыда не үйренетініңіз, қай модульді оқитыныңыз және портфолиоға қандай жоба жасайтыныңыз алдын ала жазылған. Мазмұн AO17 үшін жаңадан жазылады, әр тапсырма автоматты тексеріледі.</p>
       <p class="ac-honest">Қазір дайын: <b>{st["complete_lessons"]}</b> толық сабақ, <b>{st["auto_checked_tasks"]}</b> автоматты тексерілетін тапсырма, <b>{st["python_examples"]}</b> тексерілген Python мысалы. Қалғаны - жоспар, ол бөлек белгіленген.</p>
-      <p class="ac-cta"><a class="btn gold" href="course.html">AO17 CS курсы: 12 апта</a> <a class="btn secondary" href="#tracks">Бағыт таңдау</a> <a class="btn secondary" href="m01/l01.html">Бірінші сабақтан бастау</a> <a class="btn secondary" href="3d/index.html">3D зертхана</a> <a class="btn secondary" href="comics.html">Комикс: Нұрай, Мустафа және Бота</a> <a class="btn secondary" href="bota.html">Бота әлемі</a> <a class="btn secondary" href="oyu.html">Ою студиясы</a> <a class="btn secondary" href="xray.html">AO17 X-RAY</a> <a class="btn secondary" href="lab.html">Логика зертханасы</a> <a class="btn secondary" href="labs/index.html">CS зертханалары</a> <a class="btn secondary" href="ielts/index.html">IELTS</a> <a class="btn secondary" href="sat/index.html">Digital SAT</a> <a class="btn secondary" href="models.html">Интерактивті модельдер</a> <a class="btn secondary" href="study.html">Менің оқуым</a> <a class="btn secondary" href="map.html">Білім картасы</a></p>
+      <p class="ac-cta"><a class="btn gold" href="course.html">AO17 CS курсы: 12 апта</a> <a class="btn secondary" href="#tracks">Бағыт таңдау</a> <a class="btn secondary" href="m01/l01.html">Бірінші сабақтан бастау</a> <a class="btn secondary" href="3d/index.html">3D зертхана</a> <a class="btn secondary" href="comics.html">Комикс: Нұрай, Мустафа және Бота</a> <a class="btn secondary" href="bota.html">Бота әлемі</a> <a class="btn secondary" href="oyu.html">Ою студиясы</a> <a class="btn secondary" href="xray.html">AO17 X-RAY</a> <a class="btn secondary" href="morph.html">AO17 MORPH</a> <a class="btn secondary" href="lab.html">Логика зертханасы</a> <a class="btn secondary" href="labs/index.html">CS зертханалары</a> <a class="btn secondary" href="ielts/index.html">IELTS</a> <a class="btn secondary" href="sat/index.html">Digital SAT</a> <a class="btn secondary" href="models.html">Интерактивті модельдер</a> <a class="btn secondary" href="study.html">Менің оқуым</a> <a class="btn secondary" href="map.html">Білім картасы</a></p>
       <p><a class="ac-film" href="../film/cs/">Фильм: «Даладан жұлдызға», 36 секунд</a></p>
     </header>
     <section class="ac-sec tl-sec" id="tracks"><h2>Бес бағыт, төрт саты</h2>
@@ -1101,7 +1102,7 @@ def map_html(lessons):
 def build(write=True):
     lessons = load_lessons()
     titles = {m[0]: m[2] for m in C.ALL_MODULES}   # оқу кестесі: аптаның толық атауы
-    errs = validate(lessons) + validate_comics(lessons) + L3.validate() + AX.validate(lessons) + AP.validate(lessons, titles) + AM.validate(lessons) + OY.validate() + BT.validate() + XR.validate()
+    errs = validate(lessons) + validate_comics(lessons) + L3.validate() + AX.validate(lessons) + AP.validate(lessons, titles) + AM.validate(lessons) + OY.validate() + BT.validate() + XR.validate() + MO.validate()
     if errs:
         print("academy: ТЕКСЕРУДЕН ӨТПЕДІ:", *errs, sep="\n  ")
         sys.exit(1)
@@ -1118,7 +1119,7 @@ def build(write=True):
         return
     plan_by_id = {p["id"]: p for p in C.plan()}
     pages = [index_html(lessons, st), lab_html(), map_html(lessons), models_html(), study_html(lessons), comics_html(lessons), course_html(lessons, st),
-             AX.exam_html(lessons, page), AX.cert_html(lessons, page), AP.plan_html(lessons, titles, page), AM.methods_html(lessons, page), OY.oyu_html(page), BT.bota_html(page), XR.xray_html(page)] + L3.pages(page) + [track_html(t) for t in TR.TRACKS]
+             AX.exam_html(lessons, page), AX.cert_html(lessons, page), AP.plan_html(lessons, titles, page), AM.methods_html(lessons, page), OY.oyu_html(page), BT.bota_html(page), XR.xray_html(page), MO.morph_html(page)] + L3.pages(page) + [track_html(t) for t in TR.TRACKS]
     by_mod = {}
     for L in lessons:
         by_mod.setdefault(L["moduleId"], []).append(L)
