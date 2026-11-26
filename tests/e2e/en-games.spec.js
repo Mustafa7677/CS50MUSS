@@ -23,6 +23,7 @@ async function play(page, id) {
   if (id === "enmatch") {
     // ағылшынша сөз бен оның жұбын window ішіндегі пулдан табамыз: тақта түймелері data-i бойынша сәйкес келеді
     for (let b = 0; b < 3 && !(await page.locator(".game-result").count()); b++) {
+      await expect(page.locator(".gen-l").first()).toBeVisible();   // тақта асинхронды жүктеледі
       const n = await page.locator(".gen-l").count();
       for (let k = 0; k < n; k++) {
         const idx = await page.locator(".gen-l:not([disabled])").first().getAttribute("data-i");
@@ -39,6 +40,8 @@ async function play(page, id) {
     }
   } else if (id === "enbuild") {
     for (let i = 0; i < 8; i++) {
+      // «Бастау» деректі асинхронды жүктейді: сөйлем экраны шыққанша күтеміз (isVisible() күтпейді - әйтпесе цикл бос өтіп кетеді)
+      await expect(page.locator(".gen-check")).toBeVisible();
       for (let t = 0; t < 3 && (await page.locator(".gen-check").isVisible()); t++) {
         const n = await page.locator(".gen-pool .gen-chip:not([hidden])").count();
         for (let k = 0; k < n; k++) await page.locator(".gen-pool .gen-chip:not([hidden])").first().click();
