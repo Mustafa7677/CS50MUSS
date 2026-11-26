@@ -77,6 +77,8 @@
     var done = J("ao17cs:oyu").done, m = Object.keys(done && typeof done === "object" ? done : {}).length;
     var op = J("ao17cs:oyu").pred, opn = Object.keys(op && typeof op === "object" ? op : {}).filter(function (k) { return op[k] === 1; }).length;
     if (oy && (m || opn)) oy.textContent = "Орындалған тапсырма: " + m + " / 8" + (opn ? " · дұрыс болжам: " + opn + " / 6" : "");
+    var xr = document.querySelector('[data-play="xray"]'), runs = Number(J("ao17cs:xray").runs) || 0;
+    if (xr && runs > 0) xr.textContent = "Рентгенге түсірілген код: " + runs;
   })();
 
   // оқу кестесі (ao17-plan.js: «ao17cs:plan-dates»): келесі оқу кеші мен аяқталу күні

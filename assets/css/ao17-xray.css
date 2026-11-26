@@ -1,0 +1,158 @@
+/* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
+/* AO17 X-RAY (academy/xray.html, assets/js/ao17-xray.js). Рентген плёнкасы: жеті қабат - сия түсті «плёнка» тақталары
+   (екі режимде де қараңғы), құрылым сызықтары салқын көкшіл, ағымдағы нұсқау - Алаштың алтын түсі. */
+.xr { --xr-film: #101c31; --xr-film2: #16243d; --xr-edge: rgb(127 211 255 / .22); --xr-ray: #7fd3ff; --xr-gold: #f2d36b; --xr-cream: #f3ead6; --xr-dim: rgb(243 234 214 / .66); }
+.xr-head { max-width: 80ch; margin: 6px 0 16px; }
+.content .xr-head h1 { margin: 0 0 10px; font-size: clamp(2rem, 4.8vw, 3rem); line-height: 1.08; }
+.xr-brand { display: block; margin-bottom: 4px; color: #1d6ea6; font: 800 clamp(.95rem, 1.6vw, 1.1rem)/1.2 Unbounded, Inter, sans-serif; letter-spacing: .02em; }
+:root[data-theme="dark"] .xr-brand { color: var(--xr-ray); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .xr-brand { color: var(--xr-ray); } }
+.xr-lede { margin: 0; color: var(--muted); font-size: 1.04rem; line-height: 1.62; }
+
+.content .xr-exs { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 8px; }
+.xr-ex { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 1px; min-height: 44px; padding: 6px 12px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--text); text-align: left; font: inherit; cursor: pointer; }
+.xr-ex b { font-size: .9rem; }
+.xr-ex span { color: var(--muted); font-size: .76rem; }
+.xr-ex:hover { border-color: #c99a2e; }
+.xr-ex:focus-visible { outline: 3px solid #c99a2e; outline-offset: 2px; }
+.xr-ex[aria-pressed="true"] { border-color: #14213d; box-shadow: inset 0 0 0 1px #14213d; }
+:root[data-theme="dark"] .xr-ex[aria-pressed="true"] { border-color: var(--xr-gold); box-shadow: inset 0 0 0 1px var(--xr-gold); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .xr-ex[aria-pressed="true"] { border-color: var(--xr-gold); box-shadow: inset 0 0 0 1px var(--xr-gold); } }
+.content .xr-note { min-height: 1.4em; max-width: 86ch; margin: 0 0 14px; color: var(--text); line-height: 1.55; }
+
+.xr-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0 0 10px; }
+.xr-status { padding: 4px 10px; border-radius: 99px; background: var(--surface-2); color: var(--muted); font-size: .85rem; font-weight: 600; }
+.xr-status.ok { background: color-mix(in srgb, #1f7a4d 14%, var(--surface)); color: var(--text); }
+.xr-status.bad { background: color-mix(in srgb, #b3262e 14%, var(--surface)); color: var(--text); }
+
+/* уақыт жолағы: экранда жабысып тұрады - қабаттарды қарап отырып жылжытуға болады */
+.xr-time { position: sticky; top: 66px; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 0 0 12px; padding: 8px 10px;
+  border: 1px solid var(--border); border-radius: 14px; background: color-mix(in srgb, var(--surface) 94%, transparent); backdrop-filter: blur(6px); }
+.xr-time[hidden] { display: none; }
+.xr-tb { min-width: 40px; min-height: 38px; padding: 4px 8px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--text); font: 700 .9rem/1 Inter, system-ui, sans-serif; cursor: pointer; }
+.xr-tb:hover { border-color: #c99a2e; }
+.xr-tb:focus-visible { outline: 3px solid #c99a2e; outline-offset: 2px; }
+.xr-play { background: #14213d; border-color: #14213d; color: var(--xr-gold); }
+.xr-slider { flex: 1 1 200px; min-width: 140px; accent-color: #c99a2e; }
+.xr-gran { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: .85rem; font-weight: 600; }
+.xr-gran select { min-height: 38px; padding: 4px 8px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--text); font: inherit; }
+.xr-pos { flex: 1 0 100%; color: var(--muted); font: 600 .82rem/1.3 "JetBrains Mono", ui-monospace, monospace; }
+
+/* жеті қабат: үш бағана (код, есептеу, машина | байт-код, AST | стек), астында - толық енді шақыру ағашы */
+.xr-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) minmax(0, 1fr); gap: 12px; align-items: start; }
+.xr-col { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.xr-p-tree { grid-column: 1 / -1; }
+.xr-p { position: relative; min-width: 0; padding: 10px 12px 12px; overflow: hidden; border: 1px solid var(--xr-edge); border-radius: 16px; background: var(--xr-film); color: var(--xr-cream);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .04), 0 16px 34px -28px rgb(0 0 0 / .7); }
+.content .xr-p h2 { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; color: var(--xr-cream); font: 700 .95rem/1.3 Inter, system-ui, sans-serif; }
+.xr-n { display: inline-grid; place-items: center; width: 22px; height: 22px; border: 1px solid var(--xr-edge); border-radius: 50%; color: var(--xr-ray); font: 800 .7rem/1 Unbounded, Inter, sans-serif; }
+.xr-empty, .xr-none, .xr-more { margin: 0; color: var(--xr-dim); font-size: .86rem; line-height: 1.5; }
+.xr-src:focus-visible, .xr-ast:focus-visible, .xr-bc:focus-visible, .xr-stack:focus-visible, .xr-tree:focus-visible { outline: 3px solid #c99a2e; outline-offset: 2px; border-radius: 8px; }
+.xr-p a { color: var(--xr-gold); }
+
+/* 1. код: редактор (өңдеу) не рентген көрінісі (нақты өрнек белгіленеді) */
+.xr-p-code .ae { border-color: rgb(255 255 255 / .08); }
+.xr-src { max-height: 460px; overflow: auto; font: 500 14px/24px "JetBrains Mono", ui-monospace, monospace; }
+.xr-ln { display: flex; gap: 10px; padding-right: 8px; white-space: pre; }
+.xr-ln.on { background: rgb(242 211 107 / .08); }
+.xr-ln.bad { background: rgb(255 122 122 / .18); }
+.xr-lnn { flex: 0 0 2.2em; color: var(--xr-dim); text-align: right; user-select: none; }
+.xr-ln code { padding: 0; background: none; color: inherit; font: inherit; }
+.xr-ln mark { padding: 1px 0; border-radius: 3px; background: rgb(242 211 107 / .32); box-shadow: inset 0 -2px var(--xr-gold); color: #fff6d8; }
+.xr-edit { margin: 8px 0 0; }
+.xr-out { margin: 8px 0 0; padding: 8px 10px; border-radius: 10px; background: rgb(255 255 255 / .05); color: var(--xr-cream); font: 500 .84rem/1.5 "JetBrains Mono", ui-monospace, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+.xr-out:empty { display: none; }
+.xr-out.bad { background: rgb(255 122 122 / .16); }
+.xr-p-code.scan::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 64px; background: linear-gradient(transparent, rgb(127 211 255 / .28), transparent); pointer-events: none; animation: xr-scan 1.2s ease-out 1 forwards; }
+@keyframes xr-scan { from { transform: translateY(-64px); opacity: 1; } to { transform: translateY(520px); opacity: 0; } }
+
+/* 2. AST */
+.xr-ast { max-height: 270px; overflow: auto; font: 500 12.5px/1.45 "JetBrains Mono", ui-monospace, monospace; }
+.xr-ast ul { margin: 0; padding: 0 0 0 14px; list-style: none; border-left: 1px solid rgb(127 211 255 / .2); }
+.xr-ast .xr-tree-l { padding-left: 0; border-left: 0; }
+.xr-ast li { margin: 2px 0; }
+.xr-an { display: inline-block; padding: 1px 6px; border-radius: 6px; }
+.xr-an b { color: var(--xr-cream); font-weight: 700; }
+.xr-an i { color: var(--xr-ray); font-style: normal; }
+.xr-an.path { background: rgb(127 211 255 / .1); }
+.xr-an.on { background: var(--xr-gold); }
+.xr-an.on b, .xr-an.on i { color: #14213d; }
+
+/* 3. байт-код */
+.xr-fn { margin: 0 0 6px; color: var(--xr-dim); font-size: .82rem; }
+.content .xr-bc { max-height: 280px; margin: 0; padding: 0; overflow: auto; list-style: none; font: 500 12.5px/22px "JetBrains Mono", ui-monospace, monospace; }
+.xr-bc li { display: flex; gap: 8px; padding: 0 6px; border-radius: 6px; white-space: nowrap; }
+.xr-off { flex: 0 0 2.6em; color: var(--xr-dim); text-align: right; }
+.xr-arg { color: var(--xr-ray); overflow: hidden; text-overflow: ellipsis; }
+.xr-bc li.on { background: rgb(242 211 107 / .2); box-shadow: inset 3px 0 var(--xr-gold); }
+.xr-bc li.on b { color: var(--xr-gold); }
+.xr-op { min-height: 3em; margin: 8px 0 0; color: var(--xr-cream); font-size: .86rem; line-height: 1.5; }
+.xr-op b { color: var(--xr-gold); font-family: "JetBrains Mono", ui-monospace, monospace; }
+
+/* 4. шақыру стегі: жоғарыда - ағымдағы жақтау */
+.xr-stack { max-height: 590px; overflow: auto; }
+.xr-fr { margin: 0 0 8px; padding: 8px 10px; border: 1px solid rgb(255 255 255 / .08); border-radius: 12px; background: var(--xr-film2); }
+.xr-fr.top { border-color: var(--xr-gold); box-shadow: 0 0 0 1px rgb(242 211 107 / .35); }
+.xr-frh { margin: 0 0 6px; color: var(--xr-cream); font: 700 .86rem/1.3 "JetBrains Mono", ui-monospace, monospace; overflow-wrap: anywhere; }
+.xr-frh span { margin-left: 4px; padding: 1px 6px; border-radius: 99px; background: var(--xr-gold); color: #14213d; font: 700 .7rem/1.4 Inter, sans-serif; }
+.xr-vars { display: grid; gap: 3px; margin: 0; }
+.xr-vars div { display: flex; gap: 8px; align-items: baseline; }
+.xr-vars dt { flex: 0 0 auto; }
+.xr-vars dd { min-width: 0; margin: 0; overflow-wrap: anywhere; }
+.xr-vars code { padding: 0; background: none; color: var(--xr-cream); font: 500 12.5px/1.4 "JetBrains Mono", ui-monospace, monospace; }
+.xr-var { padding: 1px 6px; border: 1px dashed rgb(127 211 255 / .5); border-radius: 6px; background: none; color: var(--xr-ray); font: 700 12.5px/1.4 "JetBrains Mono", ui-monospace, monospace; cursor: pointer; }
+.xr-var:hover { border-style: solid; }
+.xr-var:focus-visible { outline: 3px solid #c99a2e; outline-offset: 1px; }
+.xr-vars .chg code { color: var(--xr-gold); }
+.xr-travel { min-height: 1.4em; margin: 6px 0 0; color: var(--xr-gold); font-size: .86rem; line-height: 1.5; }
+
+/* 5. шақыру ағашы */
+.xr-tree { overflow: auto; min-height: 120px; }
+.xr-tree svg { display: block; max-width: none; height: auto; margin: 0 auto; }
+.xr-te { stroke: rgb(127 211 255 / .45); stroke-width: 1.5; opacity: 0; }
+.xr-te.seen { opacity: 1; }
+.xr-tn { opacity: 0; pointer-events: none; }
+.xr-tn.seen { opacity: 1; cursor: pointer; pointer-events: auto; }
+.xr-tn:focus-visible { outline: none; }
+.xr-tn:focus-visible rect { stroke: #c99a2e; stroke-width: 3; }
+.xr-tn rect { fill: var(--xr-film2); stroke: rgb(127 211 255 / .45); stroke-width: 1.5; }
+.xr-tn text { fill: var(--xr-cream); font: 600 11px "JetBrains Mono", ui-monospace, monospace; text-anchor: middle; }
+.xr-tn .xr-tr { fill: #8fe0b0; font-size: 10.5px; opacity: 0; }
+.xr-tn.back .xr-tr { opacity: 1; }
+.xr-tn.back rect { stroke: #8fe0b0; }
+.xr-tn.live rect { stroke: var(--xr-gold); stroke-width: 2; }
+.xr-tn.cur rect { fill: var(--xr-gold); }
+.xr-tn.cur text:not(.xr-tr) { fill: #14213d; }
+.xr-more { margin-top: 6px; }
+
+/* 6. есептеу */
+.xr-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0; }
+.xr-stats div { padding: 8px 10px; border: 1px solid rgb(255 255 255 / .08); border-radius: 12px; background: var(--xr-film2); }
+.xr-stats dt { color: var(--xr-dim); font-size: .78rem; }
+.xr-stats dd { margin: 2px 0 0; color: var(--xr-cream); font: 800 1.15rem/1.3 Unbounded, Inter, sans-serif; overflow-wrap: anywhere; }
+
+/* 7. машина деңгейі */
+.xr-hw, .xr-hwl { margin: 0 0 6px; color: var(--xr-cream); font-size: .86rem; line-height: 1.55; }
+.xr-hw { color: var(--xr-dim); }
+
+.xr-how { margin-top: 28px; }
+.content .xr-steps { max-width: 80ch; padding-left: 1.3em; line-height: 1.6; }
+.xr-steps li { margin: 0 0 8px; }
+.xr-note2 { max-width: 80ch; color: var(--muted); line-height: 1.6; }
+
+.reduce-motion .xr-p-code.scan::after { animation: none; display: none; }
+@media (prefers-reduced-motion: reduce) { .xr-p-code.scan::after { animation: none; display: none; } }
+
+@media (max-width: 1099px) {
+  .xr-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .xr-cc { grid-column: 1 / -1; order: 1; }
+  .xr-p-tree { order: 2; }
+}
+@media (max-width: 719px) {
+  /* бір бағана: бағаналар «жойылып», панельдер оқу ретімен тізіледі */
+  .xr-grid { display: flex; flex-direction: column; align-items: stretch; }   /* бағаналы flex: тақта контейнер енінен аспасын */
+  .xr-col { display: contents; }
+  .xr-p-code { order: 1; } .xr-p-bc { order: 2; } .xr-p-stack { order: 3; } .xr-p-tree { order: 4; } .xr-p-ast { order: 5; } .xr-p-stats { order: 6; } .xr-p-hw { order: 7; }
+  .xr-time { top: 58px; }
+  .xr-stack, .xr-src { max-height: none; }
+}

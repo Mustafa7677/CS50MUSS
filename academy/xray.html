@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AO17 X-RAY: кодтың рентгені - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/img/icon-192.png">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="AO17 X-RAY: кодтың рентгені - AO17">
+  <meta property="og:description" content="Python кодының ішіне қара: AST, байт-код, шақыру стегі, рекурсия ағашы және машина деңгейі бір уақытта. Уақыт жолағымен алға-артқа жүр, мәннің қай нұсқауда өзгергенін тап.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/xray.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og/course-ao17cs.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og/course-ao17cs.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/xray.html">
+  <meta name="copyright" content="© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved.">
+  <link rel="license" href="../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"AO17 X-RAY: кодтың рентгені - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/xray.html","inLanguage":"kk","author":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}],"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Organization","name":"AO17 командасы","member":[{"@type":"Person","name":"Tutkabayeva Gulzat","jobTitle":"Бас дизайнер"},{"@type":"Person","name":"Toktybay Dastan","jobTitle":"Мазмұн және сапа"},{"@type":"Person","name":"Sagid Mustafa","jobTitle":"Жоба жетекшісі, архитектура"},{"@type":"Person","name":"Magzhan Romanov","jobTitle":"Frontend әзірлеуші"},{"@type":"Person","name":"Kopenova Merey","jobTitle":"Дизайнер"}]},"copyrightYear":2026,"copyrightNotice":"© 2026 AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey). All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="Python кодының ішіне қара: AST, байт-код, шақыру стегі, рекурсия ағашы және машина деңгейі бір уақытта. Уақыт жолағымен алға-артқа жүр, мәннің қай нұсқауда өзгергенін тап.">
+  <meta name="author" content="AO17 командасы">
+  <link rel="stylesheet" href="../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/academy.css">
+  <link rel="stylesheet" href="../assets/css/ao-viz.css">
+  <link rel="stylesheet" href="../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../assets/css/comic.css">
+  <link rel="stylesheet" href="../assets/css/ao17-editor.css">
+  <link rel="stylesheet" href="../assets/css/ao17-xray.css">
+  <link rel="stylesheet" href="../assets/css/ao17-motion.css">
+  <script src="../assets/js/main.js"></script>
+  <script src="../assets/js/academy-logic.js" defer></script>
+  <script src="../assets/js/academy-arith.js" defer></script>
+  <script src="../assets/js/academy-disc.js" defer></script>
+  <script src="../assets/js/academy-pseudo.js" defer></script>
+  <script src="../assets/js/academy-bits.js" defer></script>
+  <script src="../assets/js/academy.js" defer></script>
+  <script src="../assets/js/academy-cine.js" defer></script>
+  <script src="../assets/js/ao-viz.js" defer></script>
+  <script src="../assets/js/ao-viz2.js" defer></script>
+  <script src="../assets/js/ao17-motion.js" defer></script>
+  <script src="../assets/js/ao17-editor.js" defer></script>
+  <script src="../assets/js/ao17-xray.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../index.html#main">Лекциялар</a>
+        <a href="../practice.html">Жаттығу</a>
+        <a href="../games.html">Ойындар</a>
+        <a href="../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="layout single wide">
+    <article class="content xr" id="main" data-xray>
+      <p class="ac-crumb"><a href="course.html">AO17 CS курсы</a> / AO17 X-RAY</p>
+      <header class="xr-head">
+        <h1><span class="xr-brand">AO17 X-RAY</span> Кодтың рентгені</h1>
+        <p class="xr-lede">Код жаз да, оның ішіне қара. Компьютер кодты бірден орындамайды: алдымен оны ағашқа (AST) айналдырады, ағаштан виртуал машинаның нұсқауларын (байт-код) жасайды, сосын нұсқауларды бірінен соң бірін орындайды. X-RAY осының бәрін бір уақытта көрсетеді: уақыт жолағын жылжытсаң, барлық қабат бірге жүреді.</p>
+      </header>
+      <div class="xr-exs" role="group" aria-label="Мысалдар"><button type="button" class="xr-ex" data-ex="fact" aria-pressed="false"><b>Факториал</b><span>рекурсия</span></button><button type="button" class="xr-ex" data-ex="fib" aria-pressed="false"><b>Фибоначчи</b><span>ағаш жарылысы</span></button><button type="button" class="xr-ex" data-ex="memo" aria-pressed="false"><b>Есте сақтау</b><span>мемоизация</span></button><button type="button" class="xr-ex" data-ex="loop" aria-pressed="false"><b>Цикл</b><span>байт-кодтағы секіріс</span></button><button type="button" class="xr-ex" data-ex="alias" aria-pressed="false"><b>Бір тізім, екі атау</b><span>сілтеме</span></button><button type="button" class="xr-ex" data-ex="bug" aria-pressed="false"><b>Қатені тап</b><span>уақытты кері айналдыру</span></button></div>
+      <p class="xr-note" data-xr-note></p>
+      <section class="xr-work" aria-label="Рентген">
+        <div class="xr-bar">
+          <button class="btn gold" type="button" data-xr-run disabled>Рентгенге түсіру</button>
+          <span class="xr-status" data-xr-status role="status">Python жүктелуде...</span>
+        </div>
+        <div class="xr-time" data-xr-time hidden>
+          <button type="button" class="xr-tb" data-xr-go="first" aria-label="Басына">⏮</button>
+          <button type="button" class="xr-tb" data-xr-go="prev" aria-label="Артқа">◀</button>
+          <button type="button" class="xr-tb xr-play" data-xr-play aria-label="Ойнату">▶</button>
+          <button type="button" class="xr-tb" data-xr-go="next" aria-label="Алға">▶|</button>
+          <button type="button" class="xr-tb" data-xr-go="last" aria-label="Соңына">⏭</button>
+          <label class="sr-only" for="xr-slider">Уақыт жолағы</label>
+          <input id="xr-slider" class="xr-slider" type="range" min="0" max="0" value="0" data-xr-slider>
+          <label class="xr-gran"><span>Қадам</span><select data-xr-gran><option value="ins">нұсқау</option><option value="line">жол</option><option value="call">шақыру</option></select></label>
+          <span class="xr-pos" data-xr-pos aria-live="polite"></span>
+        </div>
+        <div class="xr-grid">
+          <div class="xr-col xr-ca">
+          <section class="xr-p xr-p-code" aria-labelledby="xr-h-code">
+            <h2 id="xr-h-code"><span class="xr-n">1</span> Бастапқы код</h2>
+            <label class="sr-only" for="xr-code">Python коды</label>
+            <textarea id="xr-code" class="xr-code" data-xr-code spellcheck="false" autocapitalize="off" autocomplete="off" rows="14"></textarea>
+            <div class="xr-src" data-xr-src tabindex="0" role="region" aria-label="Рентгендегі код: белгіленген - орындалып жатқан өрнек" hidden></div>
+            <p class="xr-edit" data-xr-editrow hidden><button class="btn secondary" type="button" data-xr-edit>Кодты өңдеу</button></p>
+            <div class="xr-out" data-xr-out></div>
+          </section>
+          <section class="xr-p xr-p-stats" aria-labelledby="xr-h-stats">
+            <h2 id="xr-h-stats"><span class="xr-n">6</span> Есептеу</h2>
+            <dl class="xr-stats" data-xr-stats>
+              <div><dt>Функция шақыру</dt><dd data-st="calls">-</dd></div>
+              <div><dt>Стек тереңдігі</dt><dd data-st="depth">-</dd></div>
+              <div><dt>Нұсқау</dt><dd data-st="ins">-</dd></div>
+              <div><dt>Нәтиже</dt><dd data-st="res">-</dd></div>
+            </dl>
+          </section>
+          <section class="xr-p xr-p-hw" aria-labelledby="xr-h-hw">
+            <h2 id="xr-h-hw"><span class="xr-n">7</span> Машина деңгейі</h2>
+            <p class="xr-hw" data-xr-hw>Байт-код нұсқауын CPython интерпретаторы процессордың нақты нұсқауларымен орындайды. Одан төменде - жад, регистрлер, ассемблер және логикалық элементтер: оларды 3D зертханада көр.</p>
+            <p class="xr-hwl" data-xr-hwl></p>
+          </section>
+          </div>
+          <div class="xr-col xr-cb">
+          <section class="xr-p xr-p-bc" aria-labelledby="xr-h-bc">
+            <h2 id="xr-h-bc"><span class="xr-n">3</span> Байт-код</h2>
+            <p class="xr-fn" data-xr-bcfn></p>
+            <ol class="xr-bc" data-xr-bc tabindex="0" aria-label="Байт-код нұсқаулары"></ol>
+            <p class="xr-op" data-xr-op></p>
+          </section>
+          <section class="xr-p xr-p-ast" aria-labelledby="xr-h-ast">
+            <h2 id="xr-h-ast"><span class="xr-n">2</span> AST - синтаксис ағашы</h2>
+            <div class="xr-ast" data-xr-ast tabindex="0" role="region" aria-label="AST ағашы"><p class="xr-empty">Python кодты алдымен ағашқа айналдырады: әр түйін - бір құрылым (функция, шарт, амал, атау).</p></div>
+          </section>
+          </div>
+          <div class="xr-col xr-cc">
+          <section class="xr-p xr-p-stack" aria-labelledby="xr-h-stack">
+            <h2 id="xr-h-stack"><span class="xr-n">4</span> Шақыру стегі</h2>
+            <div class="xr-stack" data-xr-stack tabindex="0" role="region" aria-label="Шақыру стегі"><p class="xr-empty">Әр функция шақырылғанда стекке жаңа жақтау қосылады: онда функцияның өз айнымалылары тұрады.</p></div>
+            <p class="xr-travel" data-xr-travel aria-live="polite"></p>
+          </section>
+          </div>
+          <section class="xr-p xr-p-tree" aria-labelledby="xr-h-tree">
+            <h2 id="xr-h-tree"><span class="xr-n">5</span> Шақыру ағашы</h2>
+            <div class="xr-tree" data-xr-tree tabindex="0" role="region" aria-label="Шақыру ағашы"><p class="xr-empty">Кім кімді шақырды: рекурсия ағаш болып өседі, жауаптар төменнен жоғары қайтады.</p></div>
+          </section>
+        </div>
+      </section>
+      <section class="xr-how" aria-labelledby="xr-h-how">
+        <h2 id="xr-h-how">Қалай оқу керек</h2>
+        <ol class="xr-steps">
+          <li><b>Бір нұсқау - бір қадам.</b> Уақыт жолағын жылжыт: бастапқы кодта нұсқаудың нақты өрнегі, AST-та сол түйін, байт-кодта сол нұсқау белгіленеді.</li>
+          <li><b>Стек пен ағаш.</b> Функция шақырылғанда стек өседі, ағашқа жаңа түйін қосылады; функция қайтқанда жақтау жабылады, ал ағаштағы түйін жауабын алады.</li>
+          <li><b>Уақытты кері айналдыр.</b> Ағаштағы шақыруды бассаң, ол жауап қайтарған сәтке барасың. Стектегі айнымалының атын бассаң, оның мәні жазылған нұсқауға ораласың. Қате қай жерде пайда болғанын осылай табасың.</li>
+        </ol>
+        <p class="xr-note2">Python-ды жол-жолымен қадағалау үшін <a href="labs/python.html">Python орындалуын көру</a> зертханасы да бар. X-RAY бір қабат тереңірек түседі: AST, байт-код және машина деңгейі.</p>
+      </section>
+      <noscript><p>X-RAY JavaScript пен Python (Pyodide) арқылы жұмыс істейді.</p></noscript>
+    </article>
+  </div>
+  <script type="application/json" id="xr-data">{"examples":[{"id":"fact","title":"Факториал","concept":"рекурсия","code":"def factorial(n):\n    if n == 1:\n        return 1\n    return n * factorial(n - 1)\n\nprint(factorial(4))\n","note":"Әр шақыру стекке жаңа жақтау қосады: n-нің төрт көшірмесі қатар тұрады. Ағаш төменге өседі де, жауаптар кері қайтады: 1, 2, 6, 24."},{"id":"fib","title":"Фибоначчи","concept":"ағаш жарылысы","code":"def fib(n):\n    if n < 2:\n        return n\n    return fib(n - 1) + fib(n - 2)\n\nprint(fib(5))\n","note":"fib(5) 15 рет шақырылады: ағашта fib(3) екі рет, fib(2) үш рет шешіледі. fib(25) - 242 785 шақыру. Есептеу тақтасына қара."},{"id":"memo","title":"Есте сақтау","concept":"мемоизация","code":"есте = {}\n\ndef fib(n):\n    if n in есте:\n        return есте[n]\n    if n < 2:\n        return n\n    есте[n] = fib(n - 1) + fib(n - 2)\n    return есте[n]\n\nprint(fib(5))\n","note":"Сол fib, бірақ жауап сөздікте сақталады: қайталанған бұтақтар бірден жауап береді. 15 шақырудың орнына 9."},{"id":"loop","title":"Цикл","concept":"байт-кодтағы секіріс","code":"s = 0\nfor i in range(4):\n    s += i\nprint(s)\n","note":"Байт-кодта «цикл» деген нұсқау жоқ: FOR_ITER келесі мәнді алады, ал JUMP_BACKWARD артқа секіреді. Цикл - кері секіріс."},{"id":"alias","title":"Бір тізім, екі атау","concept":"сілтеме","code":"a = [1, 2]\nb = a\nb.append(3)\nprint(a)\n","note":"a мен b - бір нысанның екі аты: стекте екеуінде де #1 белгісі. b арқылы өзгерткен тізім a-да да өзгереді."},{"id":"bug","title":"Қатені тап","concept":"уақытты кері айналдыру","code":"def ең_үлкен(сандар):\n    м = 0\n    for x in сандар:\n        if x > м:\n            м = x\n    return м\n\nprint(ең_үлкен([-5, -2, -9]))\n","note":"Жауап -2 болуы керек еді, бірақ 0 шықты. Тергеу: ағаштағы ең_үлкен түйінін бас - функция жауап қайтарған сәтке барасың. Сосын стектегі м атауын бас: X-RAY оның мәні қай нұсқауда жазылғанын көрсетеді."}],"machine":[{"id":"arch-3-gates","title":"Логикалық элементтер","href":"3d/arch/arch-3-gates.html"},{"id":"arch-4-adder","title":"Қосындылағыш","href":"3d/arch/arch-4-adder.html"},{"id":"arch-2-arith","title":"Екілік арифметика","href":"3d/arch/arch-2-arith.html"},{"id":"arch-5-cpu","title":"Процессор","href":"3d/arch/arch-5-cpu.html"},{"id":"arch-6-asm","title":"Ассемблер","href":"3d/arch/arch-6-asm.html"},{"id":"arch-7-memory","title":"Жад","href":"3d/arch/arch-7-memory.html"},{"id":"arch-8-cache","title":"Кэш","href":"3d/arch/arch-8-cache.html"},{"id":"arch-11-branch","title":"Тармақты болжау","href":"3d/arch/arch-11-branch.html"}]}</script>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../index.html"><img src="../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../academy/index.html">CS Universe</a></li><li><a href="../academy/3d/index.html">3D зертхана</a></li><li><a href="../programming.html">Бағдарламалау</a></li><li><a href="../en/">English Academy</a></li><li><a href="../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../math/">Математика</a></li><li><a href="../academy/ielts/index.html">IELTS</a></li><li><a href="../academy/sat/index.html">Digital SAT</a></li><li><a href="../academy/labs/index.html">CS зертханалары</a></li><li><a href="../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../index.html#main">Лекциялар</a></li><li><a href="../courses.html">Барлық курстар</a></li><li><a href="../map.html">Курс картасы</a></li><li><a href="../cheatsheet.html">Шпаргалка</a></li><li><a href="../glossary.html">Сөздік</a></li><li><a href="../exam.html">Қорытынды емтихан</a></li><li><a href="../yurt.html">Менің шаңырағым</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../practice.html">Жаттығулар</a></li><li><a href="../playground.html">Сынақ алаңы</a></li><li><a href="../viz.html">Визуализациялар</a></li><li><a href="../flashcards.html">Флэш-карточкалар</a></li><li><a href="../games.html">Ойындар</a></li><li><a href="../debug.html">Қатені тап</a></li><li><a href="../detective.html">SQL детектив</a></li><li><a href="../flask.html">Flask зертханасы</a></li><li><a href="../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../about.html">Курс туралы</a></li><li><a href="../team.html">Команда</a></li><li><a href="../alash.html">Алаш тұлғалары</a></li><li><a href="../posters.html">Афиша: постер мен фильм</a></li><li><a href="../certificate.html">Сертификат</a></li><li><a href="../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../teacher.html">Мұғалім беті</a></li><li><a href="../profile.html">Менің кабинетім</a></li><li><a href="../partners.html">Серіктестерге</a></li><li><a href="../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey. <a href="../team.html">Команда</a></p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (AO17 командасы): <a href="../cpp/">C++</a> · <a href="../java/">Java</a> · <a href="../en/">Ағылшын тілі</a> · <a href="../math/">Математика</a></p><p class="ft-links"><a href="../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>
