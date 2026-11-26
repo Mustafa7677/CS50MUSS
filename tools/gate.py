@@ -38,7 +38,9 @@ TOOLS = {"practice.html": "task", "exam.html": "test", "flashcards.html": "task"
          "cheatsheet.html": "page", "viz.html": "page", "flask.html": "task"}
 PROJECTS = {"projects.html": "task"}
 ACADEMY_PUBLIC = {"academy/index.html", "academy/map.html", "academy/models.html", "academy/study.html",
-                  "academy/course.html", "academy/comics.html"}   # AO17 CS курсының беті және комикс хабы - каталог
+                  "academy/course.html", "academy/comics.html",   # AO17 CS курсының беті және комикс хабы - каталог
+                  "academy/certificate.html"}   # сертификат: жабық мазмұны жоқ, нәтижені браузерден оқиды
+ACADEMY_TESTS = {"academy/exam.html"}   # AO17 CS емтиханы: 1-бөлімнің сұрақтары жабық сабақтардан, сондықтан бет те жабық
 # IELTS, Digital SAT және CS зертханалары - ашық жаттығу орталары (деректері браузерде): жария
 ACADEMY_PUBLIC_DIRS = ("academy/tracks/", "academy/ielts/", "academy/sat/", "academy/labs/", "academy/3d/")   # 3D зертхана: ашық лекциялар мен симуляция
 # Курстың ішкі беттерінің түрі (атауы бойынша)
@@ -63,7 +65,7 @@ def page_rule(rel):
     # AO17 CS Universe: каталог (index) мен білім картасы жария; сабақтар мен зертхана - жабық, курс «academy»
     # Бағыт беттері (academy/tracks/*) - каталог, сондықтан жария
     if parts[0] == "academy" and rel.endswith(".html") and rel not in ACADEMY_PUBLIC and not rel.startswith(ACADEMY_PUBLIC_DIRS):
-        return "academy", "task" if parts[-1] == "lab.html" else "lecture"
+        return "academy", "test" if rel in ACADEMY_TESTS else "task" if parts[-1] == "lab.html" else "lecture"
     if rel in TOOLS:
         return "tools", TOOLS[rel]
     if rel in PROJECTS:

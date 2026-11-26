@@ -51,7 +51,8 @@ test("Course JSON-LD жарамды; басты беттің негізгі ба
 test("екі бөлім: 2-бөлімде 3D зертханалар ұсынылатын ретпен, әр зертхананың бірінші сабағы бар бет", async ({ page }) => {
   const errors = collectErrors(page);
   await page.goto("academy/course.html");
-  await expect(page.locator(".crs-parts a.crs-part")).toHaveCount(2);
+  // бөлімдер навигациясы: 1-бөлім, бағалау (сынақ пен сертификат), 2-бөлім
+  expect(await page.locator(".crs-parts a.crs-part").evaluateAll((as) => as.map((a) => a.getAttribute("href")))).toEqual(["#part1", "#exam", "#part2"]);
   await expect(page.locator("#part1 .crs-w")).toHaveCount(12);
   const labs = page.locator("#part2 .crs-lab");
   await expect(labs).toHaveCount(11);
