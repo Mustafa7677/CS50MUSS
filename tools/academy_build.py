@@ -34,6 +34,7 @@ import lab3d as L3  # noqa: E402
 import ao17exam as AX  # noqa: E402
 import ao17plan as AP  # noqa: E402
 import ao17methods as AM  # noqa: E402
+import oyu as OY  # noqa: E402
 sys.path.insert(0, str(ROOT / "assets" / "py"))
 import ao_judge as JG  # noqa: E402
 import math  # noqa: E402,F401  (number.check өрнектері үшін)
@@ -681,6 +682,10 @@ def comics_html(lessons):
     return "academy/comics.html", page("academy/comics.html", "Комикс: Нұрай, Мустафа және Бота", "AO17 комиксі: Нұрай, Мустафа және Бота бағдарламалау, логика және компьютер негіздерін күнделікті өмір мысалдарымен түсіндіреді. Әр сабақта жиі қате туралы комикс.", body)
 
 
+OYU_WEEK = {6: "Ою студиясы: циклмен шаршы, жұлдыз, шаңырақ", 7: "Ою студиясы: функциямен қошқар мүйіз, айна, төрт құлақ",
+            9: "Ою студиясы: рекурсиямен өсімдік оюы"}   # Python апталары: academy/oyu.html тапсырмалары
+
+
 def course_map(weeks, labs):
     """AO17 CS курсының метро картасы (SVG). Жоғарғы қызыл желі - 1-бөлімнің апталары, оң жақта бұрылып төменгі көк желіге -
     2-бөлімнің зертханаларына жалғасады. Үзік сызық - аптада қолданылатын 3D зертханаға ауысу (бекетті нұсқағанда жанады).
@@ -742,6 +747,7 @@ def course_html(lessons, st):
         lab_links = ", ".join(f'<a href="{L3.href(h, "")}">{E(t)}</a>' for h, t in labs)
         items = (f'<li class="crs-comic"><span>Комикс</span><a href="{mid}/l01.html#s-comic">{E(ep["title"])}</a></li>' if ep else "") \
             + f'<li class="crs-3d"><span>3D зертхана</span><p>{lab_links}</p></li>' \
+            + (f'<li class="crs-oyu"><span>Студия</span><p><a href="oyu.html">{E(OYU_WEEK[n])}</a></p></li>' if n in OYU_WEEK else "") \
             + f'<li class="crs-quiz"><span>Сынақ</span><p><a href="exam.html?w={n}">{n}-апта сынағы: 8 сұрақ</a> <small data-quiz="w{n}"></small></p></li>' \
             + (f'<li class="crs-pj"><span>Жоба</span><p><a href="{mid}/{pj["slug"]}.html#project">{E(CRS.PROJECT_KK.get(pj["project"]["id"], pj["project"]["title"]))}</a>'
                + (f' <small lang="en">{E(pj["project"]["title"])}</small>' if pj["project"]["id"] in CRS.PROJECT_KK else "") + '</p></li>' if pj else "")
@@ -1074,7 +1080,7 @@ def map_html(lessons):
 def build(write=True):
     lessons = load_lessons()
     titles = {m[0]: m[2] for m in C.ALL_MODULES}   # оқу кестесі: аптаның толық атауы
-    errs = validate(lessons) + validate_comics(lessons) + L3.validate() + AX.validate(lessons) + AP.validate(lessons, titles) + AM.validate(lessons)
+    errs = validate(lessons) + validate_comics(lessons) + L3.validate() + AX.validate(lessons) + AP.validate(lessons, titles) + AM.validate(lessons) + OY.validate()
     if errs:
         print("academy: ТЕКСЕРУДЕН ӨТПЕДІ:", *errs, sep="\n  ")
         sys.exit(1)
@@ -1091,7 +1097,7 @@ def build(write=True):
         return
     plan_by_id = {p["id"]: p for p in C.plan()}
     pages = [index_html(lessons, st), lab_html(), map_html(lessons), models_html(), study_html(lessons), comics_html(lessons), course_html(lessons, st),
-             AX.exam_html(lessons, page), AX.cert_html(lessons, page), AP.plan_html(lessons, titles, page), AM.methods_html(lessons, page)] + L3.pages(page) + [track_html(t) for t in TR.TRACKS]
+             AX.exam_html(lessons, page), AX.cert_html(lessons, page), AP.plan_html(lessons, titles, page), AM.methods_html(lessons, page), OY.oyu_html(page)] + L3.pages(page) + [track_html(t) for t in TR.TRACKS]
     by_mod = {}
     for L in lessons:
         by_mod.setdefault(L["moduleId"], []).append(L)
