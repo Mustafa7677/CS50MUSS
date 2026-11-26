@@ -98,6 +98,16 @@ test("Фурье: шеңбер көбейсе, қате азаяды; өз су�
   await expect(play).toHaveText("Ойнату");
   await play.click();
   await expect(play).toHaveText("Тоқтату");
+  // экраннан тыс болса, кадр салынбайды; қайта көрінгенде анимация жалғасады
+  const frames = () => page.evaluate(() => document.querySelector("[data-morph]")._morphFourier.frames());
+  await page.locator("#matrix").scrollIntoViewIfNeeded();
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.waitForTimeout(300);
+  const f1 = await frames();
+  await page.waitForTimeout(500);
+  expect(await frames()).toBe(f1);
+  await page.locator("[data-mo-fcv]").scrollIntoViewIfNeeded();
+  await expect.poll(frames).toBeGreaterThan(f1 + 5);
   await play.click();
   await expect(play).toHaveText("Ойнату");
   const err = () => page.evaluate(() => document.querySelector("[data-morph]")._morphFourier.err());

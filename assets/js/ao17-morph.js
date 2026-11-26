@@ -351,8 +351,11 @@
       $$("[data-shape]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-shape") === id)); });
       read(); draw();
     }
+    // canvas экраннан тыс болса, анимация кадр салмайды (телефонның батареясы); қайта көрінгенде жалғасады
+    var seen = true, frames = 0;
     function loop(now) {
-      if (!playing) return;
+      if (!playing || !seen) { raf = 0; return; }
+      frames++;
       var dt = last ? Math.min(0.05, (now - last) / 1000) : 0; last = now;
       t = (t + dt / 8) % 1;
       var p = at(t, K); trace.push(p); if (trace.length > 220) trace.shift();
@@ -366,6 +369,12 @@
       if (playing) raf = requestAnimationFrame(loop); else draw();
     }
     $("[data-mo-fplay]").addEventListener("click", function () { setPlay(!playing); });
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (es) {
+        seen = es[es.length - 1].isIntersecting;
+        if (seen && playing) { cancelAnimationFrame(raf); last = 0; raf = requestAnimationFrame(loop); }
+      }).observe(cv);
+    }
     kIn.addEventListener("input", function () { K = Number(kIn.value); st.k = K; save(); trace = []; read(); draw(); });
     $$("[data-shape]").forEach(function (b) {
       b.addEventListener("click", function () {
@@ -412,6 +421,6 @@
     var s0 = D.shapes.filter(function (x) { return x.id === st.shape; })[0] || D.shapes[0];
     use(s0.pts, s0.id);
     setPlay(!still);
-    root._morphFourier = { use: function (pts) { use(resample(pts, 256), "draw"); }, err: err };   // тесттерге
+    root._morphFourier = { use: function (pts) { use(resample(pts, 256), "draw"); }, err: err, frames: function () { return frames; } };   // тесттерге
   })();
 })();
