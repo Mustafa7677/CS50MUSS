@@ -39,7 +39,8 @@ TOOLS = {"practice.html": "task", "exam.html": "test", "flashcards.html": "task"
 PROJECTS = {"projects.html": "task"}
 ACADEMY_PUBLIC = {"academy/index.html", "academy/map.html", "academy/models.html", "academy/study.html",
                   "academy/course.html", "academy/comics.html",   # AO17 CS курсының беті және комикс хабы - каталог
-                  "academy/certificate.html"}   # сертификат: жабық мазмұны жоқ, нәтижені браузерден оқиды
+                  "academy/certificate.html",   # сертификат: жабық мазмұны жоқ, нәтижені браузерден оқиды
+                  "academy/plan.html"}   # оқу кестесі: тек сабақ атаулары мен сілтемелері (курс бетінде де ашық)
 ACADEMY_TESTS = {"academy/exam.html"}   # AO17 CS емтиханы: 1-бөлімнің сұрақтары жабық сабақтардан, сондықтан бет те жабық
 # IELTS, Digital SAT және CS зертханалары - ашық жаттығу орталары (деректері браузерде): жария
 ACADEMY_PUBLIC_DIRS = ("academy/tracks/", "academy/ielts/", "academy/sat/", "academy/labs/", "academy/3d/")   # 3D зертхана: ашық лекциялар мен симуляция
