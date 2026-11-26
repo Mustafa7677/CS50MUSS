@@ -49,6 +49,24 @@
   walk(D.weeks || {}, 0, function (k) { return k; }, function (x) { return part1(x[0]); });
   walk(D.labs || {}, 1, function (k) { return "lab-" + k; }, function (x) { return part2(x[0], x[3]); });
 
+  // сынақ нәтижелері (ao17-exam.js: «ao17cs:exam»): апта жолында ең жақсы нәтиже, бағалау бөлімінде қысқаша
+  var ex = J("ao17cs:exam"), passed = 0, PASS = 70;
+  Array.prototype.forEach.call(document.querySelectorAll("[data-quiz]"), function (q) {
+    var r = ex[q.getAttribute("data-quiz")];
+    if (r && typeof r.best === "number") {
+      q.textContent = "ең жақсы нәтиже: " + r.best + "%";
+      if (r.best >= PASS) { q.classList.add("ok"); passed++; }
+    }
+  });
+  var fin = ex.final && typeof ex.final.best === "number" ? ex.final.best : null;
+  var em = document.querySelector("[data-exam-me]");
+  if (em && (passed || fin != null)) {
+    em.hidden = false;
+    em.textContent = "Сенің нәтижелерің: апта сынақтарынан өттің - " + passed + " / 12" + (fin != null ? ", қорытынды емтихан - " + fin + "%" + (fin >= PASS ? " (сертификат ашық)" : "") : "") + ".";
+  }
+  var pe = document.querySelector('.crs-pp[data-part="exam"]');
+  if (pe && (passed || fin != null)) pe.textContent = "Өткен апта сынағы: " + passed + " / 12" + (fin != null ? " · емтихан: " + fin + "%" : "");
+
   function on(x) { return x.st > 0; }
   var s1 = order[0].some(on), s2 = order[1].some(on);
   if (!s1 && !s2) return;

@@ -31,6 +31,7 @@ import comic as CX  # noqa: E402
 import comic_eps as CXE  # noqa: E402
 import course as CRS  # noqa: E402
 import lab3d as L3  # noqa: E402
+import ao17exam as AX  # noqa: E402
 sys.path.insert(0, str(ROOT / "assets" / "py"))
 import ao_judge as JG  # noqa: E402
 import math  # noqa: E402,F401  (number.check өрнектері үшін)
@@ -739,6 +740,7 @@ def course_html(lessons, st):
         lab_links = ", ".join(f'<a href="{L3.href(h, "")}">{E(t)}</a>' for h, t in labs)
         items = (f'<li class="crs-comic"><span>Комикс</span><a href="{mid}/l01.html#s-comic">{E(ep["title"])}</a></li>' if ep else "") \
             + f'<li class="crs-3d"><span>3D зертхана</span><p>{lab_links}</p></li>' \
+            + f'<li class="crs-quiz"><span>Сынақ</span><p><a href="exam.html?w={n}">{n}-апта сынағы: 8 сұрақ</a> <small data-quiz="w{n}"></small></p></li>' \
             + (f'<li class="crs-pj"><span>Жоба</span><p><a href="{mid}/{pj["slug"]}.html#project">{E(CRS.PROJECT_KK.get(pj["project"]["id"], pj["project"]["title"]))}</a>'
                + (f' <small lang="en">{E(pj["project"]["title"])}</small>' if pj["project"]["id"] in CRS.PROJECT_KK else "") + '</p></li>' if pj else "")
         thumb = f"assets/img/posters/thumb/ao17cs-w{n:02d}.jpg"
@@ -785,6 +787,7 @@ def course_html(lessons, st):
       </header>
       <nav class="crs-parts" aria-label="Курстың екі бөлімі">
         <a class="crs-part" href="#part1"><span class="crs-pk">1-бөлім</span><b>Негіз</b><span>12 апта · {tot_l} сабақ · {tot_t} тапсырма. Логикадан жүйеге дейін: Python, C, жад.</span><span class="crs-pp" data-part="0"></span></a>
+        <a class="crs-part crs-part3" href="#exam"><span class="crs-pk">Бағалау</span><b>Сынақ және сертификат</b><span>12 апта сынағы, 2 бөлім емтиханы, қорытынды емтихан. Нәтижең сертификатты ашады.</span><span class="crs-pp" data-part="exam"></span></a>
         <a class="crs-part crs-part2" href="#part2"><span class="crs-pk">2-бөлім</span><b>Технологияның ішінен</b><span>{len(LS)} зертхана · {n3_l} сабақ · {n3_q} тест сұрағы. Машинаның ішін 3D симуляцияда көр.</span><span class="crs-pp" data-part="1"></span></a>
       </nav>
       {course_map([(n, f"w{n}", CRS.WEEK_SHORT.get(mid, mid), [L3.data()[2].get(h) for h, _ in labs if L3.data()[2].get(h)]) for n, (mid, _, labs) in enumerate(CRS.WEEKS, 1)],
@@ -804,11 +807,23 @@ def course_html(lessons, st):
         <ol class="crs-labs">{"".join(labs_html)}</ol>
         <p class="crs-more"><a class="btn secondary" href="3d/index.html">2-бөлімнің барлық {n3_l} сабағы</a> <a class="btn secondary" href="3d/app/index.html">3D қолданбаны ашу</a></p>
       </section>
+      <section class="crs-sec crs-eval" id="exam" aria-labelledby="exam-h">
+        <h2 id="exam-h"><span class="crs-pk">Бағалау</span>Сынақтар, емтихан және сертификат</h2>
+        <p class="crs-note">Білімді тексерудің ең сенімді жолы - еске түсіру. Әр аптаның соңында қысқа сынақ, бөлімнің соңында емтихан, ал курстың соңында қорытынды емтихан бар. Сұрақтар {len(AX.bank(lessons)["items"])} сұрақтық қордан кездейсоқ таңдалады, сондықтан әр жолы басқаша.</p>
+        <ol class="crs-steps" role="list">
+          <li><b>Апта сынағы</b><p>12 апта, әрқайсысында 8 сұрақ: аптаның сабақтарынан және сол аптаның 3D зертханасынан. Уақыт шектелмейді, әр жауаптан кейін түсіндірмесі шығады.</p><a href="exam.html?w=1">1-апта сынағынан бастау</a></li>
+          <li><b>Бөлім емтихандары</b><p>1-бөлім: 24 сұрақ, 2-бөлім: 22 сұрақ, әрқайсысы 30 минут. Нәтиже апта мен зертхана бойынша талданады.</p><span class="crs-sl"><a href="exam.html?part=1">1-бөлім емтиханы</a><a href="exam.html?part=2">2-бөлім емтиханы</a></span></li>
+          <li><b>Қорытынды емтихан</b><p>Екі бөлімнен 36 сұрақ, 45 минут, өту шегі {AX.PASS}%. Бет жаңартылса, емтихан тоқтаған жерінен жалғасады.</p><a class="btn gold" href="exam.html">Емтиханға өту</a></li>
+          <li><b>Сертификат</b><p>Қорытынды емтиханнан өткен соң атың жазылған AO17 CS сертификаты ашылады: басып шығаруға не PDF ретінде сақтауға болады.</p><a href="certificate.html">Сертификат</a></li>
+        </ol>
+        <p class="crs-me" data-exam-me hidden></p>
+      </section>
       <section class="crs-faq"><h2>Жиі қойылатын сұрақтар</h2>
         <details><summary>Курс кімге арналған?</summary><p>Бағдарламалауды нөлден бастағысы келетін оқушы мен студентке. Алдын ала білім керек емес: бірінші апта логикадан, «иә» мен «жоқтан» басталады.</p></details>
         <details><summary>Ақылы ма?</summary><p>Жоқ. Курс тегін, тіркеусіз ашылады. Прогресс осы құрылғыда сақталады, оны кабинеттен басқа құрылғыға көшіруге болады.</p></details>
         <details><summary>Екі бөлімнің айырмасы неде?</summary><p>Бірінші бөлім - іргетас: логика, дәлелдеу, алгоритм, Python, C және жад, әр аптада өзің жазатын код пен жоба. Екінші бөлім - {len(LS)} зертхананың {n3_l} сабағы: әрқайсысында толық дәріс, тест, шешілген мысал және 3D симуляция бар. Материалдар AO17 командасының INSIDE TECH 3D платформасынан алынған. 3D зертханадағы оқу күндері «Менің шаңырағым» бетіндегі серияға да қосылады.</p></details>
         <details><summary>Тапсырмалар қалай тексеріледі?</summary><p>Браузерде, бірден: Python коды AO17 Judge-де нағыз тестпен тексеріледі, C мысалдарының шығысы сайтты құрастыру кезінде gcc арқылы алынған, 3D зертхананың тесттері жауапты түсіндірмесімен береді. Модуль жобасын мұғалім рубрикамен бағалайды.</p></details>
+        <details><summary>Сертификат бере ме?</summary><p>Иә. Қорытынды емтиханда кемінде {AX.PASS}% алсаң, атың жазылған AO17 CS сертификаты ашылады. Ол AO17 платформасындағы оқу нәтижесін растайды; ресми білім туралы құжат емес.</p></details>
         <details><summary>Прогресім қайда көрінеді?</summary><p>Осы беттің өзінде: әр аптаның және әр зертхананың астында аяқталған сабақтар саны шығады, ал «Жалғастыру» батырмасы тоқтаған жеріңе апарады. Деректер тек осы браузерде сақталады.</p></details>
       </section>
       <p><a href="index.html">CS Universe картасына оралу</a> · <a href="../yurt.html">Менің шаңырағым</a></p>
@@ -1050,7 +1065,7 @@ def map_html(lessons):
 
 def build(write=True):
     lessons = load_lessons()
-    errs = validate(lessons) + validate_comics(lessons) + L3.validate()
+    errs = validate(lessons) + validate_comics(lessons) + L3.validate() + AX.validate(lessons)
     if errs:
         print("academy: ТЕКСЕРУДЕН ӨТПЕДІ:", *errs, sep="\n  ")
         sys.exit(1)
@@ -1066,7 +1081,8 @@ def build(write=True):
         print(f"academy check: OK ({st['complete_lessons']} сабақ, {st['auto_checked_tasks']} тапсырма, {st['python_examples']} мысал)")
         return
     plan_by_id = {p["id"]: p for p in C.plan()}
-    pages = [index_html(lessons, st), lab_html(), map_html(lessons), models_html(), study_html(lessons), comics_html(lessons), course_html(lessons, st)] + L3.pages(page) + [track_html(t) for t in TR.TRACKS]
+    pages = [index_html(lessons, st), lab_html(), map_html(lessons), models_html(), study_html(lessons), comics_html(lessons), course_html(lessons, st),
+             AX.exam_html(lessons, page), AX.cert_html(lessons, page)] + L3.pages(page) + [track_html(t) for t in TR.TRACKS]
     by_mod = {}
     for L in lessons:
         by_mod.setdefault(L["moduleId"], []).append(L)
