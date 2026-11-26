@@ -31,12 +31,22 @@
     var labs = Object.keys(B.topics).filter(function (t) { return B.topics[t].part === 2; });
     var qs = new URLSearchParams(location.search);
     var w = parseInt(qs.get("w"), 10), part = qs.get("part");
-    var mode = B.topics["w" + w] ? "w" + w : qs.get("mix") ? "mix" : part === "1" ? "p1" : part === "2" ? "p2" : "final";
+    var mode = B.topics["w" + w] ? "w" + w : qs.get("duel") != null ? "duel" : qs.get("mix") ? "mix" : part === "1" ? "p1" : part === "2" ? "p2" : "final";
+    // дуэль: сұрақтар мен нұсқалар реті тұқымнан (seed) шығады, сондықтан бір сілтемені ашқан екі адам бірдей сұрақ алады
+    var seed = String(qs.get("duel") || "").toLowerCase();
+    if (mode === "duel" && !/^[a-z0-9]{4,12}$/.test(seed)) {
+      seed = Math.random().toString(36).slice(2, 8).padEnd(6, "0");
+      try { history.replaceState(null, "", location.pathname + "?duel=" + seed); } catch (e) { /* */ }
+    }
+    var vs = mode === "duel" ? { name: String(qs.get("vs") || "").slice(0, 24).trim(), s: parseInt(qs.get("s"), 10), t: parseInt(qs.get("t"), 10) } : null;
+    if (vs && !(vs.name && vs.s >= 0 && vs.s <= 10)) vs = null;
     var M = {
       final: { title: "Қорытынды емтихан", kicker: "AO17 CS · бағалау", min: 45, fb: false,
         lede: "Курстың екі бөлімінен 36 сұрақ: әр аптадан екі, әр зертханадан бір. 45 минут. Өту шегі " + B.pass + "%, ал нәтижең сертификатты ашады." },
       p1: { title: "1-бөлім емтиханы", kicker: "AO17 CS · 1-бөлім", min: 30, fb: false, lede: "12 аптаның әрқайсысынан екі сұрақ, 24 сұрақ, 30 минут. Өту шегі " + B.pass + "%." },
       p2: { title: "2-бөлім емтиханы", kicker: "AO17 CS · 2-бөлім", min: 30, fb: false, lede: "11 зертхананың әрқайсысынан екі сұрақ, 22 сұрақ, 30 минут. Өту шегі " + B.pass + "%." },
+      duel: { title: "Сұрақ дуэлі", kicker: "AO17 CS · дуэль", min: 0, fb: false,
+        lede: "Курстың екі бөлімінен 10 сұрақ. Сілтемені досыңа жібер: ол дәл осы сұрақтарды дәл осы ретпен алады. Кім көп жинайды? Тең болса, жылдамырағы озады." },
       mix: { title: "Аралас жаттығу", kicker: "AO17 CS · араластыру", min: 0, fb: true,
         lede: "Сен бастаған апталардан 10 сұрақ кезектесіп беріледі: әр сұрақта қай әдіс керек екенін өзің таңдайсың. Уақыт шектелмейді, түсіндірме бірден шығады." }
     }[mode] || { title: B.topics[mode].name.replace(":", " сынағы:"), kicker: "AO17 CS · апта сынағы", min: 0, fb: true,
@@ -62,7 +72,7 @@
     var run = obj(J(RUN, null));
     var startBtn = root.querySelector("[data-ax-start]");
     // тоқтаған сынақ: уақыты бітпесе - жалғастыру; бітсе - берілген жауаптар бойынша бағалау (жауаптар жоғалмайды)
-    if (run.mode === mode && fresh(run)) {
+    if (run.mode === mode && fresh(run) && (mode !== "duel" || run.seed === seed)) {
       var done = Object.keys(obj(run.ans)).length;
       var cont = el("button", "btn gold", expired(run) ? "Уақыт бітті: нәтижесін көру (" + done + " / " + run.qs.length + " жауап)"
         : "Жалғастыру (" + done + " / " + run.qs.length + ")");
@@ -72,13 +82,42 @@
       startBtn.textContent = "Жаңадан бастау";
       startBtn.classList.remove("gold"); startBtn.classList.add("secondary");
     }
+    if (mode === "duel") {
+      var box = el("div", "xm-duel");
+      if (vs) {
+        var ch = el("p", "xm-vs");
+        ch.appendChild(el("b")).textContent = vs.name;
+        ch.appendChild(document.createTextNode(" бұл дуэльде " + vs.s + " / 10 жинады" + (vs.t > 0 ? " (" + mmss(vs.t * 1000) + ")" : "") + ". Оны ұта аласың ба?"));
+        box.appendChild(ch);
+      }
+      var lb = el("label", "xm-namel", "<span>Атың (досың нәтижеңнің жанынан көреді)</span>");
+      var inp = el("input"); inp.type = "text"; inp.maxLength = 24; inp.autocomplete = "nickname"; inp.setAttribute("data-ax-name", ""); inp.value = J(NAME, "") || obj(J("cs50kz:progress", {})).name || "";
+      lb.appendChild(inp); box.appendChild(lb);
+      startBtn.parentNode.parentNode.insertBefore(box, startBtn.parentNode);
+    }
     startBtn.addEventListener("click", function () {
-      run = { mode: mode, qs: build(), ans: {}, i: 0, start: Date.now(), limit: M.min * 60000 };
+      run = { mode: mode, qs: build(), ans: {}, conf: {}, i: 0, start: Date.now(), limit: M.min * 60000, seed: mode === "duel" ? seed : undefined };
+      var nm = root.querySelector("[data-ax-name]");
+      if (nm) S(NAME, nm.value.trim().slice(0, 24));
       S(RUN, run);
       show(run);
     });
 
-    function count() { return mode === "final" ? weeks.length * 2 + labs.length + 1 : mode === "p1" ? weeks.length * 2 : mode === "p2" ? labs.length * 2 : mode === "mix" ? 10 : 8; }
+    function count() { return mode === "final" ? weeks.length * 2 + labs.length + 1 : mode === "p1" ? weeks.length * 2 : mode === "p2" ? labs.length * 2 : mode === "mix" || mode === "duel" ? 10 : 8; }
+    // тұқымды кездейсоқ сан (mulberry32): бір тұқым - бір реттілік
+    function seeded(str) {
+      var h = 2166136261;
+      for (var i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+      return function () { h = (h + 0x6d2b79f5) | 0; var t = h; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+    }
+    function sshuffle(a, rnd) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(rnd() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+    function duelQs() {
+      var rnd = seeded("ao17-duel:" + seed), seen = {}, out = [];
+      sshuffle(B.items.slice().sort(function (a, b) { return a.id < b.id ? -1 : 1; }), rnd).forEach(function (it) {
+        if (out.length < 10 && !seen[it.t]) { seen[it.t] = 1; out.push(it); }
+      });
+      return out.map(function (it) { return { id: it.id, p: it.k === "mc" ? sshuffle(it.o.map(function (_, i) { return i; }), rnd) : null }; });
+    }
     // аралас жаттығу: оқушы бастаған апталар (кемінде екеуі болмаса - барлық апта), сұрақтар апталар арасында кезектеседі
     function started() {
       var acad = obj(obj(J("cs50kz:academy", {})).lessons), on = {};
@@ -121,6 +160,7 @@
         list = list.concat(pick([].concat.apply([], labs.map(function (t) { return byTopic[t]; })), 1, used));
       } else if (mode === "p1") weeks.forEach(function (t) { list = list.concat(pick(byTopic[t], 2, used)); });
       else if (mode === "p2") labs.forEach(function (t) { list = list.concat(pick(byTopic[t], 2, used)); });
+      else if (mode === "duel") return duelQs();
       else if (mode === "mix") return interleave().map(function (it) { return { id: it.id, p: it.k === "mc" ? shuffle(it.o.map(function (_, i) { return i; })) : null }; });
       else {
         list = pick(byTopic[mode], 6, used);
@@ -170,6 +210,22 @@
       card.appendChild(qt);
       var cur = run.ans[run.i];
       var locked = M.fb && cur != null;
+      run.conf = obj(run.conf);
+      var cf = el("div", "xm-conf"); cf.setAttribute("role", "group"); cf.setAttribute("aria-label", "Жауап бермес бұрын: қаншалықты сенімдісің?");
+      cf.appendChild(el("span", "", "Сенімділігің:"));
+      [["sure", "Білемін"], ["guess", "Шамалаймын"], ["no", "Білмеймін"]].forEach(function (c) {
+        var b = el("button", "xm-cf", c[1]); b.type = "button"; b.setAttribute("data-conf", c[0]);
+        b.setAttribute("aria-pressed", String(run.conf[run.i] === c[0]));
+        if (locked) b.disabled = true;
+        b.addEventListener("click", function () {
+          run.conf[run.i] = run.conf[run.i] === c[0] ? undefined : c[0];
+          if (!run.conf[run.i]) delete run.conf[run.i];
+          save();
+          Array.prototype.forEach.call(cf.querySelectorAll("[data-conf]"), function (x) { x.setAttribute("aria-pressed", String(run.conf[run.i] === x.getAttribute("data-conf"))); });
+        });
+        cf.appendChild(b);
+      });
+      card.appendChild(cf);
       if (it.k === "mc") {
         var opts = el("div", "xm-opts"); opts.setAttribute("role", "radiogroup"); opts.setAttribute("aria-labelledby", "xm-qt");
         q.p.forEach(function (orig, k) {
@@ -251,6 +307,16 @@
         if (right(q, run.ans[k])) { ok++; p.ok++; } else wrong.push({ q: q, it: it, v: run.ans[k] });
       });
       var pct = Math.round((ok / run.qs.length) * 100);
+      var cal = { sure: { n: 0, ok: 0 }, guess: { n: 0, ok: 0 }, no: { n: 0, ok: 0 } }, all = obj(J("ao17cs:calib", {}));
+      Object.keys(obj(run.conf)).forEach(function (k) {
+        var lv = run.conf[k], q = run.qs[k];
+        if (!cal[lv] || !q) return;
+        var r2 = right(q, run.ans[k]);
+        cal[lv].n++; if (r2) cal[lv].ok++;
+        var a = all[lv] = obj(all[lv]); a.n = (a.n || 0) + 1; a.ok = (a.ok || 0) + (r2 ? 1 : 0);
+      });
+      if (cal.sure.n + cal.guess.n + cal.no.n) S("ao17cs:calib", all);
+      run.cal = cal;
       res = obj(J(KEY, {}));
       var r = obj(res[mode]);
       var best = Math.max(r.best || 0, pct);
@@ -260,6 +326,37 @@
       if (window.CS50KZ && typeof window.CS50KZ.check === "function") window.CS50KZ.check();   // жаңа жетістік болса - хабарлама
       root.classList.remove("xm-running");
       result(pct, ok, per, wrong, best);
+    }
+    function duelBox(ok) {
+      var secs = Math.round((run.doneAt - run.start) / 1000), name = (J(NAME, "") || "").slice(0, 24);
+      var box = el("div", "xm-duelres");
+      var me = el("p", "xm-vs"); me.textContent = "Сен: " + ok + " / 10 (" + mmss(secs * 1000) + ")";
+      box.appendChild(me);
+      if (vs) {
+        var them = el("p", "xm-vs"); them.textContent = vs.name + ": " + vs.s + " / 10" + (vs.t > 0 ? " (" + mmss(vs.t * 1000) + ")" : "");
+        box.appendChild(them);
+        var win = ok > vs.s || (ok === vs.s && vs.t > 0 && secs < vs.t), tie = ok === vs.s && !(vs.t > 0 && secs !== vs.t);
+        var v = el("p", "xm-duelv " + (win ? "ok" : tie ? "" : "bad"));
+        v.textContent = win ? "Жеңдің!" : tie ? "Тең түстіңдер!" : vs.name + " озды. Тағы бір дуэль?";
+        box.appendChild(v);
+      }
+      var url = location.origin + location.pathname + "?duel=" + seed + (name ? "&vs=" + encodeURIComponent(name) : "&vs=" + encodeURIComponent("Досың")) + "&s=" + ok + "&t=" + secs;
+      var lb = el("label", "xm-share", "<span>Досыңды шақыр: осы сілтемені жібер</span>");
+      var inp = el("input"); inp.type = "text"; inp.readOnly = true; inp.value = url; inp.setAttribute("data-duel-link", "");
+      lb.appendChild(inp); box.appendChild(lb);
+      var row = el("p", "xm-acts");
+      var cp = el("button", "btn gold", "Сілтемені көшіру"); cp.type = "button";
+      cp.addEventListener("click", function () {
+        var done = function () { cp.textContent = "Көшірілді"; };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, function () { inp.select(); });
+        else { inp.select(); try { document.execCommand("copy"); done(); } catch (e) { /* */ } }
+      });
+      row.appendChild(cp);
+      if (navigator.share) { var sh = el("button", "btn secondary", "Бөлісу"); sh.type = "button"; sh.addEventListener("click", function () { navigator.share({ title: "AO17 CS: сұрақ дуэлі", text: "Мен " + ok + " / 10 жинадым. Сен ше?", url: url }).catch(function () {}); }); row.appendChild(sh); }
+      var nw = el("a", "btn secondary", "Жаңа дуэль"); nw.href = location.pathname + "?duel=new";
+      row.appendChild(nw);
+      box.appendChild(row);
+      return box;
     }
     function result(pct, ok, per, wrong, best) {
       var pass = pct >= B.pass;
@@ -280,6 +377,23 @@
         li.appendChild(el("b", "", p.ok + " / " + p.n));
         topics.appendChild(li);
       });
+      if (mode === "duel") card.appendChild(duelBox(ok));
+      var cal = run.cal || {}, rated = ["sure", "guess", "no"].reduce(function (n, k) { return n + ((cal[k] || {}).n || 0); }, 0);
+      if (rated >= 3) {
+        card.appendChild(el("h2", "", "Сенімділік таразысы"));
+        var NM = { sure: "Білемін", guess: "Шамалаймын", no: "Білмеймін" }, ul = el("ul", "xm-cal");
+        ["sure", "guess", "no"].forEach(function (k) {
+          var c = cal[k]; if (!c || !c.n) return;
+          var f = Math.round((c.ok / c.n) * 100);
+          ul.appendChild(el("li", "cal-" + k, "<span>" + NM[k] + "</span><span class=\"xm-tb\"><i style=\"width:" + f + "%\"></i></span><b>" + c.ok + " / " + c.n + " дұрыс</b>"));
+        });
+        card.appendChild(ul);
+        var sp = cal.sure.n ? cal.sure.ok / cal.sure.n : null, np = cal.no.n ? cal.no.ok / cal.no.n : null;
+        card.appendChild(el("p", "xm-calv", sp != null && cal.sure.n >= 3 && sp < 0.6 ? "«Білемін» деген сұрақтардың едәуірі қате: асығыс сенім - қайталауға белгі. Сол тақырыптарды қайта қара."
+          : np != null && cal.no.n >= 2 && np >= 0.6 ? "«Білмеймін» деген сұрақтардың көбін дұрыс таптың: біліміңді төмен бағалайсың, өзіңе көбірек сен."
+          : sp != null && cal.sure.n >= 3 && sp >= 0.8 ? "Сенімді болған жерде дұрыс жауап бересің: өзіңді жақсы бағалайсың."
+          : "Сенімділікті белгілей бер: таразы көп сұрақта дәлірек көрсетеді. Жиынтығы «Қалай оқыған дұрыс» бетінде."));
+      }
       card.appendChild(el("h2", "", "Тақырыптар бойынша"));
       card.appendChild(topics);
       if (wrong.length) {

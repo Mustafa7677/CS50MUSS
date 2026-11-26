@@ -58,7 +58,7 @@ TACTICS = [
      "Төмендегі фокус таймері бүгінгі фокус сессияларын санайды.", "focus"),
     ("reflect", "Өзіңді бағала", "Әр оқу кешінен соң: не түсіндім, не түсініксіз қалды, келесі жолы не істеймін?",
      "Не білетініңді және не білмейтініңді анық сезіну (метатану) - тиімді оқудың өзегі. Ол уақытты әлсіз жерге бағыттауға көмектеседі.",
-     'Сынақ нәтижесіндегі апта мен зертхана бойынша талдау және <a href="study.html">«Менің оқуым»</a> бетіндегі «Қиындық тудыратын ұғымдар» мен «Қателер дәптері» осыған арналған.', None),
+     'Сынақта жауап бермес бұрын сенімділігіңді белгіле: төмендегі таразы өзіңді қаншалықты дәл бағалайтыныңды көрсетеді. Оқу журналы әр кештің қорытындысын сақтайды. Сынақ нәтижесіндегі талдау және <a href="study.html">«Менің оқуым»</a> бетіндегі «Қателер дәптері» де осыған арналған.', "reflect"),
 ]
 
 # Фейнман: әр аптаға бір ұғым
@@ -181,6 +181,20 @@ def widget(kind, lessons):
             f'<div class="an-d" id="an-{i}" hidden><p>{E(x)}</p><p class="an-lim"><b>Шегі:</b> {E(lim)}</p></div></li>'
             for i, (c, t, x, lim) in enumerate(AN.ANALOGIES))
         return f'<ul class="mt-w an-list">{cards}</ul>'
+    if kind == "reflect":
+        return """<div class="mt-w mt-refl" data-mt-reflect>
+          <h3 class="mt-wh">Сенің сенімділік таразың</h3>
+          <div data-cal-out></div>
+          <h3 class="mt-wh">Оқу журналы</h3>
+          <form data-jr-form>
+            <label class="mt-ta"><span>Бүгін не түсіндім?</span><textarea rows="2" name="a" required></textarea></label>
+            <label class="mt-ta"><span>Не түсініксіз қалды?</span><textarea rows="2" name="b"></textarea></label>
+            <label class="mt-ta"><span>Келесі жолы не істеймін?</span><textarea rows="2" name="c"></textarea></label>
+            <p class="mt-row"><button class="btn gold" type="submit">Журналға жазу</button> <button class="btn secondary" type="button" data-jr-export>Журналды жүктеу (.txt)</button></p>
+          </form>
+          <p class="mt-note" data-jr-stat aria-live="polite"></p>
+          <ol class="jr-list" data-jr-list></ol>
+        </div>"""
     if kind == "focus":
         return """<div class="mt-w mt-focus" data-mt-focus>
           <div class="mt-fring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" class="tr"/><circle cx="60" cy="60" r="52" class="va" data-fc-ring/></svg>

@@ -3145,6 +3145,7 @@ try{\n${code.replace(/<\/script/gi, "<\\/script")}\n}catch(e){__s("Қате: "+e
       A("ao17-plan", "📅", "Жоспарлы оқушы", "AO17 CS оқу кестесін күнтізбеге қосу", used.ao17plan ? 1 : 0, 1),
       A("ao17-explain", "🗣", "Түсіндіруші", "Жаргон детекторынан 5/5 алатын түсіндірме жазу", used.ao17explain ? 1 : 0, 1),
       A("ao17-focus", "⏳", "Фокус шебері", "Фокус таймерімен 4 сессия аяқтау", readJson("ao17cs:focus", {}).total || 0, 4),
+      A("ao17-journal", "📓", "Журнал жүргізуші", "Оқу журналына 7 жазба қалдыру", readJson("ao17cs:journal", []).length, 7),
       A("polyglot", "🌍", "Көпқырлы", "Кемінде 3 түрлі курстан лекция оқу", COURSE_META.filter((c) => (c.id === "x" ? read : readC(c.id)) > 0).length, 3),
     ];
   }
