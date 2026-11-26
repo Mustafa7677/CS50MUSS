@@ -91,7 +91,7 @@ test("3D қолданба AO17 ішінде: қатесіз ашылады, сы
   page.on("request", (r) => { if (!/^http:\/\/(127\.0\.0\.1|localhost)/.test(r.url()) && !r.url().startsWith("data:")) external.push(r.url()); });
   await page.goto("academy/3d/app/index.html#arch-1-binary");
   await expect(page.locator("a.ao17-back")).toHaveAttribute("href", "../index.html");
-  await expect(page).toHaveTitle(/Binary/, { timeout: 20000 });
+  await expect(page).toHaveTitle(/Екілік жүйе/, { timeout: 20000 });   // AO17 нұсқасында 3D қолданбадағы атаулар да қазақша (sync_inside: kazakh_titles)
   await page.waitForTimeout(1500);
   expect(errors).toEqual([]);
   expect(external).toEqual([]);
