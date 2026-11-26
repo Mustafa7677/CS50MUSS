@@ -6,7 +6,7 @@
    - [data-ao-progress]: беттің жоғарғы жиегінде скролл жолағы;
    - [data-ao-spy]: навигацияда экрандағы бөлімнің сілтемесі белгіленеді (.is-cur).
    Қозғалысты азайту (prefers-reduced-motion не сайттағы «Анимация» баптауы, html.reduce-motion): бәрі бірден соңғы күйде.
-   Басқа скрипттерге: window.AO17Motion = { still, onView(el, fn), count(scope) }. */
+   Басқа скрипттерге: window.AO17Reveal = { still, onView(el, fn), count(scope) }. */
 (function () {
   "use strict";
   var root = document.documentElement;
@@ -96,5 +96,5 @@
     Object.keys(map).forEach(function (id) { spy.observe(document.getElementById(id)); });
   });
 
-  window.AO17Motion = { still: still, onView: onView, count: count };
+  window.AO17Reveal = { still: still, onView: onView, count: count };
 })();

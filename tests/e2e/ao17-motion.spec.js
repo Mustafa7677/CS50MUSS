@@ -111,6 +111,14 @@ test.describe("қозғалыс бар", () => {
   });
 });
 
+test("қабат сайттың өз қозғалыс API-ін (window.AO17Motion: бетаралық өту) бұзбайды", async ({ page }) => {
+  await blockFonts(page.context());
+  for (const url of ["index.html", "academy/course.html", "academy/methods.html", "academy/exam.html?w=1"]) {
+    await page.goto(url);
+    expect(await page.evaluate(() => [typeof (window.AO17Motion || {}).routeKind, typeof (window.AO17Motion || {}).routeOf, typeof (window.AO17Reveal || {}).onView]), url).toEqual(["function", "function", "function"]);
+  }
+});
+
 test.describe("басты бет: мұқабалар сөресі", () => {
   test.use({ contextOptions: { reducedMotion: "no-preference" } });
   test("экранға кіргенде 12 мұқаба бумадан жайылады, кейін hover жұмыс істейді", async ({ page }) => {

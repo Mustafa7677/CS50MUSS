@@ -422,7 +422,7 @@
       card.appendChild(acts);
       stage.innerHTML = "";
       stage.appendChild(card);
-      if (window.AO17Motion) window.AO17Motion.count(card);   // пайыз 0-ден өседі
+      if (window.AO17Reveal) window.AO17Reveal.count(card);   // пайыз 0-ден өседі
       card.setAttribute("tabindex", "-1");
       card.focus({ preventScroll: true });
       if (stage.getBoundingClientRect().top < 0) stage.scrollIntoView({ block: "start" });

@@ -311,7 +311,7 @@
 
   // бірінші сурет: таспа солдан оңға өседі (ao17-motion.css), кейінгі өзгерістерде қайталанбайды
   var rib = root.querySelector("[data-plan-rib]");
-  if (rib && window.AO17Motion && !window.AO17Motion.still) { rib.classList.add("ao-first"); setTimeout(function () { rib.classList.remove("ao-first"); }, 3200); }
+  if (rib && window.AO17Reveal && !window.AO17Reveal.still) { rib.classList.add("ao-first"); setTimeout(function () { rib.classList.remove("ao-first"); }, 3200); }
   var rt = null;
   window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(function () { ribbon(build(st)); }, 150); });
   save();

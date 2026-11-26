@@ -128,7 +128,7 @@
     $$("[data-cv]", w).forEach(function (b) { b.addEventListener("click", function () { anim = true; draw(b.getAttribute("data-cv")); }); });
     draw("spaced");
     // экранға алғаш кіргенде қисық көз алдында сызылады
-    if (window.AO17Motion && !window.AO17Motion.still) window.AO17Motion.onView(w, function () { anim = true; draw(cur); });
+    if (window.AO17Reveal && !window.AO17Reveal.still) window.AO17Reveal.onView(w, function () { anim = true; draw(cur); });
   })();
 
   // ------------------------------------------------------------------ Жаргон детекторы (Фейнман әдісі)
@@ -234,8 +234,8 @@
   // ------------------------------------------------------------------ Араластыру: блоктардан аралас ретке (FLIP)
   (function () {
     var mix = $(".mt-mix");
-    if (!mix || !window.AO17Motion || window.AO17Motion.still) return;
-    window.AO17Motion.onView(mix, function () {
+    if (!mix || !window.AO17Reveal || window.AO17Reveal.still) return;
+    window.AO17Reveal.onView(mix, function () {
       var rows = $$(".mt-mixrow", mix);
       if (rows.length < 2) return;
       var src = $$("i", rows[0]), dst = $$("i", rows[1]), used = {};
