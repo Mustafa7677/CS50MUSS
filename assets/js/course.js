@@ -67,6 +67,27 @@
   var pe = document.querySelector('.crs-pp[data-part="exam"]');
   if (pe && (passed || fin != null)) pe.textContent = "Өткен апта сынағы: " + passed + " / 12" + (fin != null ? " · емтихан: " + fin + "%" : "");
 
+  // оқу кестесі (ao17-plan.js: «ao17cs:plan-dates»): келесі оқу кеші мен аяқталу күні
+  (function () {
+    var pc = J("ao17cs:plan-dates"), chip = document.querySelector("[data-plan-chip]");
+    if (!chip || !Array.isArray(pc.dates) || !pc.dates.length) return;
+    var MON = ["қаңтар", "ақпан", "наурыз", "сәуір", "мамыр", "маусым", "шілде", "тамыз", "қыркүйек", "қазан", "қараша", "желтоқсан"];
+    var WD = ["Жексенбі", "Дүйсенбі", "Сейсенбі", "Сәрсенбі", "Бейсенбі", "Жұма", "Сенбі"];
+    var t = new Date(), now = t.getFullYear() + "-" + String(t.getMonth() + 1).padStart(2, "0") + "-" + String(t.getDate()).padStart(2, "0");
+    function day(s) { var p = String(s).split("-"); return new Date(+p[0], +p[1] - 1, +p[2], 12); }
+    function fmt(d) { return (d.getFullYear() !== t.getFullYear() ? d.getFullYear() + " ж. " : "") + d.getDate() + " " + MON[d.getMonth()]; }
+    var nx = pc.dates.filter(function (s) { return /^\d{4}-\d{2}-\d{2}$/.test(s) && s >= now; })[0];
+    var a = document.createElement("a");
+    a.href = "plan.html";
+    if (nx) {
+      var d = day(nx);
+      a.textContent = "Оқу кестең: келесі кеш - " + (nx === now ? "бүгін" : WD[d.getDay()].toLowerCase() + ", " + fmt(d)) + (/^\d{2}:\d{2}$/.test(pc.time) ? ", " + pc.time : "")
+        + (pc.end ? " · аяқталу күні - " + fmt(day(pc.end)) : "");
+    } else a.textContent = "Оқу кестең бітті: оны бүгіннен қайта құр";
+    chip.appendChild(a);
+    chip.hidden = false;
+  })();
+
   function on(x) { return x.st > 0; }
   var s1 = order[0].some(on), s2 = order[1].some(on);
   if (!s1 && !s2) return;

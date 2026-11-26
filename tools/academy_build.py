@@ -32,6 +32,7 @@ import comic_eps as CXE  # noqa: E402
 import course as CRS  # noqa: E402
 import lab3d as L3  # noqa: E402
 import ao17exam as AX  # noqa: E402
+import ao17plan as AP  # noqa: E402
 sys.path.insert(0, str(ROOT / "assets" / "py"))
 import ao_judge as JG  # noqa: E402
 import math  # noqa: E402,F401  (number.check өрнектері үшін)
@@ -782,10 +783,11 @@ def course_html(lessons, st):
         <p class="crs-lede">Екі бөлім, бір жол. Бірінші бөлімде он екі аптада логикадан жүйеге дейін жүресің: ұғымды түсіндірме мен комикстен аласың, кодты өзің жазасың. Екінші бөлімде технологияның ішіне кіресің: процессордың, желінің, дерекқордың, нейрон желінің ішін 3D симуляцияда көріп, өлшейсің. Қазақ тілінде, тегін, браузерде.</p>
         <ul class="crs-stats"><li><b>2</b><span>бөлім</span></li><li><b>{tot_l + n3_l}</b><span>сабақ</span></li><li><b>{tot_t + n3_q}</b><span>тапсырма мен тест</span></li>
           <li><b>{len(CXE.EPISODES)}</b><span>комикс эпизоды</span></li><li><b>{len(LS)}</b><span>3D зертхана</span></li><li><b>≈{hours}</b><span>сағат</span></li></ul>
-        <p class="crs-cta"><a class="btn gold" id="crs-go" href="m01/l01.html">1-аптадан бастау</a> <a class="btn secondary" href="#part2">2-бөлім: 3D зертхана</a> <a class="btn secondary" href="comics.html">Комикстер</a> <a class="btn secondary" href="../posters.html#ao17cs">Курс мұқабалары</a></p>
+        <p class="crs-cta"><a class="btn gold" id="crs-go" href="m01/l01.html">1-аптадан бастау</a> <a class="btn secondary" href="#part2">2-бөлім: 3D зертхана</a> <a class="btn secondary" href="comics.html">Комикстер</a> <a class="btn secondary" href="../posters.html#ao17cs">Курс мұқабалары</a> <a class="btn secondary" href="plan.html">Оқу кестесі</a></p>
+        <p class="crs-plan" data-plan-chip hidden></p>
         <p class="crs-me" id="crs-me" hidden></p>
       </header>
-      <nav class="crs-parts" aria-label="Курстың екі бөлімі">
+      <nav class="crs-parts" aria-label="Курс бөлімдері">
         <a class="crs-part" href="#part1"><span class="crs-pk">1-бөлім</span><b>Негіз</b><span>12 апта · {tot_l} сабақ · {tot_t} тапсырма. Логикадан жүйеге дейін: Python, C, жад.</span><span class="crs-pp" data-part="0"></span></a>
         <a class="crs-part crs-part3" href="#exam"><span class="crs-pk">Бағалау</span><b>Сынақ және сертификат</b><span>12 апта сынағы, 2 бөлім емтиханы, қорытынды емтихан. Нәтижең сертификатты ашады.</span><span class="crs-pp" data-part="exam"></span></a>
         <a class="crs-part crs-part2" href="#part2"><span class="crs-pk">2-бөлім</span><b>Технологияның ішінен</b><span>{len(LS)} зертхана · {n3_l} сабақ · {n3_q} тест сұрағы. Машинаның ішін 3D симуляцияда көр.</span><span class="crs-pp" data-part="1"></span></a>
@@ -1065,7 +1067,8 @@ def map_html(lessons):
 
 def build(write=True):
     lessons = load_lessons()
-    errs = validate(lessons) + validate_comics(lessons) + L3.validate() + AX.validate(lessons)
+    titles = {m[0]: m[2] for m in C.ALL_MODULES}   # оқу кестесі: аптаның толық атауы
+    errs = validate(lessons) + validate_comics(lessons) + L3.validate() + AX.validate(lessons) + AP.validate(lessons, titles)
     if errs:
         print("academy: ТЕКСЕРУДЕН ӨТПЕДІ:", *errs, sep="\n  ")
         sys.exit(1)
@@ -1082,7 +1085,7 @@ def build(write=True):
         return
     plan_by_id = {p["id"]: p for p in C.plan()}
     pages = [index_html(lessons, st), lab_html(), map_html(lessons), models_html(), study_html(lessons), comics_html(lessons), course_html(lessons, st),
-             AX.exam_html(lessons, page), AX.cert_html(lessons, page)] + L3.pages(page) + [track_html(t) for t in TR.TRACKS]
+             AX.exam_html(lessons, page), AX.cert_html(lessons, page), AP.plan_html(lessons, titles, page)] + L3.pages(page) + [track_html(t) for t in TR.TRACKS]
     by_mod = {}
     for L in lessons:
         by_mod.setdefault(L["moduleId"], []).append(L)

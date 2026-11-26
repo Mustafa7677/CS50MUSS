@@ -233,6 +233,7 @@
       res[mode] = { best: best, last: pct, at: run.doneAt, bestAt: pct >= (r.best || 0) ? run.doneAt : (r.bestAt || r.at), runs: (r.runs || 0) + 1 };
       S(KEY, res);
       D(RUN);
+      if (window.CS50KZ && typeof window.CS50KZ.check === "function") window.CS50KZ.check();   // жаңа жетістік болса - хабарлама
       root.classList.remove("xm-running");
       result(pct, ok, per, wrong, best);
     }

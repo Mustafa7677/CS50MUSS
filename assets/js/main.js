@@ -3091,6 +3091,11 @@ try{\n${code.replace(/<\/script/gi, "<\\/script")}\n}catch(e){__s("Қате: "+e
         if (k.startsWith("check:")) { const a = readJson(k, []); if (a.length && a.every(Boolean)) tasks++; }
       }
     } catch (e) {}
+    // AO17 CS: апта сынақтары мен қорытынды емтихан (ao17-exam.js), 3D зертхана (lab3d.js), оқу кестесі (ao17-plan.js)
+    const ax = readJson("ao17cs:exam", {});
+    const ao17Weeks = Object.keys(ax).filter((k) => /^w\d+$/.test(k) && ax[k] && ax[k].best >= 70).length;
+    const lab3 = readJson("ao17:lab3d", {});
+    const ao17Lab = Object.keys(lab3).filter((k) => Array.isArray(lab3[k]) && lab3[k].some((q) => !/:(predict|contrast)$/.test(q))).length;
     const A = (id, ico, name, desc, cur, goal) => ({ id, ico, name, desc, cur: Math.min(cur, goal), goal, done: cur >= goal });
     return [
       A("first-read", "📖", "Алғашқы қадам", "Бір лекцияны оқып шығу", readAll, 1),
@@ -3132,6 +3137,11 @@ try{\n${code.replace(/<\/script/gi, "<\\/script")}\n}catch(e){__s("Қате: "+e
       A("builder", "🛠", "Жасаушы", "«Жобалар шеберханасында» бір жобаны аяқтау", Math.min(1, Object.keys((readJson("cs50kz:projects", {}).finished || {})).filter((k) => k !== "all").length), 1),
       A("capstone", "🏗", "Капстоун шебері", "«Жобалар шеберханасының» барлық 4 жобасын аяқтау", Object.keys((readJson("cs50kz:projects", {}).finished || {})).filter((k) => k !== "all").length, 4),
       A("verified", "🏅", "Расталған түлек", "Бірінші «Расталған білім сертификатын» алу (емтихан, тапсырмалар, тест)", verifiedCourses().length, 1),
+      A("ao17-quiz", "🧩", "Апта сынағы", "AO17 CS-тің бір апта сынағынан 70% жинау", ao17Weeks, 1),
+      A("ao17-weeks", "🗓", "Он екі апта", "AO17 CS-тің 12 апта сынағының бәрінен өту", ao17Weeks, 12),
+      A("ao17-lab", "🔬", "3D зерттеуші", "3D зертхананың 10 сабағында тест шешу", ao17Lab, 10),
+      A("ao17-final", "🎓", "AO17 CS түлегі", "AO17 CS қорытынды емтиханынан 70% жинап, сертификат алу", ax.final && ax.final.best >= 70 ? 1 : 0, 1),
+      A("ao17-plan", "📅", "Жоспарлы оқушы", "AO17 CS оқу кестесін күнтізбеге қосу", used.ao17plan ? 1 : 0, 1),
       A("polyglot", "🌍", "Көпқырлы", "Кемінде 3 түрлі курстан лекция оқу", COURSE_META.filter((c) => (c.id === "x" ? read : readC(c.id)) > 0).length, 3),
     ];
   }
