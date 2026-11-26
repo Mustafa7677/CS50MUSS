@@ -57,6 +57,57 @@ EXAMPLES = [
     ("bairak", "Өсімдік оюы", "def бұтақ(n, d):\n    if n == 0:\n        dot(8, \"алтын\")\n        return\n    pensize(n)\n    forward(d)\n    left(25)\n    бұтақ(n - 1, d * 0.72)\n    right(50)\n    бұтақ(n - 1, d * 0.72)\n    left(25)\n    pensize(n)\n    back(d)\n\ncolor(\"жасыл\")\npenup(); goto(0, -170); setheading(90); pendown()\nбұтақ(7, 80)\n"),
 ]
 
+# «Суретті болжа» (алдымен болжа, сосын іске қос): код беріледі, оқушы үш суреттің қайсысы шығатынын таңдайды.
+# (id, атауы, ұғымы, нұсқалар [код...], дұрыс нұсқаның нөмірі, түсіндірме). Тапсырманың коды - дұрыс нұсқаның коды.
+# Үш сурет build кезінде салынады, бір масштабта (өлшем мен орын да ақпарат). Нұсқалар сызықтары бойынша әртүрлі болуы керек.
+PRED = [
+    ("angle", "Үшбұрыш па, шаршы ма?", "бұрыш",
+     ["for _ in range(3):\n    forward(100)\n    left(90)\n", "for _ in range(3):\n    forward(100)\n    left(120)\n", "for _ in range(4):\n    forward(100)\n    left(90)\n"], 1,
+     "Үш рет 120 градусқа бұрылу - толық айналым (3 × 120 = 360), сондықтан тұйық үшбұрыш шығады. 90 градуспен үш бұрылыс шаршының үш қабырғасын ғана салар еді."),
+    ("indent", "Шегініс", "цикл денесі",
+     ["for _ in range(4):\n    forward(80)\nleft(90)\nforward(80)\n", "for _ in range(4):\n    forward(80)\n    left(90)\nforward(80)\n", "forward(80)\nleft(90)\nforward(80)\n"], 0,
+     "left(90) шегініссіз жазылған, сондықтан циклге кірмейді: тасбақа 4 рет алға жүріп (320 қадам түзу), сосын бір-ақ рет бұрылып, тағы 80 қадам жүреді."),
+    ("dir", "Оңға ма, солға ма?", "бағыт",
+     ["for _ in range(4):\n    forward(90)\n    left(90)\n", "for _ in range(2):\n    forward(90)\n    right(90)\n", "for _ in range(4):\n    forward(90)\n    right(90)\n"], 2,
+     "right() сағат тілімен бұрады, сондықтан шаршы бастапқы сызықтың астында салынады. left() болса, үстінде болар еді."),
+    ("mirror", "Теріс радиус", "симметрия",
+     ["circle(60)\nforward(140)\ncircle(60)\n", "circle(60)\npenup()\nforward(140)\npendown()\ncircle(-60)\n", "circle(60)\npenup()\nforward(140)\npendown()\ncircle(60)\n"], 1,
+     "circle(60) солға бұралып, сызықтың үстінде салынады, ал circle(-60) оңға бұралып, астында салынады. penup() екі шеңберді жалғайтын сызықты салдырмайды."),
+    ("func", "Ортаға оралу", "функция",
+     ["def тармақ():\n    forward(60)\n\nfor _ in range(6):\n    тармақ()\n    left(60)\n", "def тармақ():\n    forward(60)\n    back(60)\n\nfor _ in range(3):\n    тармақ()\n    left(60)\n",
+      "def тармақ():\n    forward(60)\n    back(60)\n\nfor _ in range(6):\n    тармақ()\n    left(60)\n"], 2,
+     "тармақ() алға барып, сол жолмен кері қайтады: тасбақа әр жолы ортаға оралады, сондықтан алты сәуле ортадан шығады. back(60) болмаса, тасбақа алға жылжып, алтыбұрыш салар еді."),
+    ("rec", "Рекурсия тереңдігі", "рекурсия",
+     ["def бұтақ(n):\n    if n == 0:\n        return\n    forward(40)\n    left(30)\n    бұтақ(n - 1)\n    right(60)\n    бұтақ(n - 1)\n    left(30)\n    back(40)\n\nleft(90)\nбұтақ(2)\n",
+      "def бұтақ(n):\n    if n == 0:\n        return\n    forward(40)\n    left(30)\n    бұтақ(n - 1)\n    left(30)\n    back(40)\n\nleft(90)\nбұтақ(2)\n",
+      "def бұтақ(n):\n    if n == 0:\n        return\n    forward(40)\n    left(30)\n    бұтақ(n - 1)\n    right(60)\n    бұтақ(n - 1)\n    left(30)\n    back(40)\n\nleft(90)\nбұтақ(1)\n"], 0,
+     "бұтақ(2) өзін екі рет шақырады, ал әр бұтақ(1) тағы екі рет бұтақ(0)-ді шақырады: 1 + 2 + 4 жол, екі қабат тармақ. n == 0 болғанда функция тоқтайды."),
+]
+
+
+def _segs(items):
+    """Суреттің «қолтаңбасы»: дөңгелектенген кесінділер жиыны (бағыты мен реті маңызды емес)."""
+    out = set()
+    for it in items:
+        if it["t"] == "s":
+            ps = [(round(x), round(y)) for x, y in it["p"]]
+            out |= {tuple(sorted(ab)) for ab in zip(ps, ps[1:]) if ab[0] != ab[1]}
+    return frozenset(out)
+
+
+def pred_data():
+    T, out = _turtle(), []
+    for pid, title, concept, codes, ans, why in PRED:
+        opts = [json.loads(T.run(c)) for c in codes]
+        xs = [x for o in opts for it in o["items"] if it["t"] in "sf" for x, _ in it["p"]]
+        ys = [-y for o in opts for it in o["items"] if it["t"] in "sf" for _, y in it["p"]]
+        side = max(max(xs) - min(xs), max(ys) - min(ys)) * 1.2 + 16
+        cx, cy = (max(xs) + min(xs)) / 2, (max(ys) + min(ys)) / 2
+        out.append({"id": pid, "title": title, "concept": concept, "code": codes[ans], "ans": ans, "why": why,
+                    "box": f"{cx - side / 2:g} {cy - side / 2:g} {side:g} {side:g}", "opts": [o["items"] for o in opts], "errs": [o["err"] for o in opts]})
+    return out
+
+
 COMMANDS = [("forward(d)  ·  fd", "d қадам алға"), ("back(d)  ·  bk", "d қадам артқа"), ("left(a)  ·  lt", "a градус солға бұрылу"),
             ("right(a)  ·  rt", "a градус оңға бұрылу"), ("penup()  ·  pendown()", "қаламды көтеру / түсіру"),
             ("goto(x, y)", "(x, y) нүктесіне бару"), ("setheading(a)", "бағытты a градусқа қою (0 - оңға, 90 - жоғары)"),
@@ -104,7 +155,7 @@ def data():
     for eid, title, code in EXAMPLES:
         r = json.loads(T.run(code))
         examples.append({"id": eid, "title": title, "code": code, "items": r["items"]})
-    return {"tasks": tasks, "examples": examples}
+    return {"tasks": tasks, "examples": examples, "pred": [{k: v for k, v in z.items() if k != "errs"} for z in pred_data()]}
 
 
 def validate():
@@ -121,7 +172,19 @@ def validate():
         r = json.loads(T.run(code))
         if r["err"] or not r["items"]:
             errs.append(f"ою студиясы: «{eid}» үлгісі қате ({r['err']})")
+    for z in pred_data():   # «Суретті болжа»: қатесіз, үш сурет әртүрлі
+        if any(z["errs"]) or any(not o for o in z["opts"]):
+            errs.append(f"ою студиясы: «{z['id']}» болжау тапсырмасының нұсқасы қате ({z['errs']})")
+        elif len({_segs(o) for o in z["opts"]}) != len(z["opts"]):
+            errs.append(f"ою студиясы: «{z['id']}» болжау тапсырмасының екі нұсқасы бірдей сурет салады")
+    if sorted({z[4] for z in PRED}) != [0, 1, 2]:
+        errs.append("ою студиясы: болжауда дұрыс жауап үш орынның бәрінде де болсын (әйтпесе әрдайым «А» таңдауға болады)")
     return errs
+
+
+def pred_list(pred):
+    return "".join(f'<li><button type="button" class="oy-pz" data-opz="{z["id"]}" aria-pressed="false"><b>{i}</b> {E(z["title"])}<span class="sr-only" data-sr></span></button></li>'
+                   for i, z in enumerate(pred, 1))
 
 
 def oyu_html(page):
@@ -131,7 +194,7 @@ def oyu_html(page):
     gallery = "".join(f'<li class="oy-ex"><button type="button" data-example="{e["id"]}">{svg(e["items"])}<b>{E(e["title"])}</b><span>Кодын ашу</span></button></li>' for e in d["examples"])
     cmds = "".join(f"<tr><td><code>{E(c)}</code></td><td>{E(x)}</td></tr>" for c, x in COMMANDS)
     payload = json.dumps({"tasks": [{k: v for k, v in t.items()} for t in d["tasks"]],
-                          "examples": [{"id": e["id"], "title": e["title"], "code": e["code"]} for e in d["examples"]]},
+                          "examples": [{"id": e["id"], "title": e["title"], "code": e["code"]} for e in d["examples"]], "pred": d["pred"]},
                          ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     body = f"""  <div class="layout single">
     <article class="content oy" id="main" data-oyu>
@@ -179,6 +242,22 @@ def oyu_html(page):
           <p class="oy-row"><button class="btn gold" type="button" data-oy-check>Тексеру</button> <label class="oy-sw"><input type="checkbox" data-oy-showt checked> мақсатты көрсету</label></p>
           <p class="oy-verdict" data-oy-verdict aria-live="polite"></p>
         </div>
+      </section>
+      <section class="oy-pred" aria-labelledby="oy-p-h" data-oy-pred>
+        <h2 id="oy-p-h">Суретті болжа</h2>
+        <p class="oy-note">Кодты оқы да, қай сурет шығатынын таңда. Сосын «Тексеру» дұрыс жауапты көрсетіп, себебін түсіндіреді. Кодты іске қоспай-ақ оның не салатынын көру - бағдарламашының басты дағдысы.</p>
+        <ol class="oy-plist">{pred_list(d["pred"])}</ol>
+        <div class="oy-pgrid">
+          <div class="oy-pleft">
+            <h3 class="oy-ptitle" data-oy-ptitle></h3>
+            <div class="oy-pcode" data-oy-pcode role="region" aria-label="Тапсырманың коды"></div>
+          </div>
+          <fieldset class="oy-popts"><legend>Қай сурет шығады?</legend>
+            {"".join(f'<label class="oy-popt"><input type="radio" name="oy-pick" value="{i}" data-oy-opt><span class="oy-pl" aria-hidden="true">{L}</span><svg viewBox="-220 -220 440 440" aria-hidden="true"><g data-oy-og="{i}"></g></svg><span class="sr-only">{L} нұсқасы</span></label>' for i, L in enumerate("АӘБ"))}
+          </fieldset>
+        </div>
+        <p class="oy-row"><button class="btn gold" type="button" data-oy-pcheck disabled>Тексеру</button> <button class="btn secondary" type="button" data-oy-pstudio>Студияда ашу</button></p>
+        <p class="oy-pmsg" data-oy-pmsg role="status"></p>
       </section>
       <section class="oy-gallery" aria-labelledby="oy-g-h">
         <h2 id="oy-g-h">Галерея</h2>

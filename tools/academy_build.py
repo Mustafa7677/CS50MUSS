@@ -836,10 +836,10 @@ def course_html(lessons, st):
         <p class="crs-note">Сабақтағы Python бірден көрінетін нәтижеге айналатын екі орта. Бота әлемінде код Ботаны жүргізеді, Ою студиясында қазақ оюын салады. Екеуінде де код браузерде нағыз Python-да орындалады: қате жолы белгіленеді, себебі қазақша түсіндіріледі.</p>
         <ul class="crs-play-l" role="list">
           <li class="crs-pl"><img src="../assets/img/bota-happy.svg" alt="" width="84" height="84"><div><h3><a href="bota.html">Бота әлемі</a></h3>
-            <p>{len(BT.LEVELS)} деңгей: тізбек, функция, for, while, if және лабиринт алгоритмі. Кей деңгейде код бірнеше әлемде өтуі керек: жаттап жазған шешім өтпейді.</p>
+            <p>{len(BT.LEVELS)} деңгей: тізбек, функция, for, while, if және лабиринт алгоритмі. «Болжап көр» бөлімінде кодты іске қоспай оқып, Бота қайда тоқтайтынын болжайсың, ал «Өз әлемің» бөлімінде әлемді өзің салып, досыңа жібересің.</p>
             <p class="crs-plp" data-play="bota">Бірінші деңгейден баста</p></div></li>
           <li class="crs-pl">{OY.svg(OY.data()["examples"][0]["items"], "crs-pl-oyu", fit=True)}<div><h3><a href="oyu.html">Ою студиясы</a></h3>
-            <p>{len(OY.TASKS)} тапсырма: цикл, функция, симметрия және рекурсия суретке айналады. Галерея, PNG мен SVG, сілтемемен бөлісу.</p>
+            <p>{len(OY.TASKS)} тапсырма: цикл, функция, симметрия және рекурсия суретке айналады. «Суретті болжа» бөлімінде кодты оқып, қай сурет шығатынын таңдайсың.</p>
             <p class="crs-plp" data-play="oyu">Шаршыдан баста</p></div></li>
         </ul>
       </section>
@@ -918,7 +918,7 @@ def index_html(lessons, st):
       <h1>Негізден Senior деңгейіне дейін, қазақ тілінде</h1>
       <p>Курс таңдамайсыз - бағыт таңдайсыз. Әр бағыт төрт сатыдан тұрады: Негіз, Junior, Middle, Senior. Әр сатыда не үйренетініңіз, қай модульді оқитыныңыз және портфолиоға қандай жоба жасайтыныңыз алдын ала жазылған. Мазмұн AO17 үшін жаңадан жазылады, әр тапсырма автоматты тексеріледі.</p>
       <p class="ac-honest">Қазір дайын: <b>{st["complete_lessons"]}</b> толық сабақ, <b>{st["auto_checked_tasks"]}</b> автоматты тексерілетін тапсырма, <b>{st["python_examples"]}</b> тексерілген Python мысалы. Қалғаны - жоспар, ол бөлек белгіленген.</p>
-      <p class="ac-cta"><a class="btn gold" href="course.html">AO17 CS курсы: 12 апта</a> <a class="btn secondary" href="#tracks">Бағыт таңдау</a> <a class="btn secondary" href="m01/l01.html">Бірінші сабақтан бастау</a> <a class="btn secondary" href="3d/index.html">3D зертхана</a> <a class="btn secondary" href="comics.html">Комикс: Нұрай, Мустафа және Бота</a> <a class="btn secondary" href="lab.html">Логика зертханасы</a> <a class="btn secondary" href="labs/index.html">CS зертханалары</a> <a class="btn secondary" href="ielts/index.html">IELTS</a> <a class="btn secondary" href="sat/index.html">Digital SAT</a> <a class="btn secondary" href="models.html">Интерактивті модельдер</a> <a class="btn secondary" href="study.html">Менің оқуым</a> <a class="btn secondary" href="map.html">Білім картасы</a></p>
+      <p class="ac-cta"><a class="btn gold" href="course.html">AO17 CS курсы: 12 апта</a> <a class="btn secondary" href="#tracks">Бағыт таңдау</a> <a class="btn secondary" href="m01/l01.html">Бірінші сабақтан бастау</a> <a class="btn secondary" href="3d/index.html">3D зертхана</a> <a class="btn secondary" href="comics.html">Комикс: Нұрай, Мустафа және Бота</a> <a class="btn secondary" href="bota.html">Бота әлемі</a> <a class="btn secondary" href="oyu.html">Ою студиясы</a> <a class="btn secondary" href="lab.html">Логика зертханасы</a> <a class="btn secondary" href="labs/index.html">CS зертханалары</a> <a class="btn secondary" href="ielts/index.html">IELTS</a> <a class="btn secondary" href="sat/index.html">Digital SAT</a> <a class="btn secondary" href="models.html">Интерактивті модельдер</a> <a class="btn secondary" href="study.html">Менің оқуым</a> <a class="btn secondary" href="map.html">Білім картасы</a></p>
       <p><a class="ac-film" href="../film/cs/">Фильм: «Даладан жұлдызға», 36 секунд</a></p>
     </header>
     <section class="ac-sec tl-sec" id="tracks"><h2>Бес бағыт, төрт саты</h2>

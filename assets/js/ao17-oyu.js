@@ -162,6 +162,68 @@
     }
   });
 
+  // ------------------------------------------------------------------ «Суретті болжа»: алдымен болжа, сосын көр
+  // Үш нұсқаның суреті build кезінде салынған (бір масштабта); оқушы біреуін таңдайды, «Тексеру» дұрысын белгілеп, түсіндіреді.
+  (function () {
+    var P = Array.isArray(D.pred) ? D.pred : [], pcode = $("[data-oy-pcode]"), pmsg = $("[data-oy-pmsg]"), chk = $("[data-oy-pcheck]");
+    if (!P.length || !pcode) return;
+    var Z = {}; P.forEach(function (z, i) { z.n = i + 1; Z[z.id] = z; });
+    st.pred = obj(st.pred);
+    var z = null;
+    var opts = $$("[data-oy-opt]");
+    function marks() {
+      $$("[data-opz]").forEach(function (b) {
+        var id = b.getAttribute("data-opz"), v = st.pred[id];
+        b.setAttribute("aria-pressed", String(!!z && z.id === id));
+        b.classList.toggle("is-ok", v === 1); b.classList.toggle("is-bad", v === 0);
+        b.querySelector("[data-sr]").textContent = v === 1 ? ": дұрыс таптың" : v === 0 ? ": жауап қате болды" : "";
+      });
+    }
+    function open(id) {
+      z = Z[id];
+      $("[data-oy-ptitle]").textContent = z.n + ". " + z.title + " · " + z.concept;
+      pcode.textContent = "";
+      z.code.replace(/\n$/, "").split("\n").forEach(function (ln, i) {
+        var d = document.createElement("div"), n = document.createElement("span"), c = document.createElement("code");
+        d.className = "oy-pln"; n.className = "oy-pn"; n.setAttribute("aria-hidden", "true"); n.textContent = String(i + 1);
+        c.textContent = ln || " "; d.appendChild(n); d.appendChild(c); pcode.appendChild(d);
+      });
+      opts.forEach(function (r, i) {
+        r.checked = false; r.disabled = false;
+        r.closest(".oy-popt").classList.remove("is-ok", "is-bad", "is-sel");
+        var g = $('[data-oy-og="' + i + '"]');
+        g.parentNode.setAttribute("viewBox", z.box);
+        paint(g, z.opts[i], false);
+      });
+      chk.disabled = true; pmsg.textContent = ""; pmsg.className = "oy-pmsg";
+      st.pz = id; save(); marks();
+    }
+    opts.forEach(function (r) {
+      r.addEventListener("change", function () { opts.forEach(function (o) { o.closest(".oy-popt").classList.toggle("is-sel", o.checked); }); chk.disabled = false; });
+    });
+    chk.addEventListener("click", function () {
+      var pick = opts.filter(function (r) { return r.checked; })[0];
+      if (!pick || !z) return;
+      var i = Number(pick.value), ok = i === z.ans, L = "АӘБ";
+      opts.forEach(function (r, j) {   // таңдау белгісінің орнына нәтиже: дұрысы жасыл, қате таңдау қызыл
+        var lb = r.closest(".oy-popt");
+        r.disabled = true; lb.classList.remove("is-sel");
+        lb.classList.toggle("is-ok", j === z.ans); lb.classList.toggle("is-bad", j === i && !ok);
+      });
+      st.pred[z.id] = ok ? 1 : st.pred[z.id] === 1 ? 1 : 0; save(); marks();
+      pmsg.className = "oy-pmsg " + (ok ? "ok" : "bad");
+      pmsg.textContent = (ok ? "Дұрыс! " : "Дұрыс жауап - " + L.charAt(z.ans) + ". ") + z.why;
+      chk.disabled = true;
+    });
+    $("[data-oy-pstudio]").addEventListener("click", function () {
+      if (!z) return;
+      setMode("free", z.code); st.code.free = z.code; save(); run();
+      var tb = root.querySelector(".oy-studio"); if (tb && tb.scrollIntoView) tb.scrollIntoView({ block: "start" });
+    });
+    $$("[data-opz]").forEach(function (b) { b.addEventListener("click", function () { open(b.getAttribute("data-opz")); }); });
+    open(Z[st.pz] ? st.pz : P[0].id);
+  })();
+
   // ------------------------------------------------------------------ галерея
   $$("[data-example]").forEach(function (b) {
     b.addEventListener("click", function () {

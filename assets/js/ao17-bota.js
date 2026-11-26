@@ -457,6 +457,7 @@
       var ok = guess[0] === z.fx && guess[1] === z.fy, at = cellLabel(z.fx, z.fy) + "да";
       ring(z.fx, z.fy, "bw-final");
       st.pred[z.id] = ok ? 1 : st.pred[z.id] === 1 ? 1 : 0; save(); marks();
+      if (ok && window.CS50KZ && typeof window.CS50KZ.check === "function") window.CS50KZ.check();   // «Болжампаз» жетістігі
       pmsg.className = "bw-pmsg " + (ok ? "ok" : "bad");
       pmsg.textContent = (ok ? "Дұрыс! Бота " + at + " тоқтады. " : "Бота " + at + " тоқтады, ал сенің болжамың - " + cellLabel(guess[0], guess[1]) + ". ") + z.why;
       var n = Object.keys(st.pred).filter(function (k) { return st.pred[k] === 1; }).length;

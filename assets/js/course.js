@@ -72,9 +72,11 @@
     var bt = document.querySelector('[data-play="bota"]'), oy = document.querySelector('[data-play="oyu"]');
     var stars = J("ao17cs:bota").stars, n = 0, sum = 0;
     Object.keys(stars && typeof stars === "object" ? stars : {}).forEach(function (k) { var v = Number(stars[k]); if (v > 0) { n++; sum += Math.min(3, v); } });
-    if (bt && n) bt.textContent = "Өткен деңгей: " + n + " / 16 · жұлдыз: " + sum + " / 48";
+    var pr = J("ao17cs:bota").pred, pn = Object.keys(pr && typeof pr === "object" ? pr : {}).filter(function (k) { return pr[k] === 1; }).length;
+    if (bt && (n || pn)) bt.textContent = "Өткен деңгей: " + n + " / 16 · жұлдыз: " + sum + " / 48" + (pn ? " · дұрыс болжам: " + pn + " / 8" : "");
     var done = J("ao17cs:oyu").done, m = Object.keys(done && typeof done === "object" ? done : {}).length;
-    if (oy && m) oy.textContent = "Орындалған тапсырма: " + m + " / 8";
+    var op = J("ao17cs:oyu").pred, opn = Object.keys(op && typeof op === "object" ? op : {}).filter(function (k) { return op[k] === 1; }).length;
+    if (oy && (m || opn)) oy.textContent = "Орындалған тапсырма: " + m + " / 8" + (opn ? " · дұрыс болжам: " + opn + " / 6" : "");
   })();
 
   // оқу кестесі (ao17-plan.js: «ao17cs:plan-dates»): келесі оқу кеші мен аяқталу күні
