@@ -109,7 +109,7 @@ def exam_html(lessons, page):
   <script type="application/json" id="xm-bank">{data}</script>"""
     return "academy/exam.html", page("academy/exam.html", "AO17 CS: апта сынақтары мен қорытынды емтихан",
                                      "AO17 CS курсының бағалауы: 12 апта сынағы, бөлім емтихандары және қорытынды емтихан. Нәтиже апта мен зертхана бойынша талданады.",
-                                     body, scripts=("assets/js/ao17-exam.js",), styles=("assets/css/ao17-exam.css",))
+                                     body, scripts=("assets/js/ao17-motion.js", "assets/js/ao17-exam.js"), styles=("assets/css/ao17-exam.css", "assets/css/ao17-motion.css"))
 
 
 def cert_html(lessons, page):
@@ -151,4 +151,4 @@ def cert_html(lessons, page):
   <script type="application/json" id="cert-data">{data}</script>"""
     return "academy/certificate.html", page("academy/certificate.html", "AO17 CS сертификаты",
                                             "AO17 CS курсының сертификаты: қорытынды емтиханда кемінде 70% алғанда ашылады, басып шығаруға не PDF ретінде сақтауға болады.",
-                                            body, scripts=("assets/js/ao17-exam.js",), styles=("assets/css/ao17-exam.css",))
+                                            body, scripts=("assets/js/ao17-motion.js", "assets/js/ao17-exam.js"), styles=("assets/css/ao17-exam.css", "assets/css/ao17-motion.css"))

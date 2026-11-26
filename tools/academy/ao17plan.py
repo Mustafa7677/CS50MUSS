@@ -107,4 +107,4 @@ def plan_html(lessons, titles, page):
   <script type="application/json" id="plan-data">{payload}</script>"""
     return "academy/plan.html", page("academy/plan.html", "AO17 CS: оқу кестесі",
                                      "AO17 CS курсының жеке оқу кестесі: аптасына қанша сағат бөлетініңді таңда, кесте әр сабақтың күнін есептейді және оны күнтізбеге қосады.",
-                                     body, scripts=("assets/js/ao17-plan.js",), styles=("assets/css/ao17-plan.css",))
+                                     body, scripts=("assets/js/ao17-motion.js", "assets/js/ao17-plan.js"), styles=("assets/css/ao17-plan.css", "assets/css/ao17-motion.css"))

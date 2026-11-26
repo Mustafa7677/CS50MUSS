@@ -690,8 +690,8 @@ def course_map(weeks, labs):
     xw = {sid: x0 + i * (x1 - x0) / (len(weeks) - 1) for i, (_, sid, _, _) in enumerate(weeks)}
     xl = {lid: x1 - j * (x1 - x0) / (len(labs) - 1) for j, (_, lid, _) in enumerate(labs)}
     mid = (top + bot) / 2
-    g = [f'<path class="cm-l1" d="M{x0} {top} H{x1} C976 {top} 982 {top + 26} 982 {top + 56} V{mid}"/>',
-         f'<path class="cm-l2" d="M982 {mid} V{bot - 56} C982 {bot - 26} 976 {bot} {x1} {bot} H{x0}"/>']
+    g = [f'<path class="cm-l1" pathLength="1" d="M{x0} {top} H{x1} C976 {top} 982 {top + 26} 982 {top + 56} V{mid}"/>',
+         f'<path class="cm-l2" pathLength="1" d="M982 {mid} V{bot - 56} C982 {bot - 26} 976 {bot} {x1} {bot} H{x0}"/>']
     rules = []
     for _, sid, _, lids in weeks:
         for lid in dict.fromkeys(lids):
@@ -700,8 +700,8 @@ def course_map(weeks, labs):
                 g.append(f'<path class="cm-x cx-{sid} cx-{lid}" d="M{a:.1f} {top + 16} C{a:.1f} {mid}, {b:.1f} {mid}, {b:.1f} {bot - 16}"/>')
     def station(cls, sid, x, y, n, label, href, above):
         ly = y - 24 if above else y + 36
-        rules.append(sid)
-        return (f'<a class="cm-st {cls}" href="{href}" data-st="{sid}" aria-label="{E(label)}">'
+        rules.append(sid)   # rules-тің реті - жол бойындағы реті (ao17-motion.css: бекеттер кезекпен шығады)
+        return (f'<a class="cm-st {cls}" href="{href}" data-st="{sid}" aria-label="{E(label)}" style="--i:{len(rules) - 1}">'
                 f'<circle class="cm-ring" cx="{x:.1f}" cy="{y}" r="19"/><circle class="cm-dot" cx="{x:.1f}" cy="{y}" r="13"/>'
                 f'<text class="cm-n" x="{x:.1f}" y="{y + 4}">{n}</text><text class="cm-lb" x="{x:.1f}" y="{ly}">{E(label.split(": ", 1)[1])}</text></a>')
     for i, (n, sid, short, _) in enumerate(weeks):
@@ -711,7 +711,7 @@ def course_map(weeks, labs):
     g.append(f'<text class="cm-ln" x="{x0 - 14}" y="30">1-бөлім · Негіз: 12 апта</text>'
              f'<text class="cm-ln cm-ln2" x="{x0 - 14}" y="{bot + 76}">2-бөлім · Технологияның ішінен: {len(labs)} зертхана</text>')
     css = "".join(f'.crs-map:has([data-st="{r}"]:is(:hover,:focus-visible)) .cx-{r}{{opacity:1;stroke:#c98a00;stroke-dasharray:none}}' for r in rules)
-    return (f'<section class="crs-map" aria-labelledby="map-h"><h2 id="map-h">Курс картасы</h2>'
+    return (f'<section class="crs-map" aria-labelledby="map-h" data-ao-in><h2 id="map-h">Курс картасы</h2>'
             f'<p class="crs-note">Курс - бір жол: 12 аптадан кейін 3D зертханаларға өтесің. Бекетті басса, сол апта не зертхана ашылады; үзік сызық - аптада қолданылатын 3D зертхана (бекетті нұсқағанда жанады).</p>'
             f'<style>{css}</style><div class="crs-map-sc"><svg class="crs-map-svg" viewBox="0 0 1000 380" role="group" aria-label="AO17 CS курсының картасы: 12 апта және {len(labs)} зертхана">{"".join(g)}</svg></div>'
             '<p class="crs-map-lg"><span class="cml cml-done">аяқталды</span><span class="cml cml-on">басталды</span><span class="cml cml-next">келесі қадам</span></p></section>')
@@ -746,7 +746,7 @@ def course_html(lessons, st):
             + (f'<li class="crs-pj"><span>Жоба</span><p><a href="{mid}/{pj["slug"]}.html#project">{E(CRS.PROJECT_KK.get(pj["project"]["id"], pj["project"]["title"]))}</a>'
                + (f' <small lang="en">{E(pj["project"]["title"])}</small>' if pj["project"]["id"] in CRS.PROJECT_KK else "") + '</p></li>' if pj else "")
         thumb = f"assets/img/posters/thumb/ao17cs-w{n:02d}.jpg"
-        cover = (f'<a class="crs-wv" href="../posters.html#cs-w{n:02d}" aria-label="{n}-аптаның комикс-мұқабасы"><img src="../{thumb}" alt="" width="240" height="360" loading="lazy"></a>'
+        cover = (f'<a class="crs-wv" href="../posters.html#cs-w{n:02d}" aria-label="{n}-аптаның комикс-мұқабасы" data-ao-in="cover"><img src="../{thumb}" alt="" width="240" height="360" loading="lazy"></a>'
                  if (ROOT / thumb).exists() else "")
         weeks.append(f'<li class="crs-w{" has-cover" if cover else ""}" id="w{n}">{cover}<p class="crs-wn"><span>Апта</span><b>{n}</b></p><div class="crs-wb">'
                      f'<h3><a href="{mid}/l01.html">{E(mods[mid][2])}</a></h3><p class="crs-wq">{E(question)}</p>'
@@ -777,13 +777,13 @@ def course_html(lessons, st):
           "image": "https://mustafa7677.github.io/CS50MUSS/assets/img/og/course-ao17cs.jpg",
           "hasCourseInstance": {"@type": "CourseInstance", "courseMode": "online", "courseWorkload": f"PT{hours}H"}}
     body = f"""  <div class="layout single">
-    <article class="content crs" id="main">
+    <article class="content crs" id="main" data-ao-progress>
       <header class="crs-hero">
         <p class="crs-k">AO17 CS</p>
         <h1>Компьютерлік ғылымға кіріспе</h1>
         <p class="crs-lede">Екі бөлім, бір жол. Бірінші бөлімде он екі аптада логикадан жүйеге дейін жүресің: ұғымды түсіндірме мен комикстен аласың, кодты өзің жазасың. Екінші бөлімде технологияның ішіне кіресің: процессордың, желінің, дерекқордың, нейрон желінің ішін 3D симуляцияда көріп, өлшейсің. Қазақ тілінде, тегін, браузерде.</p>
-        <ul class="crs-stats"><li><b>2</b><span>бөлім</span></li><li><b>{tot_l + n3_l}</b><span>сабақ</span></li><li><b>{tot_t + n3_q}</b><span>тапсырма мен тест</span></li>
-          <li><b>{len(CXE.EPISODES)}</b><span>комикс эпизоды</span></li><li><b>{len(LS)}</b><span>3D зертхана</span></li><li><b>≈{hours}</b><span>сағат</span></li></ul>
+        <ul class="crs-stats"><li><b data-ao-count>2</b><span>бөлім</span></li><li><b data-ao-count>{tot_l + n3_l}</b><span>сабақ</span></li><li><b data-ao-count>{tot_t + n3_q}</b><span>тапсырма мен тест</span></li>
+          <li><b data-ao-count>{len(CXE.EPISODES)}</b><span>комикс эпизоды</span></li><li><b data-ao-count>{len(LS)}</b><span>3D зертхана</span></li><li><b data-ao-count>≈{hours}</b><span>сағат</span></li></ul>
         <p class="crs-cta"><a class="btn gold" id="crs-go" href="m01/l01.html">1-аптадан бастау</a> <a class="btn secondary" href="#part2">2-бөлім: 3D зертхана</a> <a class="btn secondary" href="comics.html">Комикстер</a> <a class="btn secondary" href="../posters.html#ao17cs">Курс мұқабалары</a> <a class="btn secondary" href="plan.html">Оқу кестесі</a></p>
         <p class="crs-plan" data-plan-chip hidden></p>
         <p class="crs-me" id="crs-me" hidden></p>
@@ -841,7 +841,7 @@ def course_html(lessons, st):
   <script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>"""
     return "academy/course.html", page("academy/course.html", "AO17 CS: Компьютерлік ғылымға кіріспе",
                                        f"AO17 CS - екі бөлімді тегін курс қазақ тілінде: 12 апта логикадан жүйеге дейін және {len(LS)} 3D зертхана. {tot_l + n3_l} сабақ, комикстер, 3D симуляциялар.",
-                                       body, scripts=("assets/js/course.js",), styles=("assets/css/course.css",))
+                                       body, scripts=("assets/js/ao17-motion.js", "assets/js/course.js"), styles=("assets/css/course.css", "assets/css/ao17-motion.css"))
 
 
 def study_html(lessons):

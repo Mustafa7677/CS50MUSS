@@ -1,0 +1,80 @@
+/* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
+/* AO17 CS беттерінің қозғалыс қабаты (assets/js/ao17-motion.js). Тек transform, opacity, stroke-dash қолданылады; әр анимация
+   бір рет, мағынасы бар жерде: курс картасы сызылады, мұқабалар ашылады, таспа өседі, қисық сызылады, ұпай шеңбері толады.
+   Бәрі .ao-move ішінде: қозғалысты азайтқанда (.ao-still) ешқайсысы іске қосылмайды. Аяқталған соң элемент өз стиліне оралады
+   (fill-mode: backwards), сондықтан hover мен прогресс бояулары бұзылмайды. */
+@keyframes ao-draw { from { stroke-dasharray: 1; stroke-dashoffset: 1; } to { stroke-dasharray: 1; stroke-dashoffset: 0; } }
+@keyframes ao-fade { from { opacity: 0; } }
+@keyframes ao-pop { from { opacity: 0; transform: scale(.25); } }
+@keyframes ao-rise { from { opacity: 0; transform: translateY(14px); } }
+@keyframes ao-grow { from { transform: scaleX(0); } }
+@keyframes ao-drop { from { opacity: 0; transform: translateY(-14px); } }
+@keyframes ao-stamp { from { opacity: 0; transform: scale(1.6); } 60% { opacity: 1; transform: scale(.96); } }
+@keyframes ao-ok { 35% { transform: scale(1.035); } }
+@keyframes ao-shake { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+@keyframes ao-unfold { from { opacity: 0; transform: translateY(-6px); } }
+@keyframes ao-ring { from { stroke-dasharray: 0 327; } }
+@keyframes ao-seal { from { opacity: 0; transform: rotate(-30deg) scale(2.4); } }
+@keyframes ao-pulse { 0%, 100% { opacity: .9; transform: scale(1); } 50% { opacity: .35; transform: scale(1.35); } }
+
+/* скролл жолағы: беттің жоғарғы жиегі */
+.ao-progress { position: fixed; inset: 0 0 auto 0; height: 3px; z-index: 1002; pointer-events: none; }
+.ao-progress i { display: block; height: 100%; background: linear-gradient(90deg, #b3262e, #c99a2e 60%, #f2d36b); transform-origin: 0 50%; transform: scaleX(var(--p, 0)); }
+@media print { .ao-progress { display: none; } }
+
+/* курс картасы: қызыл желі сызылады, сосын бұрылып көк желі; бекеттер жол бойымен кезекпен шығады, ауысулар соңынан */
+.ao-move .crs-map:not(.ao-in) :is(.cm-l1, .cm-l2) { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.ao-move .crs-map:not(.ao-in) :is(.cm-st, .cm-x, .cm-ln) { opacity: 0; }
+.ao-move .crs-map.ao-in .cm-l1 { animation: ao-draw 1.5s var(--e-io) backwards; }
+.ao-move .crs-map.ao-in .cm-l2 { animation: ao-draw 1.3s var(--e-io) 1.35s backwards; }
+.ao-move .crs-map.ao-in .cm-st { transform-box: fill-box; transform-origin: 50% 25%; animation: ao-pop .55s var(--e-spring) backwards; animation-delay: calc(var(--i, 0) * 118ms + .1s); }
+.ao-move .crs-map.ao-in .cm-x { animation: ao-fade .9s ease 2.75s backwards; }
+.ao-move .crs-map.ao-in .cm-ln { animation: ao-fade .7s ease .2s backwards; }
+.ao-move .crs-map.ao-in .cm-ln2 { animation-delay: 1.4s; }
+/* келесі қадам: алтын сақина тыныш дем алады */
+.ao-move .crs-map .st-next .cm-ring { transform-box: fill-box; transform-origin: center; animation: ao-pulse 2.4s ease-in-out 3.2s infinite; }
+
+/* апта мұқабасы: журнал мұқабасы сияқты ашылады */
+.ao-move [data-ao-in="cover"] { transition: opacity .7s var(--e-out), transform .95s var(--e-out); }
+.ao-move [data-ao-in="cover"]:not(.ao-in) { opacity: 0; transform: perspective(800px) rotateY(-42deg) translateX(-12px); transform-origin: 0 50%; }
+
+/* оқу кестесі: курс таспасы солдан оңға өседі, бүгінгі сызық түседі */
+.ao-move .pl-rib.ao-first .pl-seg rect { transform-box: fill-box; transform-origin: 0 50%; animation: ao-grow .75s var(--e-out) backwards; animation-delay: calc(var(--i, 0) * 50ms + .1s); }
+.ao-move .pl-rib.ao-first .pl-sn, .ao-move .pl-rib.ao-first .pl-ex { animation: ao-fade .5s ease backwards; animation-delay: calc(var(--i, 0) * 50ms + .55s); }
+.ao-move .pl-rib.ao-first .pl-today { animation: ao-drop .6s var(--e-spring) 1.3s backwards; }
+.ao-move .pl-u.is-now .pl-un { animation: ao-pulse 2.6s ease-in-out 1.5s 3; }
+
+/* оқу тактикалары: ұмыту қисығы сызылады, «аралас» тақтайшалар орнына ұшып келеді (JS), жауап мөрдей басылады */
+.ao-move .mt-cfig svg.cv-anim .cv { animation: ao-draw 1.2s var(--e-io) backwards; }
+.ao-move .mt-cfig svg.cv-anim .rv { transform-box: fill-box; transform-origin: center; animation: ao-pop .45s var(--e-spring) backwards; animation-delay: calc(var(--i, 0) * 160ms + .25s); }
+.ao-move .mt-cfig svg.cv-anim .base { animation: ao-fade .6s ease backwards; }
+.ao-move .my-c.just .my-v { transform-origin: 0 50%; animation: ao-stamp .5s var(--e-spring) backwards; }
+.ao-move .my-c.just .my-x p:not(.my-v) { animation: ao-unfold .45s var(--e-out) .12s backwards; }
+.ao-move .an-c.is-open .an-d { animation: ao-unfold .38s var(--e-out) backwards; }
+.ao-move .fy-crit li { animation: ao-rise .4s var(--e-out) backwards; animation-delay: calc(var(--i, 0) * 70ms); }
+
+/* бөлімдер навигациясы: экрандағы тактика */
+.mt-index a.is-cur { border-color: #c99a2e; background: color-mix(in srgb, #c99a2e 16%, var(--surface)); }
+@media (min-width: 981px) {
+  /* компьютерде мазмұн бір жолда жабысып тұрады (көлденең жылжиды), бөлімдер оның астынан ашылады */
+  .content .mt-index { position: sticky; top: 63px; z-index: 6; margin: 0 -8px 6px; padding: 8px; border-radius: 0 0 14px 14px;
+    background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .content .mt-index ul { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; scroll-behavior: smooth; }
+  .content .mt-index ul::-webkit-scrollbar { display: none; }
+  .mt-index a { white-space: nowrap; }
+  .mt-t, .mt-rhythm { scroll-margin-top: 128px; }
+}
+
+/* сынақ: дұрыс жауап мөрдей басылады, қате басын шайқайды; нәтиже шеңбері толады, тақырып жолақтары кезекпен өседі */
+.ao-move .xm-q.just .xm-opt.ok { animation: ao-ok .45s var(--e-spring); }
+.ao-move .xm-q.just .xm-opt.bad { animation: ao-shake .42s ease; }
+.ao-move .xm-q.just .xm-fb { animation: ao-unfold .4s var(--e-out) backwards; }
+.ao-move .xm-res .xm-score .va { animation: ao-ring 1.2s var(--e-out) .15s backwards; }
+.ao-move .xm-res :is(.xm-tb, .cal-bar) i, .ao-move .xm-res .xm-cal .xm-tb i { transform-origin: 0 50%; animation: ao-grow .8s var(--e-out) backwards; animation-delay: calc(var(--i, 0) * 55ms + .35s); }
+.ao-move .xm-res .xm-verdict { animation: ao-stamp .55s var(--e-spring) .5s backwards; transform-origin: 0 50%; }
+.ao-move .xm-duelres .xm-duelv { animation: ao-stamp .6s var(--e-spring) .7s backwards; transform-origin: 0 50%; }
+
+/* сертификат: мөр басылады */
+.ao-move .xm-certwrap:not([hidden]) .xm-cert-seal { animation: ao-seal .75s var(--e-spring) .45s backwards; }
+.ao-move .xm-certwrap:not([hidden]) .xm-cert-name { animation: ao-rise .7s var(--e-out) .2s backwards; }
+@media print { .xm-cert-seal, .xm-cert-name { animation: none !important; } }
