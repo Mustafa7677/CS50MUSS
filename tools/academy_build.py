@@ -675,7 +675,7 @@ def comics_html(lessons):
     body = f"""  <div class="layout single">
     <article class="content" id="main">
       <header class="lecture-head" style="--lc:#b3262e"><div class="num">CS Universe</div><h1>Комикс: Нұрай, Мустафа және Бота</h1>
-        <p>Нұрай - мұқият, сұрақ қоятын оқушы. Мустафа - батыл, асығыс кодтайтын, сондықтан тұзаққа жиі түсетін оқушы. Бота - AO17-нің ботақаны, ол түсіндіреді. Нұрай мен Мустафа INSIDE TECH 3D зертханаларында да кездеседі. Level I-дің әр модулі бір эпизодпен ашылады: күнделікті өмірден алынған мысал, қате және оның себебі. Комикстегі әр код кадрының шығысы сайтты құрастыру кезінде нағыз Python не gcc арқылы тексерілген. Курстың <a href="#part2">2-бөлімінде, 3D зертханаларда, тағы {n3} комикс</a> бар.</p></header>
+        <p>Нұрай - мұқият, сұрақ қоятын оқушы. Мустафа - батыл, асығыс кодтайтын, сондықтан тұзаққа жиі түсетін оқушы. Бота - AO17-нің ботақаны, ол түсіндіреді. Нұрай мен Мустафа INSIDE TECH 3D зертханаларында да кездеседі. Level I-дің әр модулі бір эпизодпен ашылады: күнделікті өмірден алынған мысал, қате және оның себебі. Комикстегі әр код кадрының шығысы сайтты құрастыру кезінде нағыз Python не gcc арқылы тексерілген. Курстың <a href="#part2">2-бөлімінде, 3D зертханаларда, тағы {n3} комикс</a>, техника-кейіпкерлердің <a href="#stories">«Тірі заттар» әңгімелері</a> және оқу туралы <a href="#learn">«Қалай оқу керек?» эпизодтары</a> бар.</p></header>
       <h2>Level I: {len(cards)} эпизод</h2>
       <ul class="cxh-grid">{"".join(cards)}</ul>
       <h2>«Тұзақ» комикстері: әр сабақта</h2>
@@ -684,7 +684,13 @@ def comics_html(lessons):
       <h2 id="part2">2-бөлім: 3D зертхана, {n3} комикс</h2>
       <p>INSIDE TECH 3D зертханаларының комикстері. Әр зертхананың алғашқы екі сабағы күнделікті өмірдегі бір жағдайдан басталады, ал үшінші сабағы - кино-комикс: тыңшылық триллер, ғылыми фантастика, детектив және тағы жеті жанр. Математика сабақтарының өз комикстері бар. Комикс сабақтың өз қадамында, дәрістің алдында тұрады. Мұнда да түсіндіретін - Бота.</p>
       {L3.comics_shelf()}
-      <p><a href="index.html">CS Universe картасына оралу</a> · <a href="3d/index.html">2-бөлім: 3D зертхана</a></p>
+      <h2 id="stories">«Тірі заттар»: {len(L3.IX.stories())} әңгіме</h2>
+      <p>Бұл әңгімелерде ноутбук, сервер, процессор, желі пакеті, телефон, робот және вирус өздері сөйлейді: сабақтағы ұғымды техниканың өз көзімен көресің. Әр әңгіме өз сабағының соңында тұр.</p>
+      {L3.stories_shelf()}
+      <h2 id="learn">«Қалай оқу керек?»: {len(L3.IX.episodes())} эпизод</h2>
+      <p>Оқу туралы жеті танымал сенім. Әр эпизодта алдымен өзің шешесің: миф пе, шындық па? Сосын комикс, зерттеулердің нәтижесі және сайттағы құрал ашылады.</p>
+      {L3.learn_shelf()}
+      <p><a href="index.html">CS Universe картасына оралу</a> · <a href="3d/index.html">2-бөлім: 3D зертхана</a> · <a href="learn.html">Қалай оқу керек?</a></p>
     </article>
   </div>"""
     return "academy/comics.html", page("academy/comics.html", "Комикс: Нұрай, Мустафа және Бота", "AO17 комиксі: Нұрай, Мустафа және Бота бағдарламалау, логика және компьютер негіздерін күнделікті өмір мысалдарымен түсіндіреді. Әр сабақта жиі қате туралы комикс, 3D зертханаларда тағы 44 комикс.", body)
@@ -1132,7 +1138,7 @@ def build(write=True):
         return
     plan_by_id = {p["id"]: p for p in C.plan()}
     pages = [index_html(lessons, st), lab_html(), map_html(lessons), models_html(), study_html(lessons), comics_html(lessons), course_html(lessons, st),
-             AX.exam_html(lessons, page), AX.cert_html(lessons, page), AP.plan_html(lessons, titles, page), AM.methods_html(lessons, page), OY.oyu_html(page), BT.bota_html(page), XR.xray_html(page), MO.morph_html(page)] + L3.pages(page) + [track_html(t) for t in TR.TRACKS]
+             AX.exam_html(lessons, page), AX.cert_html(lessons, page), AP.plan_html(lessons, titles, page), AM.methods_html(lessons, page), OY.oyu_html(page), BT.bota_html(page), XR.xray_html(page), MO.morph_html(page), L3.IX.learn_html(page)] + L3.pages(page) + [track_html(t) for t in TR.TRACKS]
     by_mod = {}
     for L in lessons:
         by_mod.setdefault(L["moduleId"], []).append(L)

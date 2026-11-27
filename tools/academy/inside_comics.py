@@ -15,16 +15,21 @@
 #   - сахна: кадрдың өз bg өрісі, болмаса мәтіндегі орын (түн, ғарыш, сервер, сынып, үй, дала, қала), болмаса зертхананың сахнасы;
 #     дыбысы (sfx) бар кадр - жарқыл.
 # Ұстаздың сөзін Бота айтады (tools/inside_media.mjs). INSIDE TECH-тегідей комикс сабақтың өз қадамында, дәрістің алдында тұрады.
+# Тағы екі серия сол қозғалтқышпен салынады:
+#   «Тірі заттар» - 6 әңгіме, кейіпкерлері техника (ноутбук, сервер, процессор, пакет...: gadgets.py); әр әңгіме өз сабағының соңында;
+#   «Қалай оқу керек?» - оқу туралы 7 сенім (academy/learn.html): оқушы алдымен «миф пе, шындық па» деп болжайды, сосын комикс ашылады.
 import html
 import json
 import pathlib
 import re
 
 import comic as CX
+import gadgets as GD
 
 E = lambda s: html.escape(str(s), quote=True)  # noqa: E731
 DATA = pathlib.Path(__file__).resolve().parent / "data" / "inside_media.json"
-WHO = {"nuray": "N", "mustafa": "M", "bota": "B"}
+WHO = {"nuray": "N", "mustafa": "M", "bota": "B", **{g: g for g in GD.DRAW}}
+HOME = {"N": "l", "M": "r", "B": "r"}     # басты кейіпкерлердің әдеттегі жағы; техника-кейіпкерлер комикске кіру ретімен кезектеседі
 MOOD = {"smile": "happy", "explain": "calm", "think": "think", "confused": "worried", "wow": "wow"}
 GESTURE = {"explain": "point", "think": "chin", "wow": "up"}
 BG = {"room": "desk", "classroom": "class", "server-room": "screen", "circuit": "screen", "city": "aul", "night": "night", "space": "night"}
@@ -34,7 +39,7 @@ PLACE = [("night", r"түн|ғарыш|марс|орбита|спутник"), (
 LAB_BG = {"ai": "desk", "web": "desk", "game": "class", "net": "screen", "db": "desk", "arch": "screen", "cloud": "screen", "sec": "night",
           "algo": "class", "iot": "desk", "math": "class"}
 ORDER = {"l": 0, "c": 1, "r": 2}
-BOARD_W = {"B": 198, "N": 226, "M": 226}   # тар кадрдағы тақтаның ені (comic._layout: Бота оң жақта - 14..212, басқалары сол жақта - 162..388)
+BOARD_W = {"B": 198}   # тар кадрдағы тақтаның ені (comic._layout: Бота оң жақта - 14..212, басқалары сол жақта - 162..388, яғни 226)
 BOARD_MIN = 11.0     # бор тақтадағы қаріптің ең кіші өлшемі (одан кіші болса, кадр кең болады)
 _cache = {}
 
@@ -100,29 +105,56 @@ def _partner(panels, i, me):
     return None
 
 
-def _sides(codes):
-    """Кейіпкерлердің орны: Бота - оң жақта, Нұрай - сол жақта; үшеуі болса Мустафа ортада."""
+def homes(src):
+    """Әр кейіпкердің әдеттегі жағы (бүкіл комикс бойы тұрақты) және комикске кіру реті."""
+    home, order = dict(HOME), {}
+    k = 0
+    for p in src:
+        for w in [p["who"]] + list(p.get("with") or []):
+            c = WHO.get(w)
+            if not c or c in order:
+                continue
+            order[c] = len(order)
+            if c not in home:
+                home[c] = "l" if k % 2 == 0 else "r"
+                k += 1
+    return home, order
+
+
+def _sides(codes, home=HOME, order=None):
+    """Кейіпкерлердің орны: Бота әрдайым оң жақта; қалғандары - әдеттегі жағында, екеуі бір жаққа түссе, комикске ертерек кіргені
+    өз жағында қалады. Үшеуі болса: сол, орта, оң (Бота болса - ол оң жақта)."""
+    order = order or {}
     if len(codes) == 1:
         return {codes[0]: "c"}
+    rank = sorted(codes, key=lambda c: (c == "B", home.get(c, "l") == "r", order.get(c, 99)))
     if len(codes) == 3:
-        return {c: {"N": "l", "M": "c", "B": "r"}[c] for c in codes}
+        return dict(zip(rank, ("l", "c", "r")))
     a, b = codes
     if "B" in codes:
         return {a: "r" if a == "B" else "l", b: "r" if b == "B" else "l"}
-    return {"N": "l", "M": "r"}
+    ha, hb = home.get(a, "l"), home.get(b, "r")
+    if ha != hb:
+        return {a: ha, b: hb}
+    first, second = sorted(codes, key=lambda c: order.get(c, 99))
+    return {first: ha, second: "r" if ha == "l" else "l"}
 
 
 def _board_fits(lines, avail):
     return max(len(t) for t in lines) * BOARD_MIN * .55 + 24 <= avail
 
 
-def _cast(codes, moods, speaker=None, gesture=None, prop=False, wide=False):
-    sides = _sides(codes)
+def _cast(codes, moods, speaker=None, gesture=None, prop=False, wide=False, home=HOME, order=None):
+    if len(set(codes)) < len(codes):   # көшірмелер (мысалы, екі сервер): бірегей кейіпкер ортада, көшірмелер екі жағында
+        dup = [c for c in codes if codes.count(c) > 1]
+        seq = [dup[0]] + [c for c in codes if codes.count(c) == 1] + dup[1:]
+        return [(c, moods[c], side) for c, side in zip(seq, ("l", "c", "r") if len(seq) == 3 else ("l", "r"))]
+    sides = _sides(codes, home, order)
     if prop and len(codes) == 1:     # жалғыз кейіпкер тақтаға қарап тұрады (кең кадрда тақта әрдайым оң жақта)
         sides = {codes[0]: "r" if codes[0] == "B" and not wide else "l"}
     cast = []
     for c in sorted(codes, key=lambda x: ORDER[sides[x]]):
-        g = gesture if (c == speaker and c != "B") else None
+        g = gesture if (c == speaker and c in ("N", "M")) else None   # қимыл тек Нұрай мен Мустафада
         cast.append((c, moods[c], sides[c], g) if g else (c, moods[c], sides[c]))
     return cast
 
@@ -130,6 +162,7 @@ def _cast(codes, moods, speaker=None, gesture=None, prop=False, wide=False):
 def convert(comic, lab_id):
     """INSIDE TECH комиксі -> AO17 комиксі (comic.py пішімі)."""
     src = comic["panels"]
+    home, order = homes(src)
     first = " ".join(x for x in (src[0].get("scene", ""), src[0]["say"]) if x)
     bg = BG.get(src[0].get("bg")) or place(first) or LAB_BG.get(lab_id, "desk")
     out, need = [], []
@@ -165,7 +198,7 @@ def convert(comic, lab_id):
             near = [out[j] for j in list(range(i + 1, len(out))) + list(range(i - 1, -1, -1)) if out[j]["_me"]]
             pn["_codes"] = list(near[0]["_codes"]) if near else ["N", "M"]
     # тақтасы бар кадр: жазуы тар кадрдың тақтасына сыйса - тек сөйлеуші, әйтпесе кең кадр
-    wide = [need[i] and not _board_fits(pn["prop"][1]["lines"], BOARD_W[pn["_me"] or pn["_codes"][0]]) for i, pn in enumerate(out)]
+    wide = [need[i] and not _board_fits(pn["prop"][1]["lines"], BOARD_W.get(pn["_me"] or pn["_codes"][0], 226)) for i, pn in enumerate(out)]
     # тор: екі кең кадрдың арасындағы жай кадрлар саны жұп болсын
     i = 0
     while i <= len(out):
@@ -193,7 +226,7 @@ def convert(comic, lab_id):
                 pn["prop_side"] = "l"
         else:
             codes = codes[:3]
-        pn["cast"] = _cast(codes, moods, me, GESTURE.get(mood), bool(pn.get("prop")), wide[i])
+        pn["cast"] = _cast(codes, moods, me, GESTURE.get(mood), bool(pn.get("prop")), wide[i], home, order)
         if wide[i]:
             pn["wide"] = True
         if me and mood == "confused":
@@ -263,3 +296,122 @@ def validate(lab_of, steps_of):
         if re.search(r"[Ұұ]стаз", json.dumps(e["comic"], ensure_ascii=False)):
             errs.append(f"{where}: Ұстаз аталған")
     return errs
+
+
+# ------------------------------------------------------------------ «Тірі заттар»: 6 әңгіме, әрқайсысы өз сабағының соңында
+def stories():
+    return media()["stories"]
+
+
+def story_for(lid):
+    return next((st for st in stories() if st["lessonId"] == lid), None)
+
+
+def story_section(st, base="../../"):
+    """Сабақтың соңындағы «Тірі заттар» комиксі (бет: academy/3d/<зертхана>/<сабақ>.html)."""
+    c = st["comic"]
+    tag = f'<p class="cx-tag">{E(c["tagline"])}</p>' if c.get("tagline") else ""
+    head = (f'<div class="cx-head"><div><p class="cx-k">Тірі заттар · сабақтағы ұғымдар заттардың өз көзімен</p>'
+            f'<h2 class="cx-t" id="st-h">{E(c["title"])}</h2>{tag}</div><a href="{base}comics.html#stories">Барлық әңгіме</a></div>')
+    strip = CX.strip(convert(c, st["labId"]), CX.uid_of("st" + st["id"]), head, "", "cx-ix cx-story")
+    return f'<section class="l3-story" id="s-story" aria-labelledby="st-h">{strip}</section>'
+
+
+def story_cover(st):
+    p0 = {k: v for k, v in convert(st["comic"], st["labId"])["panels"][0].items() if k not in ("wide", "prop", "prop_side")}
+    if len(p0["cast"]) == 1:
+        p0["cast"] = [(p0["cast"][0][0], p0["cast"][0][1], "c") + tuple(p0["cast"][0][3:])]
+    return CX.cover_svg({"panels": [p0]}, CX.uid_of("cvs" + st["id"]))
+
+
+# ------------------------------------------------------------------ «Қалай оқу керек?»: 7 эпизод (academy/learn.html)
+# Әр эпизодтың құралы: AO17-нің оқу әдістемесіндегі тактика (academy/methods.html) және INSIDE TECH-тегі құрал (3D қолданбада)
+TACTIC = {"reread": ("t-recall", "Еске түсіру"), "cram": ("t-space", "Аралықпен қайталау"), "styles": ("t-dual", "Сөз бен сурет"),
+          "multitask": ("t-focus", "Назар"), "errors": ("t-reflect", "Өз оқуыңды бақыла"), "interleave": ("t-mix", "Араластыру"),
+          "examples": ("t-explain", "Өзіңе түсіндір")}
+
+
+def episodes():
+    return media()["episodes"]
+
+
+def tool_href(href, base=""):
+    """INSIDE TECH маршруты -> AO17 ішіндегі сілтеме: /labs/<зертхана>/<сабақ> - лекция беті, қалғаны - 3D қолданбаның бөлімі."""
+    m = re.match(r"^/labs/([a-z]+)/([a-z0-9-]+)$", href)
+    if m:
+        return f"{base}3d/{m.group(1)}/{m.group(2)}.html"
+    return f"{base}3d/app/index.html#{href.strip('/')}"
+
+
+def episode_cover(ep):
+    p0 = {k: v for k, v in convert(ep["comic"], "learn")["panels"][0].items() if k not in ("wide", "prop", "prop_side")}
+    if len(p0["cast"]) == 1:
+        p0["cast"] = [(p0["cast"][0][0], p0["cast"][0][1], "c") + tuple(p0["cast"][0][3:])]
+    return CX.cover_svg({"panels": [p0]}, CX.uid_of("cve" + ep["id"]))
+
+
+def learn_html(page):
+    eps = episodes()
+    nav = "".join(f'<li><a href="#ep-{E(e["id"])}" data-ep="{E(e["id"])}"><span>{k}</span>{E(e["tool"]["label"])}</a></li>' for k, e in enumerate(eps, 1))
+    arts = []
+    for k, e in enumerate(eps, 1):
+        c, (tid, tname) = e["comic"], TACTIC.get(e["id"], ("t-recall", "Еске түсіру"))
+        head = f'<div class="cx-head"><div><p class="cx-k">Комикс · {k}-эпизод</p><h3 class="cx-t">{E(c["title"])}</h3></div></div>'
+        strip = CX.strip(convert(c, "learn"), CX.uid_of("ep" + e["id"]), head, "", "cx-ix")
+        arts.append(
+            f'<article class="lh-ep" id="ep-{E(e["id"])}" data-ep="{E(e["id"])}" data-fact="{1 if e["fact"] else 0}" aria-labelledby="ep-{E(e["id"])}-h">'
+            f'<p class="lh-k">{k}-эпизод · сенім</p><h2 class="lh-claim" id="ep-{E(e["id"])}-h">«{E(e["claim"])}»</h2>'
+            f'<div class="lh-btns" role="group" aria-label="Миф пе, шындық па?"><button type="button" data-v="0">Миф</button><button type="button" data-v="1">Шындық</button></div>'
+            f'<p class="lh-verdict" role="status" tabindex="-1"></p>'
+            f'<p class="lh-locked" hidden>Комикс жауабыңнан кейін ашылады: алдын ала болжау оқуды күшейтеді. Бұл да зерттеулердің бірі.</p>'
+            f'<div class="lh-open"><p class="lh-ans">Жауабы: <b>{"шындық" if e["fact"] else "миф"}</b>.</p>{strip}'
+            f'<section class="lh-box lh-find"><h3>Зерттеулер не дейді</h3><p>{E(e["finding"])}</p></section>'
+            f'<section class="lh-box lh-tool"><h3>Сайтта қалай қолданасың</h3><p>{E(e["tool"]["how"])}</p>'
+            f'<p class="lh-links"><a class="btn secondary" href="{tool_href(e["tool"]["href"])}">{E(e["tool"]["label"])}</a> '
+            f'<a class="btn secondary" href="methods.html#{tid}">AO17 тактикасы: {E(tname)}</a></p></section></div></article>')
+    body = f"""  <div class="layout single">
+    <article class="content lh" id="main">
+      <p class="ac-crumb"><a href="course.html">AO17 CS курсы</a> / <a href="methods.html">Оқу әдістемесі</a> / Қалай оқу керек?</p>
+      <header class="lecture-head lh-head" style="--lc:#b3262e"><div class="num">Комикс-курс · {len(eps)} эпизод</div><h1>Қалай оқу керек?</h1>
+        <p>Көп адам оқуға ең тиімсіз тәсілдермен уақыт жұмсайды. Нұрай, Мустафа және Бота оқу туралы жеті танымал сенімді тексереді. Әр эпизодта алдымен өзің шеш: миф пе, шындық па? Комикс жауабыңнан кейін ашылады.</p>
+        <p class="lh-prog" aria-live="polite"></p></header>
+      <nav class="lh-nav" aria-label="Эпизодтар"><ol>{nav}</ol></nav>
+      {"".join(arts)}
+      <section class="lh-final" hidden aria-label="Курс аяқталды"><h2>Курс аяқталды</h2>
+        <p>Енді сен оқудың өзін білесің: еске түсір, аралықпен қайтала, араластыр, қатеңнен үйрен, назарыңды сақта. Әр тактиканың құралы мен жаттығуы AO17-нің оқу әдістемесінде.</p>
+        <p><a class="btn gold" href="methods.html">Оқу әдістемесін ашу</a></p></section>
+      <p class="l3-src">Эпизодтар AO17 командасының INSIDE TECH платформасынан алынған. Болжамдарың INSIDE TECH-тің «Қалай оқу керек?» бөлімімен ортақ сақталады.</p>
+    </article>
+  </div>"""
+    return "academy/learn.html", page("academy/learn.html", "Қалай оқу керек? Оқу туралы жеті сенім",
+                                      "AO17 комикс-курсы: Нұрай, Мустафа және Бота оқу туралы жеті танымал сенімді тексереді. Алдымен болжа: миф пе, шындық па?",
+                                      body, scripts=("assets/js/learn-how.js",))
+
+
+def validate_more(lab_of, steps_of):
+    """«Тірі заттар» мен «Қалай оқу керек?»: әр әңгіме бар сабақта, комикстер comic.py тексерісінен өтеді."""
+    errs = []
+    if len(stories()) != 6:
+        errs.append(f"«Тірі заттар»: 6 емес, {len(stories())}")
+    if len(episodes()) != 7:
+        errs.append(f"«Қалай оқу керек?»: 7 емес, {len(episodes())}")
+    for st in stories():
+        where = f"«Тірі заттар» {st['id']}"
+        if lab_of.get(st["lessonId"]) != st["labId"]:
+            errs.append(f"{where}: {st['labId']}/{st['lessonId']} сабағы жоқ")
+            continue
+        c = convert(st["comic"], st["labId"])
+        errs += CX.validate(c, where) + CX.layout_errors(c, where)
+    for e in episodes():
+        where = f"«Қалай оқу керек?» {e['id']}"
+        c = convert(e["comic"], "learn")
+        errs += CX.validate(c, where) + CX.layout_errors(c, where)
+        if e["id"] not in TACTIC:
+            errs.append(f"{where}: AO17 тактикасы жоқ (TACTIC)")
+        m = re.match(r"^/labs/([a-z]+)/([a-z0-9-]+)$", e["tool"]["href"])
+        if m and lab_of.get(m.group(2)) != m.group(1):
+            errs.append(f"{where}: {e['tool']['href']} сабағы жоқ")
+    if re.search(r"[Ұұ]стаз", json.dumps([stories(), episodes()], ensure_ascii=False)):
+        errs.append("«Тірі заттар» не «Қалай оқу керек?»: Ұстаз аталған")
+    return errs
+

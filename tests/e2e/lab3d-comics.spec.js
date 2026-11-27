@@ -101,7 +101,7 @@ test("сурет кадрдан шықпайды: жарқылдың сәуле�
 
 test("3D хабы: «Комикс кітапханасы» AO17-нің өз комикс хабына апарады, мұқабасы - комикстің кадры", async ({ page }) => {
   await page.goto("academy/3d/index.html");
-  const card = page.locator("#stories a.l3-cnat");
+  const card = page.locator("#stories a.l3-cnat", { hasText: "Комикс кітапханасы" });
   await expect(card).toHaveAttribute("href", "../comics.html#part2");
   await expect(card.locator("svg")).toHaveAttribute("aria-hidden", "true");
   await expect(card).toContainText("44 комикс");
