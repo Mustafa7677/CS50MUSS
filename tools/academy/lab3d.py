@@ -10,6 +10,8 @@ import json
 import pathlib
 import re
 
+import cine as CN
+import cine3d as C3
 import inside_catalog as IC
 import lab3d_kk as KK
 
@@ -149,6 +151,30 @@ def md(text, hshift=1):
     return "\n".join(out)
 
 
+# Дәрістің бөлімдері: әрқайсысы өз «қағазында» (lab3d.css: .l3-b-*). Тақырып мәтіні өзгермейді.
+KIND = {"Идея": "idea", "Түйсік": "intuit", "Есептеп көрейік": "calc", "Нақты әлемде": "world", "Енді сен": "you", "Ойлан": "think",
+        "Спецификация": "spec", "Автотексеруші": "check", "Абай бол": "warn", "Неге бұл маңызды": "why", "Бағасы": "why"}
+
+
+def kind(title):
+    t = title.strip()
+    return KIND.get(t) or ("calc" if t.startswith("Есептеп көрейік") else "deep" if t.startswith("Тереңірек") else "other")
+
+
+def body_html(text):
+    """Дәріс (Markdown): «## » бөлімдері бөлек блоктарға оралады - Идея, Түйсік, Есептеп көрейік, Нақты әлемде, Енді сен ..."""
+    parts = re.split(r"^## (.+)$", str(text).replace("\r", ""), flags=re.M)
+    out = [md(parts[0], hshift=1)] if parts[0].strip() else []
+    for title, content in zip(parts[1::2], parts[2::2]):
+        out.append(f'<div class="l3-blk l3-b-{kind(title)}"><h3>{inline(title.strip())}</h3>{md(content, hshift=1)}</div>')
+    return "\n".join(out)
+
+
+def film(L, lab):
+    """Кино-түсіндіру: сценарий сабақтың мазмұнынан (tools/academy/cine3d.py), қозғалтқыш - assets/js/academy-cine.js."""
+    return C3.story(L, LAB_KK.get(lab["id"], lab["title"]), kk(L))
+
+
 # ------------------------------------------------------------------ сабақ бетінің блоктары
 def quiz_block(q, qid, kind="quiz"):
     opts = "".join(f'<button type="button" class="l3-opt" data-i="{k}">{inline(o)}</button>' for k, o in enumerate(q["options"]))
@@ -163,7 +189,7 @@ def quiz_block(q, qid, kind="quiz"):
 def step_html(L, i, s):
     lid = L["id"]
     parts = [f'<section class="l3-step" id="s{i}" aria-labelledby="s{i}-h"><h2 id="s{i}-h"><span class="l3-n">{i}</span>{inline(s["title"])}</h2>',
-             f'<div class="l3-body">{md(s.get("body", ""), hshift=1)}</div>']
+             f'<div class="l3-body">{body_html(s.get("body", ""))}</div>']
     objs = [o["text"] for o in s.get("objectives", []) if o.get("text")]
     if objs:
         parts.append(f'<div class="l3-task"><h3>3D симуляцияда орында</h3><ul>{"".join(f"<li>{inline(t)}</li>" for t in objs)}</ul>'
@@ -207,12 +233,19 @@ def lesson_page(lab, L, idx, prev_l, next_l, page):
            + f'<a href="../index.html#{lab["id"]}">{E(LAB_KK.get(lab["id"], lab["title"]))}</a>'
            + (f'<a href="{E(next_l["id"])}.html">{E(kk(next_l))} →</a>' if next_l else "<span></span>") + "</nav>")
     sub = f'<p class="l3-en" lang="en">{E(en(L))}</p>' if en(L) else ""
+    st = film(L, lab)
+    film_tr = "".join(f"<li><b>{E(c)}.</b> {E(t)}</li>" for c, t in CN.transcript(st))
+    film_json = json.dumps({"cine": st}, ensure_ascii=False).replace("</", "<\\/")
+    film_html = (f'<section class="ac-cine l3-cine" id="s-film" data-cine data-title="{E(kk(L))}" data-img="../../../assets/img/" aria-label="Кино-түсіндіру: {E(kk(L))}">'
+                 f'<p class="ac-note">Кино-түсіндіру: сабақтың өзегі бір минуттық мультфильмде. Мәтіні төменде.</p></section>'
+                 f'<details class="cn-tr"><summary>Фильмнің мәтіні (сабақтың қадамдарынан құрастырылған)</summary><ol>{film_tr}</ol></details>'
+                 f'<script type="application/json" id="cn-data">{film_json}</script>')
     cv = cover(lab["id"], "../../../")
     lab_kk = LAB_KK.get(lab["id"], lab["title"])
     cv_html = (f'<a class="l3-cov" href="../../../posters.html#cs-3d-{lab["id"]}" aria-label="«{E(lab_kk)}» зертханасының комикс-мұқабасы (афиша)">'
                f'<img src="{cv}" alt="" width="240" height="360"></a>') if cv else ""
     body = f"""  <div class="layout single">
-    <article class="content l3" id="main" data-lesson="{E(L['id'])}" style="--lc:{LAB_COLOR.get(lab['id'], '#0a4c7a')}">
+    <article class="content l3" id="main" data-lesson="{E(L['id'])}" style="--lc:{LAB_COLOR.get(lab['id'], '#0a4c7a')};--mh:{LAB_COLOR.get(lab['id'], '#0a4c7a')}">
       <p class="ac-crumb"><a href="../../course.html">AO17 CS курсы</a> / <a href="../index.html">2-бөлім: 3D зертхана</a> / <a href="../index.html#{lab['id']}">{E(LAB_KK.get(lab['id'], lab['title']))}</a></p>
       <header class="l3-head{" l3-hc" if cv_html else ""}">{cv_html}
         <p class="l3-k">{E(LAB_KK.get(lab['id'], lab['title']))} · {idx}-сабақ · ≈{L.get('estimatedMinutes', 10)} мин · {len(steps)} қадам · {nq} сұрақ</p>
@@ -221,6 +254,7 @@ def lesson_page(lab, L, idx, prev_l, next_l, page):
         <p class="l3-cta"><a class="btn gold" href="../app/index.html#{E(L['id'])}">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
         <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
       </header>
+      {film_html}
       <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol>{toc}</ol></nav>
       {"".join(step_html(L, i, s) for i, s in enumerate(steps, 1))}
       <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
@@ -299,7 +333,7 @@ def hub_page(page):
       </header>
       <nav class="l3-secnav" aria-label="Хабтың бөлімдері">{secnav}</nav>
       <section class="l3-labs" id="labs" aria-labelledby="h-labs"><h2 id="h-labs">{len(labs)} зертхана</h2>
-        <p class="l3-gi">Әр зертхана - 2-бөлімнің бір нөмірі. Ұсынылатын рет: архитектура мен алгоритмдер қалғанының негізі. Әр зертханада 10-15 сабақ, әр сабақта дәріс, тест және 3D симуляция.</p>
+        <p class="l3-gi">Әр зертхана - 2-бөлімнің бір нөмірі. Ұсынылатын рет: архитектура мен алгоритмдер қалғанының негізі. Әр зертханада 10-15 сабақ, әр сабақта кино-түсіндіру, дәріс, тест және 3D симуляция.</p>
         <ol class="l3-tiles{" l3-rack" if cover(labs[0]["id"]) else ""}">{"".join(tiles)}</ol></section>
       {"".join(groups)}
       <section class="l3-all" id="all" aria-labelledby="h-all"><h2 id="h-all">Барлық {n_l} сабақ</h2>
@@ -337,6 +371,7 @@ def validate():
                 errs.append(f"3D {L['id']}: қадам жоқ")
             if not re.search(r"[А-Яа-яӘәҒғҚқҢңӨөҰұҮүҺһІі]", kk(L)):
                 errs.append(f"3D {L['id']}: қазақша атауы жоқ (tools/academy/lab3d_kk.py: TITLE_KK)")
+            errs += C3.validate(L["id"], film(L, lab))
             for s in L.get("steps", []):
                 if len(s.get("body", "")) < 200:
                     errs.append(f"3D {L['id']}/{s.get('id')}: дәріс тым қысқа")

@@ -28,6 +28,13 @@ test("афиша: 9 постер жүктеледі, әрқайсысы курс
   expect(await page.locator(".ps-films a").evaluateAll((a) => a.map((n) => n.getAttribute("href")))).toEqual(["film/", "film/cs/", "film/code/", "film/math/", "film/en/", "film/ielts/", "film/sat/"]);
   for (const h of await page.locator(".ps-films a").evaluateAll((a) => a.map((n) => n.getAttribute("href"))))
     expect(fs.existsSync(path.join(ROOT, h, "index.html")), h).toBe(true);
+  // әр фильмнің карточкасында өз кадры (tools/make_film_stills.py, 640×360)
+  const stills = await page.locator(".ps-films .ps-fimg img").evaluateAll((a) => a.map((i) => i.getAttribute("src")));
+  expect(stills).toEqual(["alash", "cs", "code", "math", "en", "ielts", "sat"].map((f) => `assets/img/posters/films/${f}.jpg`));
+  for (const src of stills) expect(fs.existsSync(path.join(ROOT, src)), src).toBe(true);
+  const st = page.locator(".ps-films .ps-fimg img").nth(1);
+  await st.scrollIntoViewIfNeeded();
+  await expect.poll(() => st.evaluate((i) => i.complete && i.naturalWidth)).toBe(640);
   expect(errs).toEqual([]);
 });
 
