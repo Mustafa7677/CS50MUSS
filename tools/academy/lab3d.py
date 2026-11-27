@@ -4,6 +4,7 @@
 # болжам, тест (түсіндірмесімен), кеңес, шешілген мысал, «қатені тап», өз сөзіңмен түсіндіру. INSIDE TECH-тің 44 комиксі
 # (inside_comics.py) AO17 комикс қозғалтқышымен салынады және INSIDE TECH-тегідей сабақтың өз қадамында, дәрістің алдында тұрады.
 # Математиканың 10 сабағында қадамның соңында «шешім фильмі» бар (inside_films.py, assets/js/board-film.js).
+# Алты сабақтың соңында «Тірі заттар» комиксі бар: сабақтағы ұғымдар техниканың өз көзімен (inside_comics.story_section).
 # Сабақтың басты атауы - қазақша (lab3d_kk.TITLE_KK), ағылшынша атауы астында (lang="en").
 # 3D симуляцияның өзі academy/3d/app/ ішінде (бір origin: прогресс «inside-tech:*» кілттерінде ортақ).
 # Бұл - AO17 CS курсының 2-бөлімі «Технологияның ішінен»: зертханалардың реті мен сабақтардың қазақша атаулары lab3d_kk.py-да.
@@ -237,6 +238,7 @@ def lesson_page(lab, L, idx, prev_l, next_l, page):
     cx_step = cx["step"] if cx else None
     bf = IF.for_lesson(L["id"])
     bf_step = bf["step"] if bf else None
+    tz = IX.story_for(L["id"])   # «Тірі заттар» әңгімесі
     toc = "".join(f'<li><a href="#s{i}">{inline(s["title"])}' + (' <span class="l3-tcx">комикс</span>' if s["id"] == cx_step else "")
                   + (' <span class="l3-tcx">фильм</span>' if s["id"] == bf_step else "") + "</a></li>"
                   for i, s in enumerate(steps, 1))
@@ -266,9 +268,10 @@ def lesson_page(lab, L, idx, prev_l, next_l, page):
         <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
       </header>
       {film_html}
-      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol>{toc}</ol></nav>
+      <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol>{toc}</ol>{(f'<p class="l3-toc-x">Сабақтан кейін - «Тірі заттар» комиксі: <a href="#s-story">{E(tz["comic"]["title"])}</a></p>') if tz else ""}</nav>
       {"".join(step_html(L, i, s, IX.section(cx, lab["id"]) if s["id"] == cx_step else "", IF.section(bf) if s["id"] == bf_step else "")
                for i, s in enumerate(steps, 1))}
+      {IX.story_section(tz) if tz else ""}
       <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
       {nav}
     </article>
@@ -291,7 +294,8 @@ def shot(name):
     return f"shots/{name}.jpg" if (SHOTS / f"{name}.jpg").exists() else ""
 
 
-NATIVE = {"comics": ("../comics.html#part2", "Барлық 44 комикс AO17 бетінде: зертханалардың алғашқы сабақтары, он жанрдағы кино-комикс, математика сабақтары.")}
+NATIVE = {"comics": ("../comics.html#part2", "Барлық 44 комикс AO17 бетінде: зертханалардың алғашқы сабақтары, он жанрдағы кино-комикс, математика сабақтары."),
+          "learn": ("../learn.html", "Нұрай, Мустафа және Бота оқу туралы жеті танымал сенімді тексереді. Алдымен өзің болжа: миф пе, шындық па?")}
 
 
 def feature_card(route, title, desc):
@@ -299,9 +303,10 @@ def feature_card(route, title, desc):
     pic = f'<img src="{img}" alt="" width="560" height="350" loading="lazy">' if img else ""
     if route in NATIVE:   # INSIDE TECH-тің бұл бөлімі AO17-нің өз бетінде
         href, desc = NATIVE[route]
-        e = IX.entries()[0]
         _, _, lab_of = data()
-        return (f'<li><a class="l3-card l3-cnat" href="{href}">{IX.cover(e, lab_of[e["lesson"]])}'
+        e = IX.entries()[0]
+        art = IX.episode_cover(IX.episodes()[0]) if route == "learn" else IX.cover(e, lab_of[e["lesson"]])
+        return (f'<li><a class="l3-card l3-cnat" href="{href}">{art}'
                 f'<span class="l3-ct"><b>{E(title)}</b><span>{E(desc)}</span></span></a></li>')
     return (f'<li><a class="l3-card" href="app/index.html#{E(route)}">{pic}'
             f'<span class="l3-ct"><b>{E(title)}</b><span>{E(desc)}</span></span></a></li>')
@@ -390,6 +395,27 @@ def comics_shelf(base=""):
     return "".join(out)
 
 
+def stories_shelf(base=""):
+    """Комикс хабы үшін: «Тірі заттар» (6 әңгіме) - сабақтың соңындағы комикске апарады."""
+    _, by_lab, _ = data()
+    cards = []
+    for st in IX.stories():
+        ls = by_lab[st["labId"]]
+        k, L = next((k, L) for k, L in enumerate(ls, 1) if L["id"] == st["lessonId"])
+        cards.append(f'<li><a class="cxh-card" href="{base}3d/{st["labId"]}/{E(L["id"])}.html#s-story">{IX.story_cover(st)}<div class="cxh-tx">'
+                     f'<p class="cxh-ep">{E(LAB_KK.get(st["labId"], st["labId"]))}, {k}-сабақ</p><h4>{E(st["comic"]["title"])}</h4>'
+                     f'<p>{E(st["comic"].get("tagline", ""))}</p></div></a></li>')
+    return f'<ul class="cxh-grid">{"".join(cards)}</ul>'
+
+
+def learn_shelf(base=""):
+    """Комикс хабы үшін: «Қалай оқу керек?» (7 эпизод) - academy/learn.html-дағы эпизодқа апарады."""
+    cards = "".join(f'<li><a class="cxh-card" href="{base}learn.html#ep-{E(e["id"])}">{IX.episode_cover(e)}<div class="cxh-tx">'
+                    f'<p class="cxh-ep">{k}-эпизод · {E(e["tool"]["label"])}</p><h4>{E(e["comic"]["title"])}</h4><p>«{E(e["claim"])}» Миф пе, шындық па?</p></div></a></li>'
+                    for k, e in enumerate(IX.episodes(), 1))
+    return f'<ul class="cxh-grid">{cards}</ul>'
+
+
 def pages(page):
     labs, by_lab, _ = data()
     out = [hub_page(page)]
@@ -423,6 +449,7 @@ def validate():
                         errs.append(f"3D {L['id']}/{s.get('id')}: тест жауабы нұсқалардың сыртында")
     _, _, lab_of = data()
     errs += IF.validate({L["id"]: [s["id"] for s in L.get("steps", [])] for ls in by_lab.values() for L in ls})
+    errs += IX.validate_more(lab_of, {})
     errs += IX.validate(lab_of,
                         {L["id"]: [s["id"] for s in L.get("steps", [])] for ls in by_lab.values() for L in ls})
     return errs

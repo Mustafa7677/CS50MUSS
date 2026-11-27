@@ -255,13 +255,15 @@ def actor(who, mood, x, s, face, gesture=None):
         body, k = nurai(mood, gesture), s
     elif who == "M":
         body, k = mustafa(mood, gesture, mirror=face < 0), s
+    elif who in GD.DRAW:   # «Тірі заттар»: техника-кейіпкерлер (gadgets.py)
+        body, k = GD.DRAW[who](mood), s
     else:
         body, k = bota(mood), s * BK
     return f'<g transform="translate({_n(x)} {H}) scale({_n(k * face)} {_n(k)})">{body}</g>'
 
 
 def head_xy(who, x, s, face):
-    hx, hy, hr = {"N": N_HEAD, "M": M_HEAD}.get(who, B_HEAD)
+    hx, hy, hr = {"N": N_HEAD, "M": M_HEAD, **GD.HEAD}.get(who, B_HEAD)
     k = s * BK if who == "B" else s
     return x + hx * k * face, H + hy * k, hr * k
 
@@ -858,3 +860,11 @@ def cover_svg(comic, uid):
     while html_.count("<svg", i, j) > html_.count("</svg>", i, j) + 1:   # ішкі svg-лер болса - сыртқысының соңын табу
         j = html_.index("</svg>", j + 6)
     return html_[i:j + 6].replace('role="img"', 'aria-hidden="true"', 1).replace(' cx-art-w', '')
+
+
+# «Тірі заттар» кейіпкерлері (ноутбук, компьютер, сервер, процессор, пакет, робот, телефон, вирус): gadgets.py бұл модульдің
+# көмекші функцияларын (бет-әлпет) қолданады, сондықтан ол модульдің соңында жүктеледі
+import gadgets as GD  # noqa: E402
+
+WHO.update(GD.NAME)
+GEN.update(GD.GEN)

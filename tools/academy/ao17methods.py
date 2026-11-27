@@ -241,6 +241,7 @@ def methods_html(lessons, page):
         <p class="mt-note">Оқу туралы алты тұжырым. Әрқайсысына жауап бер, сосын ғылым не дейтінін көр.</p>
         <ol class="my-list">{myths}</ol>
         <p class="my-score" data-my-score aria-live="polite"></p>
+        <p class="my-more">Тағы жеті сенім комикс түрінде: <a href="learn.html">Қалай оқу керек?</a> Нұрай, Мустафа және Бота әрқайсысын тексереді, ал сен алдымен болжайсың.</p>
       </section>
       <nav class="mt-index" aria-label="Тактикалар" data-ao-spy><ul>{index}</ul></nav>
 {chr(10).join(secs)}
