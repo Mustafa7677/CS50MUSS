@@ -300,7 +300,8 @@
 
   function boot() {
     const box = $("[data-cine]");
-    const raw = $("#ac-data");
+    // 1-бөлімнің сабағы - #ac-data (academy.js-пен ортақ); 2-бөлімнің (3D зертхана) сабағы - тек фильмнің деректері, #cn-data
+    const raw = $("#ac-data") || $("#cn-data");
     if (!box || !raw) return;
     let data;
     try { data = JSON.parse(raw.textContent); } catch (e) { return; }

@@ -191,3 +191,58 @@ for (const scheme of ["light", "dark"]) {
     await c.close();
   });
 }
+
+
+test("3D сабақтың кино-түсіндіруі: 5 тарау, болжам сұрағы; 1-бөлімнің прогресіне тиіспейді; дәріс бөлімдері өз блоктарында", async ({ browser }) => {
+  const c = await browser.newContext({ reducedMotion: "reduce" });
+  await blockFonts(c);
+  const p = await c.newPage(); const errors = collectErrors(p);
+  await p.goto("academy/3d/algo/algo-1-search.html");
+  const film = p.locator("#s-film");
+  await expect(film.locator(".cn-pk")).toContainText("Кино-түсіндіру · 5 тарау");
+  await expect(film.locator(".cn-poster h3")).toHaveText("Іздеу");
+  // деректер бөлек блокта: #ac-data жоқ, сондықтан academy.js бұл бетті 1-бөлімнің сабағы деп санамайды
+  await expect(p.locator("#cn-data")).toHaveCount(1);
+  await expect(p.locator("#ac-data")).toHaveCount(0);
+  const L = DATA.lessons.find((x) => x.lesson.id === "algo-1-search").lesson;
+  const ask = L.steps.map((s) => s.predict).find(Boolean) || L.steps[0].quiz[0];
+  await film.locator('[data-a="start"]').click();
+  await expect(film.locator(".cn-say")).toContainText(ask.question.slice(0, 30));
+  // Бейне -> Болжа: сұрақ пен нұсқалар; қате болжам - түсіндірме, сосын жалғастыру
+  await film.locator('[data-a="next"]').click();
+  await film.locator('[data-a="next"]').click();
+  const opts = film.locator(".cn-opts button");
+  await expect(opts).toHaveCount(ask.options.length);
+  await opts.nth((ask.answer + 1) % ask.options.length).click();
+  await expect(film.locator(".cn-why")).toBeVisible();
+  await expect(opts.nth(ask.answer)).toHaveClass(/ok/);
+  await film.locator('[data-a="cont"]').click();
+  // Көр: бірінші қадамның атауы мен коды сахнада
+  await expect(film.locator(".cn-say")).toContainText("1-қадам, «Сызықтық іздеу»");
+  await expect(film.locator(".cn-stage")).toContainText("for i from 0 to n");   // сабақта «n−1» (Unicode минус)
+  // фильмнің мәтіні (JS жоқ кезде де оқылады)
+  await expect(p.locator(".cn-tr li").first()).toContainText("Сұрақ");
+  expect(await p.evaluate(() => localStorage.getItem("cs50kz:academy"))).toBeNull();
+  // дәрістің бөлімдері: Идея, Түйсік, Есептеп көрейік, Нақты әлемде, Енді сен - әрқайсысы өз блогында
+  const kinds = await p.locator("#s1 .l3-blk").evaluateAll((a) => a.map((b) => [...b.classList].find((c) => c.startsWith("l3-b-")) + ":" + b.querySelector("h3").textContent));
+  expect(kinds).toEqual(["l3-b-idea:Идея", "l3-b-intuit:Түйсік", "l3-b-calc:Есептеп көрейік", "l3-b-world:Нақты әлемде", "l3-b-you:Енді сен"]);
+  expect(errors).toEqual([]);
+  await c.close();
+});
+
+test("160 сабақтың бәрінде кино-түсіндіру бар (сценарий - сабақтың мазмұнынан)", async () => {
+  const labs = new Set(DATA.lessons.map((x) => x.labId));
+  let n = 0;
+  for (const lab of labs) {
+    for (const f of fs.readdirSync(path.join(ROOT, "academy/3d", lab)).filter((x) => x.endsWith(".html"))) {
+      const html = fs.readFileSync(path.join(ROOT, "academy/3d", lab, f), "utf8");
+      const m = html.match(/<script type="application\/json" id="cn-data">(.*?)<\/script>/s);
+      expect(m, f).not.toBeNull();
+      const st = JSON.parse(m[1]).cine;
+      expect(st.beats.some((b) => b.ask), f).toBe(true);
+      expect(st.key.length, f).toBeGreaterThan(10);
+      n++;
+    }
+  }
+  expect(n).toBe(DATA.lessons.length);
+});
