@@ -316,4 +316,76 @@ do $$ begin
 end $$;
 reset role;
 
+-- ---------- тапсырмалар: мұғалім өз класына береді; мүше көреді; бөтен адам көрмейді, жаза алмайды ----------
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
+set role authenticated;
+do $$ begin perform public.ao_admin_set_role('t2@example.com', 'teacher'); end $$;   -- 2-мұғалім әлі мұғалім
+reset role;
+select pg_temp.as_user('00000000-0000-0000-0000-0000000000b2');
+set role authenticated;
+create temp table t2_class as select * from public.ao_admin_class_create('9Б информатика');
+insert into public.ao_assignments (class_id, kind, target, title, due_at)
+  select id, 'test', 'w1', '1-апта сынағы', now() + interval '7 days' from t2_class;
+insert into public.ao_assignments (class_id, kind, target, title)
+  select id, 'lesson', 'ao17-foundation.m01.l02', 'Терістеу, конъюнкция, дизъюнкция' from t2_class;
+do $$ begin
+  if (select created_by from public.ao_assignments where target = 'w1') is distinct from auth.uid() then raise exception 'FAIL: тапсырма авторы жазылмады'; end if;
+  begin insert into public.ao_assignments (class_id, kind, target, title) select id, 'test', 'w13', 'жоқ апта' from t2_class;
+        raise exception 'FAIL: жарамсыз сынақ режимі қабылданды';
+  exception when check_violation then null; end;
+  begin insert into public.ao_assignments (class_id, kind, target, title) select id, 'lesson', '../../etc/passwd', 'x' from t2_class;
+        raise exception 'FAIL: жарамсыз сабақ нысанасы қабылданды';
+  exception when check_violation then null; end;
+  begin insert into public.ao_assignments (class_id, kind, target, title) select id, 'test', 'w1', 'қайта' from t2_class;
+        raise exception 'FAIL: бір тапсырма екі рет берілді';
+  exception when unique_violation then null; end;
+  begin insert into public.ao_assignments (class_id, kind, target, title) select id, 'test', 'w2', 'бөтен класс' from t1_class;
+        raise exception 'FAIL: мұғалім бөтен класқа тапсырма берді';
+  exception when insufficient_privilege then null; end;
+end $$;
+reset role;
+
+-- оқушы (класс мүшесі) тапсырмаларды көреді, бірақ өзгерте алмайды
+select pg_temp.as_user('00000000-0000-0000-0000-000000000003');
+set role authenticated;
+do $$ begin perform public.ao_join((select join_code from t2_class)); end $$;
+do $$ begin
+  if (select count(*) from public.ao_my_assignments()) <> 2 then raise exception 'FAIL: оқушы өз тапсырмаларын көрмеді'; end if;
+  if (select class_title from public.ao_my_assignments() limit 1) <> '9Б информатика' then raise exception 'FAIL: класс атауы жоқ'; end if;
+  if (select target from public.ao_my_assignments() limit 1) <> 'w1' then raise exception 'FAIL: мерзімі бар тапсырма бірінші емес'; end if;
+  if (select count(*) from public.ao_assignments) <> 2 then raise exception 'FAIL: оқушы өз класының тапсырмаларын RLS арқылы көрмеді'; end if;
+  update public.ao_assignments set title = 'Хак';
+  delete from public.ao_assignments;
+  begin insert into public.ao_assignments (class_id, kind, target, title) select id, 'test', 'w3', 'өзіне' from t2_class;
+        raise exception 'FAIL: оқушы тапсырма берді';
+  exception when insufficient_privilege then null; end;
+end $$;
+reset role;
+
+-- басқа оқушы (мүше емес) және басқа класс мұғалімі көрмейді
+select pg_temp.as_user('00000000-0000-0000-0000-000000000001');
+set role authenticated;
+do $$ begin
+  if (select count(*) from public.ao_my_assignments()) <> 0 then raise exception 'FAIL: мүше емес оқушы тапсырманы көрді'; end if;
+  if (select count(*) from public.ao_assignments) <> 0 then raise exception 'FAIL: мүше емес оқушы тапсырманы RLS арқылы көрді'; end if;
+end $$;
+reset role;
+
+-- мұғалім тексереді: оқушы ештеңе өзгерте алмаған; класс мұрағатталса - оқушыға тапсырма көрінбейді
+select pg_temp.as_user('00000000-0000-0000-0000-0000000000b2');
+set role authenticated;
+do $$ begin
+  if (select count(*) from public.ao_assignments) <> 2 then raise exception 'FAIL: оқушы тапсырманы өшірді'; end if;
+  if exists (select 1 from public.ao_assignments where title = 'Хак') then raise exception 'FAIL: оқушы тапсырманы өзгертті'; end if;
+  update public.ao_classes set archived = true where id = (select id from t2_class);
+end $$;
+reset role;
+select pg_temp.as_user('00000000-0000-0000-0000-000000000003');
+set role authenticated;
+do $$ begin
+  if (select count(*) from public.ao_my_assignments()) <> 0 then raise exception 'FAIL: мұрағаттағы класс тапсырмасы көрінді'; end if;
+  if (select count(*) from public.ao_assignments) <> 0 then raise exception 'FAIL: мұрағаттағы класс тапсырмасы RLS арқылы көрінді'; end if;
+end $$;
+reset role;
+
 select 'platform_test: БАРЛЫҒЫ ӨТТІ' as result;

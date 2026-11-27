@@ -7,6 +7,8 @@
   if (!AO || !page) return;
   const kind = page.dataset.ao;
   const $ = (s, el) => (el || document).querySelector(s);
+  const MIGR = "Бұл мүмкіндікке дерекқорды жаңарту керек: supabase/platform.sql (docs/PLATFORM.md).";
+  const migr = (e) => /does not exist|could not find|schema cache|PGRST20[02]/i.test(String((e && (e.message || e.details || e.code)) || e));
   const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const ROOT = AO.CFG && document.querySelector('script[src$="assets/js/ao-ui.js"]') ? document.querySelector('script[src$="assets/js/ao-ui.js"]').src.replace(/assets\/js\/ao-ui\.js.*$/, "") : new URL(".", location.href).href;
   const qs = new URLSearchParams(location.search);
@@ -196,7 +198,7 @@
     const ul = $('[data-list="teachers"]', page);
     if (!ul) return;
     let rows = [];
-    try { rows = (await AO.rpc("ao_admin_teachers")) || []; } catch (err) { return msg($("[data-gmsg]", page), AO.human(err), true); }
+    try { rows = (await AO.rpc("ao_admin_teachers")) || []; } catch (err) { ul.innerHTML = `<li class="ao-empty">${esc(migr(err) ? MIGR : AO.human(err))}</li>`; return; }
     ul.innerHTML = rows.length ? rows.map((t) => `<li class="ao-teacher"><span><b>${esc(t.display_name || t.email)}</b><small>${esc(t.email)} · ${t.classes} класс</small></span>
         <button class="btn ghost danger" type="button" data-unteach="${esc(t.email)}">Мұғалімдікті алу</button></li>`).join("")
       : '<li class="ao-empty">Әзірге мұғалім жоқ.</li>';
@@ -245,6 +247,7 @@
       </div>
       <div class="ao-tabs" role="tablist">
         <button type="button" role="tab" data-t="content" aria-selected="${A.tab === "content"}">Ашылатын мазмұн</button>
+        <button type="button" role="tab" data-t="assign" aria-selected="${A.tab === "assign"}">Тапсырмалар</button>
         <button type="button" role="tab" data-t="students" aria-selected="${A.tab === "students"}">Оқушылар (${k.members})</button>
         <button type="button" role="tab" data-t="results" aria-selected="${A.tab === "results"}">Нәтижелер</button>
         <button type="button" role="tab" data-t="settings" aria-selected="${A.tab === "settings"}">Баптау</button>
@@ -252,7 +255,7 @@
       <div data-pane></div><p class="ao-msg" role="status" aria-live="polite" data-cmsg></p>`;
     box.querySelectorAll("[data-copy]").forEach((b) => b.addEventListener("click", () => copy(b.dataset.copy, b)));
     box.querySelectorAll("[data-t]").forEach((b) => b.addEventListener("click", () => { A.tab = b.dataset.t; renderClass(k); }));
-    ({ content: paneContent, students: paneStudents, results: paneResults, settings: paneSettings })[A.tab](k, $("[data-pane]", box), $("[data-cmsg]", box));
+    ({ content: paneContent, assign: paneAssign, students: paneStudents, results: paneResults, settings: paneSettings })[A.tab](k, $("[data-pane]", box), $("[data-cmsg]", box));
   }
 
   // ---------- мазмұн: курс және бет деңгейі ----------
@@ -341,6 +344,67 @@
       <h4>Емтихан</h4><p>${exam.best != null ? "Ең жақсы нәтиже: " + esc(exam.best) + "%" : "Әзірге жоқ"}${exams.map(([key, v]) => "<br>" + esc(key.split(":").pop()) + ": " + esc((v && v.best) ?? "-") + "%").join("")}</p>
       <h4>Оқыған лекциялар (${read.length})</h4><p class="ao-read">${read.length ? read.map(esc).join(", ") : "Әзірге жоқ"}</p></div>`;
     el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  // ---------- тапсырмалар: AO17 CS сабағы не сынағы, мерзімімен (assets/js/ao17-assign.js, supabase/platform.sql: ao_assignments) ----------
+  async function paneAssign(k, el, out) {
+    const T = window.AO17Assign;
+    el.innerHTML = '<p class="ao-empty">Жүктелуде…</p>';
+    if (!T) { el.innerHTML = ""; return msg(out, "Тапсырма модулі жүктелмеді: бетті жаңартыңыз", true); }
+    const c = await AO.client();
+    let list, rows;
+    try {
+      const r = await c.from("ao_assignments").select("id,kind,target,title,due_at,created_at").eq("class_id", k.id)
+        .order("due_at", { ascending: true, nullsFirst: false }).order("created_at");
+      if (r.error) throw r.error;
+      list = r.data || [];
+      rows = (await AO.rpc("ao_admin_members", { p_class: k.id })) || [];
+    } catch (err) { el.innerHTML = `<p class="ao-empty">${esc(migr(err) ? MIGR : AO.human(err))}</p>`; return; }
+    const now = Date.now();
+    const lessons = A.pages.map((p) => ({ id: T.lessonOf(p.path), title: p.title || p.path })).filter((x) => x.id).sort((a, b) => a.id.localeCompare(b.id));
+    const weeks = {};
+    lessons.forEach((x) => (weeks[x.id.split(".")[1]] = weeks[x.id.split(".")[1]] || []).push(x));
+    const optTests = T.TESTS.map((m) => `<option value="test|${m}">${esc(T.testLabel(m))}</option>`).join("");
+    const optLessons = Object.keys(weeks).sort().map((m) => `<optgroup label="${+m.slice(1)}-апта: сабақтар">${weeks[m].map((x) => `<option value="lesson|${x.id}">${esc(x.title)}</option>`).join("")}</optgroup>`).join("");
+    const item = (a) => {
+      const s = T.summary(a, rows, now);
+      const past = a.due_at && Date.parse(a.due_at) < now;
+      const per = rows.map((r) => ({ r, x: T.status(a, T.fromRow(r), now) }));
+      return `<li class="ao-assign" data-aid="${a.id}">
+        <div class="ao-assign-head"><b>${esc(a.title)}</b>
+          <span>${a.due_at ? "Мерзімі: " + esc(fmt(a.due_at)) : "Мерзімсіз"}${past ? ' <span class="ao-badge overdue">мерзімі өтті</span>' : ""}</span>
+          <span class="ao-assign-sum">Орындады: <b>${s.done + s.late}</b> / ${s.total}${s.late ? ` · кешікті: ${s.late}` : ""}${s.overdue ? ` · мерзімінде орындамады: ${s.overdue}` : ""}</span>
+          <span class="ao-assign-acts"><a href="${esc(ROOT + T.href(a))}">Ашу</a>${T.planHref(a) ? ` · <a href="${esc(ROOT + T.planHref(a))}">Сабақ жоспары (ҚМЖ)</a>` : ""} · <button class="ao-link-btn danger" type="button" data-adel="${a.id}">Өшіру</button></span>
+        </div>
+        ${rows.length ? `<details><summary>Оқушылар бойынша</summary><ul class="ao-assign-st">${per.map(({ r, x }) => `<li><span>${esc(r.display_name || r.email)}</span><span class="ao-badge ${x.state}">${esc(x.label)}${x.score != null ? " · " + x.score + "%" : ""}</span></li>`).join("")}</ul></details>` : ""}
+      </li>`;
+    };
+    el.innerHTML = `<form class="ao-assign-form" data-form="assign">
+        <label>Не береміз<select name="what" required><optgroup label="AO17 CS сынақтары">${optTests}</optgroup>${optLessons}</select></label>
+        <label>Мерзімі<input type="datetime-local" name="due"></label>
+        <button class="btn" type="submit">Тапсырма беру</button>
+      </form>
+      <p class="ao-hint">Оқушы тапсырманы ашуы үшін сабақ не сынақ «Ашылатын мазмұн» қойындысында ашық болуы керек. Сынақ ${T.PASS}%-дан бастап, сабақ меңгерілгенде орындалды деп саналады.</p>
+      ${lessons.length ? "" : '<p class="ao-hint">Сабақтар тізімі мазмұн каталогынан алынады. Каталог бос болса, тек сынақ беруге болады.</p>'}
+      <ul class="ao-assign-list" data-alist>${list.length ? list.map(item).join("") : '<li class="ao-empty">Әзірге тапсырма жоқ.</li>'}</ul>`;
+    const f = $('[data-form="assign"]', el);
+    f.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const [kind, target] = f.what.value.split("|");
+      const title = kind === "test" ? T.testLabel(target) : (lessons.find((x) => x.id === target) || {}).title || target;
+      const due = f.due.value ? new Date(f.due.value).toISOString() : null;
+      const { error } = await c.from("ao_assignments").insert({ class_id: k.id, kind, target, title, due_at: due });
+      if (error) return msg(out, error.code === "23505" ? "Бұл тапсырма бұл класқа бұрын берілген" : migr(error) ? MIGR : AO.human(error), true);
+      msg(out, "Тапсырма берілді ✓");
+      paneAssign(k, el, out);
+    });
+    el.querySelectorAll("[data-adel]").forEach((b) => b.addEventListener("click", async () => {
+      if (!confirm("Тапсырманы өшіресіз бе? Оқушылардың прогресі сақталады.")) return;
+      const { error } = await c.from("ao_assignments").delete().eq("id", +b.dataset.adel);
+      if (error) return msg(out, AO.human(error), true);
+      msg(out, "Тапсырма өшірілді ✓");
+      paneAssign(k, el, out);
+    }));
   }
 
   // ---------- AO17 CS нәтижелері және пилот есебі (assets/js/ao17-results.js, docs/AO17-CS-PILOT.md) ----------
@@ -447,6 +511,7 @@
       <div class="ao-card"><h2>Класқа қосылу</h2>
         <form class="ao-inline" data-form="join"><input name="code" placeholder="8 таңбалы код" maxlength="32" autocomplete="off" required aria-label="Қосылу коды"><button class="btn gold" type="submit">Қосылу</button></form>
         <p class="ao-msg" role="status" aria-live="polite" data-jmsg></p></div>
+      <div class="ao-card"><h2>Менің тапсырмаларым</h2><div data-assign><p class="ao-empty">Жүктелуде…</p></div></div>
       <div class="ao-card"><h2>Менің кластарым</h2><ul class="ao-list" data-my></ul></div>
       <div class="ao-card"><h2>Маған ашық мазмұн</h2><div data-access><p class="ao-empty">Жүктелуде…</p></div></div>`;
     bindLogout();
@@ -464,7 +529,10 @@
     AO.startSync();
     load();
     async function load() {
+      // тапсырмалар бөлек: дерекқор әлі жаңартылмаса да кластар мен мазмұн көрінеді
+      const asgP = AO.rpc("ao_my_assignments").catch(() => null);
       const [cls, acc] = await Promise.all([AO.rpc("ao_my_classes"), AO.rpc("ao_my_access")]).catch((e) => { msg(jm, AO.human(e), true); return [[], []]; });
+      myAssignments(await asgP);
       $("[data-my]", page).innerHTML = (cls || []).length ? cls.map((k) => `<li><b>${esc(k.title)}</b><span>қосылған: ${esc(fmt(k.joined_at))}</span></li>`).join("") : '<li class="ao-empty">Әзірге ешбір класта емессіз. Мұғалім берген кодты жоғарыға енгізіңіз.</li>';
       const by = {};
       (acc || []).forEach((x) => (by[x.course] = by[x.course] || []).push(x));
@@ -472,6 +540,21 @@
         <ul class="ao-pages">${by[cid].map((x) => `<li><a href="${esc(ROOT + x.path)}">${esc(x.title || x.path)}</a></li>`).join("")}</ul></details>`).join("")
         : '<p class="ao-empty">Мұғалім әзірге ештеңе ашпаған.</p>';
     }
+  }
+
+  // Оқушының тапсырмалары: күйі осы құрылғыдағы прогрестен (бұлттан тартылған) - assets/js/ao17-assign.js
+  function myAssignments(asg) {
+    const T = window.AO17Assign, box = $("[data-assign]", page);
+    if (!box) return;
+    if (!T || asg == null) { box.innerHTML = '<p class="ao-empty">Тапсырмалар әзірге қолжетімсіз.</p>'; return; }
+    if (!asg.length) { box.innerHTML = '<p class="ao-empty">Әзірге тапсырма жоқ.</p>'; return; }
+    let ls = null;
+    try { ls = window.localStorage; } catch (e) { ls = null; }
+    const data = T.fromLocal(ls), now = Date.now();
+    box.innerHTML = `<ul class="ao-assign-my">${asg.filter(T.valid).map((a) => { const s = T.status(a, data, now); return `<li class="ao-assign-row ${s.state}">
+        <a href="${esc(ROOT + T.href(a))}"><b>${esc(a.title)}</b></a>
+        <span>${esc(a.class_title || "")} · ${a.due_at ? "мерзімі " + esc(fmt(a.due_at)) : "мерзімсіз"}</span>
+        <span class="ao-badge ${s.state}">${esc(s.label)}${s.score != null ? " · " + s.score + "%" : ""}</span></li>`; }).join("")}</ul>`;
   }
 
   ({ login: renderLogin, admin: renderAdmin, student: renderStudent })[kind]?.();
