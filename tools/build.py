@@ -599,6 +599,9 @@ def process_page(path, prefix, active):
         og = "assets/img/og/course-ao17cs.jpg"   # AO17 CS курсының мұқабасы (tools/make_course_posters.py)
     if rel.startswith("academy/3d/") and not rel.startswith("academy/3d/app/"):
         og = "assets/img/og/ao17cs-3d.jpg"
+        lab = rel.split("/")[2] if rel.count("/") == 3 else ""   # зертхананың сабағы: сол зертхананың мұқабасы (tools/make_lab_posters.py)
+        if lab and (ROOT / f"assets/img/og/ao17cs-3d-{lab}.jpg").exists():
+            og = f"assets/img/og/ao17cs-3d-{lab}.jpg"
     for code, c in ALL_COURSES.items():  # басқа курс лекцияларының баннер түсі мен нөмірі
         m = re.match(rf"{code}/lectures/week-(\d+)\.html$", rel)
         if m:

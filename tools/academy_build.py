@@ -775,7 +775,10 @@ def course_html(lessons, st):
     for no, x in enumerate(LS, 1):
         first = x["lessons"][0]
         prog["labs"][x["id"]] = [[q["id"], f'3d/{x["id"]}/{q["id"]}.html', q["kk"], q["quiz"]] for q in x["lessons"]]
-        labs_html.append(f'<li class="crs-lab" id="lab-{x["id"]}" style="--lc:{x["color"]}"><p class="crs-ln" aria-hidden="true">{no}</p><div class="crs-lb">'
+        lthumb = f"assets/img/posters/thumb/ao17cs-3d-{x['id']}.jpg"   # tools/make_lab_posters.py: зертхананың комикс-мұқабасы
+        lcover = (f'<a class="crs-wv" href="../posters.html#cs-3d-{x["id"]}" aria-label="«{E(x["kk"])}» зертханасының комикс-мұқабасы" data-ao-in="cover">'
+                  f'<img src="../{lthumb}" alt="" width="240" height="360" loading="lazy"></a>') if (ROOT / lthumb).exists() else ""
+        labs_html.append(f'<li class="crs-lab{" has-cover" if lcover else ""}" id="lab-{x["id"]}" style="--lc:{x["color"]}">{lcover}<p class="crs-ln" aria-hidden="true">{no}</p><div class="crs-lb">'
                          f'<h3><a href="3d/index.html#{x["id"]}">{E(x["kk"])}</a> <small lang="en">{E(x["en"])}</small></h3>'
                          + (f'<p class="crs-lt">{E(x["tag"])}</p>' if x["tag"] else "")
                          + f'<p class="crs-wm">{len(x["lessons"])} сабақ · {sum(q["quiz"] for q in x["lessons"])} тест сұрағы · ≈{round(x["minutes"] / 60)} сағат</p>'
@@ -789,15 +792,20 @@ def course_html(lessons, st):
           "isAccessibleForFree": True, "url": "https://mustafa7677.github.io/CS50MUSS/academy/course.html",
           "image": "https://mustafa7677.github.io/CS50MUSS/assets/img/og/course-ao17cs.jpg",
           "hasCourseInstance": {"@type": "CourseInstance", "courseMode": "online", "courseWorkload": f"PT{hours}H"}}
+    poster = (ROOT / "assets/img/posters/ao17cs.jpg").exists()
+    hv = ('<div class="crs-hv"><a class="crs-hcov" href="../posters.html#cs-main" aria-label="AO17 CS курсының комикс-мұқабасы (афиша)">'
+          '<img src="../assets/img/posters/ao17cs.jpg" alt="AO17 CS курсының мұқабасы: шаңырақ-схема астында Нұрай, Мустафа және Бота" width="1000" height="1500"></a>'
+          '<a class="crs-hfilm" href="../film/cs/"><span class="crs-hplay" aria-hidden="true"></span><span><b>Фильм: «Даладан жұлдызға»</b><small>36 секунд</small></span></a></div>') if poster else ""
+    film_m = ' <a class="btn secondary crs-film-m" href="../film/cs/">Фильм: 36 секунд</a>' if hv else ""   # телефонда: мұқабаның астындағы жолдың орнына
     body = f"""  <div class="layout single">
     <article class="content crs" id="main" data-ao-progress>
-      <header class="crs-hero">
+      <header class="crs-hero{" crs-hx" if hv else ""}">{hv}
         <p class="crs-k">AO17 CS</p>
         <h1>Компьютерлік ғылымға кіріспе</h1>
         <p class="crs-lede">Екі бөлім, бір жол. Бірінші бөлімде он екі аптада логикадан жүйеге дейін жүресің: ұғымды түсіндірме мен комикстен аласың, кодты өзің жазасың. Екінші бөлімде технологияның ішіне кіресің: процессордың, желінің, дерекқордың, нейрон желінің ішін 3D симуляцияда көріп, өлшейсің. Қазақ тілінде, тегін, браузерде.</p>
         <ul class="crs-stats"><li><b data-ao-count>2</b><span>бөлім</span></li><li><b data-ao-count>{tot_l + n3_l}</b><span>сабақ</span></li><li><b data-ao-count>{tot_t + n3_q}</b><span>тапсырма мен тест</span></li>
           <li><b data-ao-count>{len(CXE.EPISODES)}</b><span>комикс эпизоды</span></li><li><b data-ao-count>{len(LS)}</b><span>3D зертхана</span></li><li><b data-ao-count>≈{hours}</b><span>сағат</span></li></ul>
-        <p class="crs-cta"><a class="btn gold" id="crs-go" href="m01/l01.html">1-аптадан бастау</a> <a class="btn secondary" href="#part2">2-бөлім: 3D зертхана</a> <a class="btn secondary" href="comics.html">Комикстер</a> <a class="btn secondary" href="../posters.html#ao17cs">Курс мұқабалары</a> <a class="btn secondary" href="plan.html">Оқу кестесі</a></p>
+        <p class="crs-cta"><a class="btn gold" id="crs-go" href="m01/l01.html">1-аптадан бастау</a> <a class="btn secondary" href="#part2">2-бөлім: 3D зертхана</a> <a class="btn secondary" href="comics.html">Комикстер</a> <a class="btn secondary" href="../posters.html#ao17cs">Курс мұқабалары</a> <a class="btn secondary" href="plan.html">Оқу кестесі</a>{film_m}</p>
         <p class="crs-plan" data-plan-chip hidden></p>
         <p class="crs-me" id="crs-me" hidden></p>
       </header>
