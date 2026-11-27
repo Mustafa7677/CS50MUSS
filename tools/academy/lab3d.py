@@ -66,8 +66,7 @@ def lab_summary():
              "lessons": [{"id": L["id"], "kk": kk(L), "quiz": quiz_total(L)} for L in by_lab[lab["id"]]]} for lab in labs]
 
 
-# INSIDE TECH-тің AO17-нің өз беттеріне көшкен бөлімдері: маршрут -> academy/ ішіндегі бет
-NATIVE_PAGE = {"comics": "comics.html#part2", "learn": "learn.html", "journey": "journey.html", "career": "careers.html"}
+NATIVE_PAGE = IX.NATIVE_PAGE   # INSIDE TECH-тің AO17-нің өз беттеріне көшкен бөлімдері: маршрут -> academy/ ішіндегі бет
 
 
 def href(lesson_or_route, base="academy/"):
@@ -303,7 +302,9 @@ def shot(name):
 NATIVE = {"comics": ("../comics.html#part2", "Барлық 44 комикс AO17 бетінде: зертханалардың алғашқы сабақтары, он жанрдағы кино-комикс, математика сабақтары."),
           "learn": ("../learn.html", "Нұрай, Мустафа және Бота оқу туралы жеті танымал сенімді тексереді. Алдымен өзің болжа: миф пе, шындық па?"),
           "journey": ("../journey.html", "Мекенжай жолында Enter басылғаннан бет шыққанға дейінгі 185 мс: он аялдама, әрқайсысында бір сұрақ."),
-          "career": ("../careers.html", "Жеті сұраққа жауап бер де, қай IT мамандығы саған жақын екенін, оның бір күнін және 2-бөлімнен оған апаратын жолды көр.")}
+          "career": ("../careers.html", "Жеті сұраққа жауап бер де, қай IT мамандығы саған жақын екенін, оның бір күнін және 2-бөлімнен оған апаратын жолды көр."),
+          "problems": ("../problems.html", "Жеті қиын есеп: маманның шешімін фильммен талда, стратегия таңда, егіз есепті өзің шығар. Күннің есебі мен күндер қатары."),
+          "cards": ("../cards.html", "22 карточка, бес жәшік: білгенің 1, 3, 7, 14 күннен кейін қайтады, білмегенің бүгін қайта шығады.")}
 
 
 def native_art(route):
@@ -312,7 +313,9 @@ def native_art(route):
     if route == "learn":
         return IX.episode_cover(IX.episodes()[0])
     scene = {"journey": ("screen", [("packet", "wow", 130, 1), ("server", "happy", 275, -1)]),
-             "career": ("class", [("robot", "happy", 125, 1), ("phone", "happy", 275, -1)])}.get(route)
+             "career": ("class", [("robot", "happy", 125, 1), ("phone", "happy", 275, -1)]),
+             "problems": ("class", [("N", "think", 125, 1), ("B", "calm", 275, -1)]),
+             "cards": ("desk", [("M", "happy", 125, 1), ("laptop", "happy", 275, -1)])}.get(route)
     if not scene:
         e = IX.entries()[0]
         return IX.cover(e, lab_of[e["lesson"]])

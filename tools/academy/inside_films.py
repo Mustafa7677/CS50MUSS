@@ -36,9 +36,10 @@ def fresh(film):
     return out
 
 
-def section(e, base="../"):
-    """Сабақ қадамының соңындағы фильм (бет: academy/3d/<зертхана>/<сабақ>.html). base - academy/3d/-ге дейінгі жол."""
-    film, lid = e["film"], e["lesson"]
+def player(film, uid="s-board", kicker="Шешім фильмі · практикадан кейін",
+           note="Өзің шығарып болдың ба? Енді шешімді фильм сияқты көр: тақтаға жол-жолымен жазылады, әр қадамның себебі астында айтылады.",
+           link="", heading="h3"):
+    """Фильмнің ойнатқышы (assets/js/board-film.js) және JS-сіз оқылатын толық мәтіні. Бір бетте бірнеше фильм болса, uid әртүрлі."""
     frames = [{k: f[k] for k in ("stage", "board", "mark", "say") if k in f} for f in film["frames"]]
     data = json.dumps({"title": film["title"], "stages": STAGES, "frames": frames}, ensure_ascii=False).replace("</", "<\\/")
     route = "".join(f"<li>{E(s)}</li>" for s in STAGES)
@@ -46,14 +47,19 @@ def section(e, base="../"):
     for f, new in zip(film["frames"], fresh(film)):
         lines = "".join(f"<code>{E(t)}</code>" for t in new)
         tr.append(f'<li><span class="bf-st">{E(STAGES[f["stage"]])}.</span> {E(f["say"])}' + (f'<span class="bf-lines">{lines}</span>' if lines else "") + "</li>")
-    return (f'<div class="bf" id="s-board" data-bf role="region" aria-labelledby="bf-h">'
-            f'<div class="bf-head"><p class="bf-k">Шешім фильмі · практикадан кейін</p><h3 class="bf-t" id="bf-h">{E(film["title"])}</h3></div>'
+    hid = "bf-h" if uid == "s-board" else f"{uid}-h"
+    return (f'<div class="bf" id="{uid}" data-bf role="region" aria-labelledby="{hid}">'
+            f'<div class="bf-head"><p class="bf-k">{E(kicker)}</p><{heading} class="bf-t" id="{hid}">{E(film["title"])}</{heading}></div>'
             f'<div class="bf-poster"><ol class="bf-route" aria-label="Шешу жолы">{route}</ol>'
-            f'<p class="bf-note">Өзің шығарып болдың ба? Енді шешімді фильм сияқты көр: тақтаға жол-жолымен жазылады, әр қадамның себебі астында айтылады.</p>'
-            f'<p class="bf-go"><button type="button" class="btn gold bf-start" hidden>▶ Фильмді көру</button> '
-            f'<a class="btn secondary" href="{base}app/index.html#{E(lid)}">3D сахнамен көру</a></p></div>'
+            f'<p class="bf-note">{E(note)}</p>'
+            f'<p class="bf-go"><button type="button" class="btn gold bf-start" hidden>▶ Фильмді көру</button>{(" " + link) if link else ""}</p></div>'
             f'<details class="bf-tr"><summary>Фильмнің мәтіні ({len(frames)} кадр)</summary><ol>{"".join(tr)}</ol></details>'
             f'<script type="application/json" class="bf-data">{data}</script></div>')
+
+
+def section(e, base="../"):
+    """Сабақ қадамының соңындағы фильм (бет: academy/3d/<зертхана>/<сабақ>.html). base - academy/3d/-ге дейінгі жол."""
+    return player(e["film"], link=f'<a class="btn secondary" href="{base}app/index.html#{E(e["lesson"])}">3D сахнамен көру</a>')
 
 
 def validate(steps_of):

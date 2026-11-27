@@ -5,7 +5,9 @@
 //   lessonComics - сабақтардың өз комикстері (математика курсы және бірнеше IT сабағы);
 //   board       - «тақта фильмдері»: шешімді қадамдап көрсететін фильмдер (сабақ қадамының film өрісі);
 //   episodes    - «Қалай оқу керек?» эпизодтары (lib/learnHow.ts); stories - «Тірі заттар» әңгімелері (lib/stories.ts);
-//   journey     - «Бір басудың саяхаты» (lib/journey.ts); careers, careerQuiz - мамандықтар мен мамандық тесті (lib/careers.ts).
+//   journey     - «Бір басудың саяхаты» (lib/journey.ts); careers, careerQuiz - мамандықтар мен мамандық тесті (lib/careers.ts);
+//   problems    - «Есептер залы»: қиын есеп, шешім фильмі, стратегия, егіз есеп (lib/problems.ts);
+//   cards, cardIntervals - «Есте сақтау карточкалары» және Лейтнер жәшіктерінің аралықтары (lib/cards.ts).
 // AO17-де Ұстаз кейіпкері жоқ: оның сөзін Бота айтады (who: "ustaz" -> "bota"), мәтіндегі «Ұстаз» де «Бота» болады.
 // Сондықтан бұл шығару strip_ustaz-тан БҰРЫН, таза клонда жүреді (tools/sync_inside.py).
 // Қолдану: node tools/inside_media.mjs <3d-learning- қалтасы> <шығыс.json>
@@ -28,6 +30,8 @@ import { EPISODES } from "@/lib/learnHow";
 import { STORIES } from "@/lib/stories";
 import { JOURNEY } from "@/lib/journey";
 import { CAREERS, QUIZ } from "@/lib/careers";
+import { PROBLEMS } from "@/lib/problems";
+import { CARDS, INTERVAL_DAYS } from "@/lib/cards";
 import { lessonEntries } from "@/lib/lessons";
 const clean = (v) => JSON.parse(JSON.stringify(v, (k, x) => (typeof x === "function" || k === "onEnter" ? undefined : x)));
 const lessonComics = {}, board = {};
@@ -36,7 +40,7 @@ for (const e of lessonEntries) for (const s of e.lesson.steps) {
   if (s.film) board[e.lesson.id] = { step: s.id, film: s.film };
 }
 process.stdout.write(JSON.stringify(clean({ labComics: LAB_COMICS, filmComics: FILM_COMICS, lessonComics, board, episodes: EPISODES, stories: STORIES,
-  journey: JOURNEY, careers: CAREERS, careerQuiz: QUIZ })));
+  journey: JOURNEY, careers: CAREERS, careerQuiz: QUIZ, problems: PROBLEMS, cards: CARDS, cardIntervals: INTERVAL_DAYS })));
 `;
 const res = await build({
   stdin: { contents: entry, resolveDir: web, loader: "ts" }, bundle: true, platform: "node", format: "esm", write: false, logLevel: "error",
@@ -70,4 +74,5 @@ if (left) {
 await writeFile(out, JSON.stringify(data) + "\n");
 const n = (o) => Object.keys(o).length;
 console.log("inside_media:", out, `- комикс: ${n(data.labComics)} + ${n(data.filmComics)} + ${n(data.lessonComics)}, тақта фильмі: ${n(data.board)},`,
-  `эпизод: ${data.episodes.length}, әңгіме: ${data.stories.length}, саяхат: ${data.journey.length}, мамандық: ${data.careers.length}`);
+  `эпизод: ${data.episodes.length}, әңгіме: ${data.stories.length}, саяхат: ${data.journey.length}, мамандық: ${data.careers.length},`,
+  `есеп: ${data.problems.length}, карточка: ${data.cards.length}`);
