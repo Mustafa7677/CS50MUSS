@@ -42,15 +42,18 @@ test("хаб: шешілген сабақтар белгіленеді, зерт
 });
 
 
-test("INSIDE TECH-тің толық порталы: 24 бөлім скриншотпен, әрқайсысы 3D қолданбаның нақты бөлімін ашады", async ({ page }) => {
+test("INSIDE TECH-тің толық порталы: 24 бөлім, әрқайсысы 3D қолданбаның нақты бөлімін не AO17-нің өз бетін ашады", async ({ page }) => {
   test.setTimeout(150000);
   await page.goto("academy/3d/index.html");
   const cards = page.locator(".l3-feat a.l3-card");
   await expect(cards).toHaveCount(24);
-  const routes = await cards.evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+  const all = await cards.evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+  // INSIDE TECH-тің комикс кітапханасы AO17-нің өз бетінде (lab3d.NATIVE): мұқабасы - комикстің кадры, скриншот емес
+  expect(all.filter((h) => !h.startsWith("app/"))).toEqual(["../comics.html#part2"]);
+  const routes = all.filter((h) => h.startsWith("app/"));
   for (const h of routes) expect(h, h).toMatch(/^app\/index\.html#[a-z]+$/);
   const imgs = await page.locator(".l3-feat img, .l3-tiles img, .l3-hshot img").evaluateAll((a) => a.map((i) => i.getAttribute("src")));
-  expect(imgs.length).toBe(24 + 11 + 1);
+  expect(imgs.length).toBe(23 + 11 + 1);
   for (const src of imgs) expect(fs.existsSync(path.join(ROOT, "academy/3d", src)), src).toBe(true);
   for (const h of await page.locator(".l3-secnav a").evaluateAll((a) => a.map((x) => x.getAttribute("href")))) await expect(page.locator(h)).toHaveCount(1);
   await expect(page.locator(".l3-tiles a.l3-tile")).toHaveCount(11);
