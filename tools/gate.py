@@ -70,6 +70,10 @@ def page_rule(rel):
         return parts[0], "lecture"
     if len(parts) == 2 and parts[0] in COURSES and parts[1].endswith(".html") and parts[1] != "index.html":
         return parts[0], SUB_KIND.get(parts[1][:-5], "page")
+    # Мұғалім жоспарлары (academy/teach/m*.html, жауап кілтімен): бөлек «teach» курсы. Мұғалім мен Super Admin
+    # жабық мазмұнның бәрін көреді (ao_can_view), ал оқушыға «academy» курсы ашылғанда да бұл беттер жабық қалады.
+    if rel.startswith("academy/teach/") and rel.endswith(".html") and rel not in ACADEMY_PUBLIC:
+        return "teach", "page"
     # AO17 CS Universe: каталог (index) мен білім картасы жария; сабақтар мен зертхана - жабық, курс «academy»
     # Бағыт беттері (academy/tracks/*) - каталог, сондықтан жария
     if parts[0] == "academy" and rel.endswith(".html") and rel not in ACADEMY_PUBLIC and not rel.startswith(ACADEMY_PUBLIC_DIRS):

@@ -3,7 +3,8 @@
    academy/exam.html - ?w=N апта сынағы (8 сұрақ, жауаптан кейін бірден түсіндірме), ?part=1|2 бөлім емтиханы (30 мин),
    режимсіз - қорытынды емтихан (36 сұрақ: әр аптадан 2, әр зертханадан 1 және тағы 1; 45 мин). Өту шегі 70%.
    academy/certificate.html - қорытынды емтиханда 70%+ болса, атың жазылған сертификат (басып шығару / PDF).
-   Сақтау (осы браузер): «ao17cs:exam» - {режим: {best, last, at, bestAt, runs}}, «ao17cs:exam-run» - тоқтаған сынақ. */
+   Сақтау (осы браузер): «ao17cs:exam» - {режим: {best, last, at, bestAt, runs, first, firstAt}}
+   (first/firstAt - алғашқы әрекет: пилоттың бастапқы деңгейі, кейін өзгермейді; ескі жазбада белгісіз - null), «ao17cs:exam-run» - тоқтаған сынақ. */
 (function () {
   "use strict";
   var KEY = "ao17cs:exam", RUN = "ao17cs:exam-run", NAME = "ao17cs:name";
@@ -321,8 +322,10 @@
       res = obj(J(KEY, {}));
       var r = obj(res[mode]);
       var best = Math.max(r.best || 0, pct);
-      res[mode] = { best: best, last: pct, at: run.doneAt, bestAt: pct >= (r.best || 0) ? run.doneAt : (r.bestAt || r.at), runs: (r.runs || 0) + 1 };
+      var first = r.first != null ? r.first : r.runs ? null : pct, firstAt = r.firstAt != null ? r.firstAt : r.runs ? null : run.doneAt;
+      res[mode] = { best: best, last: pct, at: run.doneAt, bestAt: pct >= (r.best || 0) ? run.doneAt : (r.bestAt || r.at), runs: (r.runs || 0) + 1, first: first, firstAt: firstAt };
       S(KEY, res);
+      try { document.dispatchEvent(new CustomEvent("cs50kz:week")); } catch (e) { /* */ }   // ao.js: нәтиже бұлтқа (кірген болса)
       D(RUN);
       if (window.CS50KZ && typeof window.CS50KZ.check === "function") window.CS50KZ.check();   // жаңа жетістік болса - хабарлама
       root.classList.remove("xm-running");

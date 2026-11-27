@@ -7,6 +7,8 @@
 -- Рөлдер:
 --   * admin   - жалғыз Super Admin. Рөлді тек service_role кілтімен ao_bootstrap_admin() береді,
 --               және ол тек әлі бірде-бір admin жоқ кезде жұмыс істейді. Клиент рөлді өзгерте алмайды.
+--   * teacher - мұғалім. Рөлді тек Super Admin береді (ao_admin_set_role). Өзі ашқан кластарды ғана басқарады
+--               (ao_classes.owner): мазмұн ашу, оқушылар, нәтижелер; жабық мазмұнның бәрін көреді (сабаққа дайындалу үшін).
 --   * student - Supabase Auth арқылы тіркелген кез келген адам (email + құпиясөз).
 --
 -- Рұқсат моделі:
@@ -27,7 +29,7 @@ create table if not exists public.ao_profiles (
   id            uuid primary key references auth.users(id) on delete cascade,
   email         text,
   display_name  text not null default '' check (length(display_name) <= 80),
-  role          text not null default 'student' check (role in ('admin', 'student')),
+  role          text not null default 'student' check (role in ('admin', 'teacher', 'student')),
   must_change_password boolean not null default false,
   created_at    timestamptz not null default now()
 );
@@ -85,6 +87,12 @@ create table if not exists public.ao_progress (
   updated_at  timestamptz not null default now()
 );
 
+-- ---------- мұғалім рөлі (2026-11): бұрыннан бар дерекқорда да осы жолдар жаңартады (идемпотентті)
+alter table public.ao_profiles drop constraint if exists ao_profiles_role_check;
+alter table public.ao_profiles add constraint ao_profiles_role_check check (role in ('admin', 'teacher', 'student'));
+alter table public.ao_classes add column if not exists owner uuid references public.ao_profiles(id) on delete set null;   -- класты ашқан мұғалім
+create index if not exists ao_classes_owner_idx on public.ao_classes(owner);
+
 -- ======================================================================== жаңа пайдаланушы → профиль
 create or replace function public.ao_on_auth_user()
 returns trigger language plpgsql security definer set search_path = public as $$
@@ -108,6 +116,18 @@ on conflict (id) do nothing;
 create or replace function public.ao_is_admin()
 returns boolean language sql stable security definer set search_path = public as $$
   select exists (select 1 from public.ao_profiles where id = auth.uid() and role = 'admin');
+$$;
+
+create or replace function public.ao_is_teacher()
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.ao_profiles where id = auth.uid() and role = 'teacher');
+$$;
+
+-- Класты басқара ала ма: Super Admin - кез келгенін, мұғалім - тек өзі ашқанын (рөлі teacher болып тұрғанда)
+create or replace function public.ao_can_manage(p_class uuid)
+returns boolean language sql stable security definer set search_path = public as $$
+  select public.ao_is_admin()
+      or (public.ao_is_teacher() and exists (select 1 from public.ao_classes where id = p_class and owner = auth.uid()));
 $$;
 
 -- 8 таңбалы код: адам шатастыратын 0/O, 1/I/L жоқ
@@ -144,7 +164,7 @@ returns boolean language plpgsql stable security definer set search_path = publi
 declare uid uuid := auth.uid(); pg public.ao_pages;
 begin
   if uid is null or p_path is null then return false; end if;
-  if public.ao_is_admin() then return true; end if;
+  if public.ao_is_admin() or public.ao_is_teacher() then return true; end if;
   select * into pg from public.ao_pages where path = p_path;
   if found then
     return exists (
@@ -192,19 +212,22 @@ create policy ao_profiles_self on public.ao_profiles for select using (id = auth
 drop policy if exists ao_profiles_name on public.ao_profiles;
 create policy ao_profiles_name on public.ao_profiles for update using (id = auth.uid()) with check (id = auth.uid());
 
+-- Класс: Super Admin - бәрі; мұғалім - өз класы. Мұғалім класты басқа біреуге бере алмайды (with check: owner - өзі)
 drop policy if exists ao_classes_admin on public.ao_classes;
-create policy ao_classes_admin on public.ao_classes for all using (public.ao_is_admin()) with check (public.ao_is_admin());
+create policy ao_classes_admin on public.ao_classes for all using (public.ao_can_manage(id))
+  with check (public.ao_is_admin() or (public.ao_is_teacher() and owner = auth.uid()));
 
 drop policy if exists ao_grants_admin on public.ao_grants;
-create policy ao_grants_admin on public.ao_grants for all using (public.ao_is_admin()) with check (public.ao_is_admin());
+create policy ao_grants_admin on public.ao_grants for all using (public.ao_can_manage(class_id)) with check (public.ao_can_manage(class_id));
 
 drop policy if exists ao_members_read on public.ao_members;
-create policy ao_members_read on public.ao_members for select using (user_id = auth.uid() or public.ao_is_admin());
+create policy ao_members_read on public.ao_members for select using (user_id = auth.uid() or public.ao_can_manage(class_id));
 drop policy if exists ao_members_delete on public.ao_members;
-create policy ao_members_delete on public.ao_members for delete using (user_id = auth.uid() or public.ao_is_admin());
+create policy ao_members_delete on public.ao_members for delete using (user_id = auth.uid() or public.ao_can_manage(class_id));
 
 drop policy if exists ao_progress_read on public.ao_progress;
-create policy ao_progress_read on public.ao_progress for select using (user_id = auth.uid() or public.ao_is_admin());
+create policy ao_progress_read on public.ao_progress for select using (user_id = auth.uid() or public.ao_is_admin()
+  or exists (select 1 from public.ao_members m where m.user_id = ao_progress.user_id and public.ao_can_manage(m.class_id)));
 drop policy if exists ao_progress_ins on public.ao_progress;
 create policy ao_progress_ins on public.ao_progress for insert with check (user_id = auth.uid());
 drop policy if exists ao_progress_upd on public.ao_progress;
@@ -256,15 +279,28 @@ begin
   if not public.ao_is_admin() then raise exception 'тек әкімші' using errcode = '42501'; end if;
 end $$;
 
+create or replace function public.ao_require_staff()
+returns void language plpgsql stable security definer set search_path = public as $$
+begin
+  if not (public.ao_is_admin() or public.ao_is_teacher()) then raise exception 'тек мұғалім не әкімші' using errcode = '42501'; end if;
+end $$;
+
+create or replace function public.ao_require_manage(p_class uuid)
+returns void language plpgsql stable security definer set search_path = public as $$
+begin
+  if not public.ao_can_manage(p_class) then raise exception 'бұл класты басқаруға рұқсат жоқ' using errcode = '42501'; end if;
+end $$;
+
+-- Класс ашу: Super Admin не мұғалім; иесі - ашқан адам
 create or replace function public.ao_admin_class_create(p_title text)
 returns public.ao_classes language plpgsql security definer set search_path = public as $$
 declare r public.ao_classes;
 begin
-  perform public.ao_require_admin();
+  perform public.ao_require_staff();
   for i in 1..10 loop
     begin
-      insert into public.ao_classes (title, join_code, invite_token)
-      values (btrim(p_title), public.ao_rand_code(8), public.ao_rand_token()) returning * into r;
+      insert into public.ao_classes (title, join_code, invite_token, owner)
+      values (btrim(p_title), public.ao_rand_code(8), public.ao_rand_token(), auth.uid()) returning * into r;
       return r;
     exception when unique_violation then null;  -- сирек код қақтығысы: қайталаймыз
     end;
@@ -276,7 +312,7 @@ create or replace function public.ao_admin_regen_codes(p_class uuid)
 returns public.ao_classes language plpgsql security definer set search_path = public as $$
 declare r public.ao_classes;
 begin
-  perform public.ao_require_admin();
+  perform public.ao_require_manage(p_class);
   update public.ao_classes set join_code = public.ao_rand_code(8), invite_token = public.ao_rand_token()
    where id = p_class returning * into r;
   if not found then raise exception 'класс жоқ' using errcode = 'P0002'; end if;
@@ -288,12 +324,14 @@ returns table (id uuid, title text, join_code text, invite_token text, join_open
                created_at timestamptz, members bigint, grants bigint)
 language plpgsql stable security definer set search_path = public as $$
 begin
-  perform public.ao_require_admin();
+  perform public.ao_require_staff();
   return query
     select c.id, c.title, c.join_code, c.invite_token, c.join_open, c.archived, c.created_at,
            (select count(*) from public.ao_members m where m.class_id = c.id),
            (select count(*) from public.ao_grants g where g.class_id = c.id and public.ao_grant_active(g))
-    from public.ao_classes c order by c.archived, c.created_at desc;
+    from public.ao_classes c
+    where public.ao_is_admin() or c.owner = auth.uid()   -- мұғалім: тек өз кластары
+    order by c.archived, c.created_at desc;
 end $$;
 
 create or replace function public.ao_admin_members(p_class uuid)
@@ -301,13 +339,35 @@ returns table (user_id uuid, email text, display_name text, joined_at timestampt
                summary jsonb, snapshot jsonb, updated_at timestamptz)
 language plpgsql stable security definer set search_path = public as $$
 begin
-  perform public.ao_require_admin();
+  perform public.ao_require_manage(p_class);
   return query
     select p.id, p.email, p.display_name, m.joined_at, coalesce(pr.summary, '{}'::jsonb),
            coalesce(pr.snapshot, '{}'::jsonb), pr.updated_at
     from public.ao_members m join public.ao_profiles p on p.id = m.user_id
     left join public.ao_progress pr on pr.user_id = p.id
     where m.class_id = p_class order by p.display_name, p.email;
+end $$;
+
+-- Super Admin мұғалім тағайындайды не мұғалімдікті алады (teacher <-> student). Admin рөлін бұл функция бермейді және алмайды.
+create or replace function public.ao_admin_set_role(p_email text, p_role text)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare r public.ao_profiles;
+begin
+  perform public.ao_require_admin();
+  if p_role is null or p_role not in ('teacher', 'student') then raise exception 'рөл қате' using errcode = '22023'; end if;
+  update public.ao_profiles set role = p_role where lower(email) = lower(btrim(p_email)) and role <> 'admin' returning * into r;
+  if not found then raise exception 'пайдаланушы жоқ' using errcode = 'P0002'; end if;
+  return jsonb_build_object('id', r.id, 'email', r.email, 'display_name', r.display_name, 'role', r.role);
+end $$;
+
+create or replace function public.ao_admin_teachers()
+returns table (id uuid, email text, display_name text, classes bigint)
+language plpgsql stable security definer set search_path = public as $$
+begin
+  perform public.ao_require_admin();
+  return query
+    select p.id, p.email, p.display_name, (select count(*) from public.ao_classes c where c.owner = p.id)
+    from public.ao_profiles p where p.role = 'teacher' order by p.display_name, p.email;
 end $$;
 
 -- Бірінші Super Admin: тек service_role, тек admin әлі жоқ кезде.
@@ -335,9 +395,9 @@ begin
   end loop;
 end $$;
 
-grant execute on function public.ao_is_admin(), public.ao_can_view(text), public.ao_join(text),
+grant execute on function public.ao_is_admin(), public.ao_is_teacher(), public.ao_can_manage(uuid), public.ao_can_view(text), public.ao_join(text),
   public.ao_my_classes(), public.ao_my_access(), public.ao_password_changed(),
   public.ao_admin_class_create(text), public.ao_admin_regen_codes(uuid), public.ao_admin_overview(),
-  public.ao_admin_members(uuid) to authenticated;
--- ao_grant_active, ao_class_allows, ao_rand_*: тек ішкі (SECURITY DEFINER функциялар иесінің құқығымен шақырады)
+  public.ao_admin_members(uuid), public.ao_admin_set_role(text, text), public.ao_admin_teachers() to authenticated;
+-- ao_grant_active, ao_class_allows, ao_rand_*, ao_require_*: тек ішкі (SECURITY DEFINER функциялар иесінің құқығымен шақырады)
 grant execute on function public.ao_bootstrap_admin(text) to service_role;
