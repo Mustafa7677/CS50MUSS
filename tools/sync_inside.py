@@ -6,7 +6,10 @@ INSIDE TECH (github.com/Mustafa7677/3d-learning-) - AO17 командасыны�
      шрифттер AO17-нің жергілікті шрифттеріне ауыстырылады (Google Fonts сұратылмайды), «AO17-ге оралу» батырмасы қосылады;
   2) tools/academy/data/inside_lessons.json - 160 сабақтың дәрістері, тесттері, болжамдары, мысалдары (tools/inside_extract.mjs);
      tools/academy/lab3d.py осыдан academy/3d/<зертхана>/<сабақ>.html лекция беттерін жасайды (tools/build.py кезінде);
-  3) academy/3d/app/THIRD-PARTY-NOTICES.txt - бумаға кіретін кітапханалардың (React, three.js, ...) лицензия мәтіндері.
+  3) academy/3d/app/THIRD-PARTY-NOTICES.txt - бумаға кіретін кітапханалардың (React, three.js, ...) лицензия мәтіндері;
+  4) tools/academy/data/inside_media.json - комикстер, тақта фильмдері, «Қалай оқу керек?», «Тірі заттар», «Бір басудың саяхаты»,
+     мамандықтар (tools/inside_media.mjs). Ол strip_ustaz-тан бұрын шығарылады: AO17 беттерінде Ұстаздың сөзін Бота айтады
+     (tools/academy/inside_comics.py комикстерді AO17 комикс қозғалтқышымен салады).
 AO17 нұсқасында Ұстаз кейіпкері жоқ: құрастырудың алдында оның комикс жолдары баяндаушы (narrator) мәтініне айналады,
 «Нұрай, Мустафа және Ұстаз» - «Нұрай мен Мустафа», Feynman чатындағы кеңесті Нұрай береді (strip_ustaz). Құрастырған соң
 INSIDE TECH клоны бастапқы күйіне қайтарылады (git checkout), ал бумада «ұстаз» сөзі (кез келген регистрде, \\uXXXX түрінде де)
@@ -26,6 +29,7 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 APP = ROOT / "academy/3d/app"
 DATA = ROOT / "tools/academy/data/inside_lessons.json"
+MEDIA = ROOT / "tools/academy/data/inside_media.json"
 BACK = ('<a class="ao17-back" href="../index.html" title="AO17 3D зертханалары: лекциялар">AO17 · 3D зертхана</a>'
         '<style>.ao17-back{position:fixed;left:12px;bottom:12px;z-index:2147483000;padding:7px 12px;border-radius:99px;background:#f2b705;color:#1b1510;'
         'font:700 12px/1.2 Inter,system-ui,sans-serif;text-decoration:none;box-shadow:0 6px 16px rgb(0 0 0 / .35)}'
@@ -171,6 +175,8 @@ def main():
     web = src / "apps/web"
     run(["pnpm", "install", "--frozen-lockfile"], src)
     commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=src, capture_output=True, text=True, check=True).stdout.strip()
+    MEDIA.parent.mkdir(parents=True, exist_ok=True)
+    run(["node", str(ROOT / "tools/inside_media.mjs"), str(src), str(MEDIA)], src)   # таза клоннан: Ұстаздың сөзі -> Бота
     changed = strip_ustaz(src)
     print("strip_ustaz:", len(changed), "файл")
     try:
@@ -187,7 +193,8 @@ def main():
             subprocess.run(["git", "checkout", "--", *changed], cwd=src, check=True)   # клон бастапқы күйіне қайтады
     art = web / "dist-artifact"
     bundle = "".join((art / f).read_text(encoding="utf-8") for f in ("app.js", "ai-lab-worker.js", "index.html"))
-    left = [n for n, t in (("бума (app.js, ai-lab-worker.js, index.html)", bundle), ("inside_lessons.json", DATA.read_text(encoding="utf-8"))) if has_ustaz(t)]
+    left = [n for n, t in (("бума (app.js, ai-lab-worker.js, index.html)", bundle), ("inside_lessons.json", DATA.read_text(encoding="utf-8")),
+                           ("inside_media.json", MEDIA.read_text(encoding="utf-8"))) if has_ustaz(t)]
     if left:
         sys.exit(f"sync_inside: Ұстаз қалды: {left}")
     if APP.exists():
@@ -200,7 +207,7 @@ def main():
     (APP / "SOURCE.json").write_text(json.dumps({"repo": "https://github.com/Mustafa7677/3d-learning-", "commit": commit,
                                                  "build": "FULL_HTML=1 pnpm --filter @inside-tech/web build:artifact",
                                                  "ao17": "Ұстаз кейіпкері алынған (strip_ustaz); тақырып 721-1440px-те бір қатарда (ao17_patches); зертхана мен сабақ атаулары қазақша (kazakh_titles)"}, indent=1) + "\n", encoding="utf-8")
-    print("sync_inside: дайын ->", APP.relative_to(ROOT), "және", DATA.relative_to(ROOT))
+    print("sync_inside: дайын ->", APP.relative_to(ROOT), ",", DATA.relative_to(ROOT), "және", MEDIA.relative_to(ROOT))
 
 
 if __name__ == "__main__":
