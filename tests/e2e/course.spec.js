@@ -95,7 +95,7 @@ test("прогресс: апта мен зертхана астында шыға
   await page.reload();
   await expect(page.locator("#w2.is-got")).toHaveCount(1);
   await expect(page.locator(".crs-w.is-got")).toHaveCount(1);
-  await expect(page.locator("#crs-me")).toContainText("Мұқаба коллекциясы: 1 / 12");
+  await expect(page.locator("#crs-me")).toContainText("Мұқаба коллекциясы: 1 / 23");   // 12 апта + 11 зертхана
   // тек 2-бөлімде әрекет болса - 2-бөлімнің келесі сабағы
   await page.evaluate(() => localStorage.removeItem("cs50kz:academy"));
   await page.reload();

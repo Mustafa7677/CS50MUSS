@@ -207,10 +207,14 @@ def lesson_page(lab, L, idx, prev_l, next_l, page):
            + f'<a href="../index.html#{lab["id"]}">{E(LAB_KK.get(lab["id"], lab["title"]))}</a>'
            + (f'<a href="{E(next_l["id"])}.html">{E(kk(next_l))} →</a>' if next_l else "<span></span>") + "</nav>")
     sub = f'<p class="l3-en" lang="en">{E(en(L))}</p>' if en(L) else ""
+    cv = cover(lab["id"], "../../../")
+    lab_kk = LAB_KK.get(lab["id"], lab["title"])
+    cv_html = (f'<a class="l3-cov" href="../../../posters.html#cs-3d-{lab["id"]}" aria-label="«{E(lab_kk)}» зертханасының комикс-мұқабасы (афиша)">'
+               f'<img src="{cv}" alt="" width="240" height="360"></a>') if cv else ""
     body = f"""  <div class="layout single">
     <article class="content l3" id="main" data-lesson="{E(L['id'])}" style="--lc:{LAB_COLOR.get(lab['id'], '#0a4c7a')}">
       <p class="ac-crumb"><a href="../../course.html">AO17 CS курсы</a> / <a href="../index.html">2-бөлім: 3D зертхана</a> / <a href="../index.html#{lab['id']}">{E(LAB_KK.get(lab['id'], lab['title']))}</a></p>
-      <header class="l3-head">
+      <header class="l3-head{" l3-hc" if cv_html else ""}">{cv_html}
         <p class="l3-k">{E(LAB_KK.get(lab['id'], lab['title']))} · {idx}-сабақ · ≈{L.get('estimatedMinutes', 10)} мин · {len(steps)} қадам · {nq} сұрақ</p>
         <h1>{E(kk(L))}</h1>{sub}
         <p class="l3-lede">{inline(L.get('summary', ''))}</p>
@@ -226,6 +230,14 @@ def lesson_page(lab, L, idx, prev_l, next_l, page):
     rel = f"academy/3d/{lab['id']}/{L['id']}.html"
     return rel, page(rel, f"{kk(L)} · {LAB_KK.get(lab['id'], lab['title'])}", f"AO17 CS, 2-бөлім (3D зертхана): {L.get('summary', '')}"[:300], body,
                      scripts=("assets/js/lab3d.js",), styles=("assets/css/lab3d.css",))
+
+
+POSTERS = pathlib.Path(__file__).resolve().parents[2] / "assets" / "img" / "posters"   # tools/make_lab_posters.py
+
+
+def cover(lab_id, base="../../"):
+    """Зертхананың комикс-мұқабасы (240×360 кішірейтілгені), бар болса - сайт түбіне қатысты base арқылы жолы."""
+    return f"{base}assets/img/posters/thumb/ao17cs-3d-{lab_id}.jpg" if (POSTERS / "thumb" / f"ao17cs-3d-{lab_id}.jpg").exists() else ""
 
 
 def shot(name):
@@ -257,9 +269,10 @@ def hub_page(page):
                     + (f'<p class="l3-tag">{E(lab["inside"])}</p>' if lab.get("inside") else "")
                     + f'<p class="l3-labn">{len(ls)} сабақ · ≈{round(mins / 60, 1):g} сағат<span class="l3-labp" aria-live="polite"></span>'
                     f' · <a href="app/index.html#{lab["id"]}">3D беті</a></p><ol class="l3-lessons">{items}</ol></section>')
-        img = shot(f"lab-{lab['id']}")
-        tiles.append(f'<li style="--lc:{color}"><a class="l3-tile" href="#{lab["id"]}">'
-                     + (f'<img src="{img}" alt="" width="560" height="350" loading="lazy">' if img else "")
+        cv = cover(lab["id"])
+        img = cv or shot(f"lab-{lab['id']}")
+        tiles.append(f'<li style="--lc:{color}"><a class="l3-tile{" l3-tcov" if cv else ""}" href="#{lab["id"]}">'
+                     + (f'<img src="{img}" alt="" width="{240 if cv else 560}" height="{360 if cv else 350}" loading="lazy">' if img else "")
                      + f'<span class="l3-tt"><span class="l3-no">{no}</span><b>{E(name)}</b><small>{len(ls)} сабақ · ≈{round(mins / 60):g} сағат</small></span></a></li>')
     groups = []
     for gid, gname, _, gdesc in IC.GROUPS:
@@ -267,12 +280,13 @@ def hub_page(page):
         groups.append(f'<section class="l3-feat" id="{gid}" aria-labelledby="h-{gid}"><h2 id="h-{gid}">{E(gname)}</h2><p class="l3-gi">{E(gdesc)}</p>'
                       f'<ul class="l3-cards">{cards}</ul></section>')
     home = shot("home")
+    poster = "../../assets/img/posters/ao17cs-3d.jpg" if (POSTERS / "ao17cs-3d.jpg").exists() else ""
     first = f'{labs[0]["id"]}/{by_lab[labs[0]["id"]][0]["id"]}.html'
     secnav = "".join(f'<a href="#{h}">{E(t)}</a>' for h, t in [("labs", f"{len(labs)} зертхана"), *[(g, short) for g, _, short, _ in IC.GROUPS], ("all", f"{n_l} сабақ")])
     body = f"""  <div class="layout single">
     <article class="content l3 l3-hub" id="main">
       <p class="ac-crumb"><a href="../course.html">AO17 CS курсы</a> / 2-бөлім: 3D зертхана</p>
-      <header class="l3-hero{" l3-hero-x" if home else ""}">
+      <header class="l3-hero{" l3-hero-x" if home or poster else ""}{" l3-hero-p" if poster else ""}">
         <div class="l3-hx">
           <p class="l3-k">AO17 CS курсы · 2-бөлім</p>
           <h1>Технологияның ішінен</h1>
@@ -280,12 +294,13 @@ def hub_page(page):
           <ul class="l3-stats"><li><b>{len(labs)}</b><span>зертхана</span></li><li><b>{n_l}</b><span>сабақ</span></li><li><b>{n_q}</b><span>тест сұрағы</span></li><li><b>{len(IC.FEATURES)}</b><span>ойын мен құрал</span></li></ul>
           <p class="l3-cta"><a class="btn gold" href="{first}">Бірінші сабақтан бастау</a> <a class="btn secondary" href="app/index.html">INSIDE TECH-ті толық ашу</a> <a class="btn secondary" href="../course.html#part2">Курс бағдарламасы</a></p>
         </div>
-        {f'<a class="l3-hshot" href="app/index.html" aria-label="INSIDE TECH басты бетін ашу"><img src="{home}" alt="INSIDE TECH басты беті: «Технологияның ішіне кір» және 3D чип" width="560" height="350"></a>' if home else ""}
+        {(f'<a class="l3-hshot l3-hpos" href="../../posters.html#cs-3d" aria-label="2-бөлімнің комикс-мұқабасы (афиша)"><img src="{poster}" alt="AO17 CS, 2-бөлімнің мұқабасы «Технологияның ішінен»: изометриялық чип ішінде ALU, кэш, жад және желі, қасында Нұрай мен Мустафа" width="1000" height="1500"></a>' if poster
+          else f'<a class="l3-hshot" href="app/index.html" aria-label="INSIDE TECH басты бетін ашу"><img src="{home}" alt="INSIDE TECH басты беті: «Технологияның ішіне кір» және 3D чип" width="560" height="350"></a>' if home else "")}
       </header>
       <nav class="l3-secnav" aria-label="Хабтың бөлімдері">{secnav}</nav>
       <section class="l3-labs" id="labs" aria-labelledby="h-labs"><h2 id="h-labs">{len(labs)} зертхана</h2>
-        <p class="l3-gi">Ұсынылатын рет: архитектура мен алгоритмдер қалғанының негізі. Әр зертханада 10-15 сабақ, әр сабақта дәріс, тест және 3D симуляция.</p>
-        <ol class="l3-tiles">{"".join(tiles)}</ol></section>
+        <p class="l3-gi">Әр зертхана - 2-бөлімнің бір нөмірі. Ұсынылатын рет: архитектура мен алгоритмдер қалғанының негізі. Әр зертханада 10-15 сабақ, әр сабақта дәріс, тест және 3D симуляция.</p>
+        <ol class="l3-tiles{" l3-rack" if cover(labs[0]["id"]) else ""}">{"".join(tiles)}</ol></section>
       {"".join(groups)}
       <section class="l3-all" id="all" aria-labelledby="h-all"><h2 id="h-all">Барлық {n_l} сабақ</h2>
         <p class="l3-gi">Сабақтың беті - толық дәріс пен тест; «3D симуляцияны ашу» батырмасы сол сабақты INSIDE TECH қолданбасында ашады. Прогресс екеуінде ортақ.</p>
