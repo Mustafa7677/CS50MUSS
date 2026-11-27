@@ -391,7 +391,8 @@ HARVARD_URL = "https://cs50.harvard.edu/"
 #   B - AO17 командасының дербес әзірлемесі (All Rights Reserved)
 #   M - аралас бет (интерфейс - B, Harvard бейімдеулері мен тексерілетін материал - A/R)
 B_PAGES = {"detective.html", "projects.html", "flask.html", "alash.html", "viz.html", "playground.html", "games.html", "profile.html", "yurt.html",
-           "teacher.html", "login.html", "admin.html", "student.html", "certificate.html", "404.html", "copyright.html", "partners.html", "metrics.html", "posters.html", "team.html"}
+           "teacher.html", "login.html", "admin.html", "student.html", "certificate.html", "404.html", "copyright.html", "partners.html", "metrics.html", "posters.html", "team.html",
+           "schools.html", "privacy.html", "terms.html"}
 
 
 def license_kind(rel):
@@ -545,7 +546,7 @@ def footer_block(p):
         + "      " + col("Академиялар", [("academy/index.html", "CS Universe"), ("academy/3d/index.html", "3D зертхана"), ("programming.html", "Бағдарламалау"), ("en/", "English Academy"), ("en/skills.html", "Ағылшын: дағдылар"), ("math/", "Математика"), ("academy/ielts/index.html", "IELTS"), ("academy/sat/index.html", "Digital SAT"), ("academy/labs/index.html", "CS зертханалары"), ("academy/study.html", "Менің оқуым")])
         + col("Оқу", [("index.html#main", "Лекциялар"), ("courses.html", "Барлық курстар"), ("map.html", "Курс картасы"), ("cheatsheet.html", "Шпаргалка"), ("glossary.html", "Сөздік"), ("exam.html", "Қорытынды емтихан"), ("yurt.html", "Менің шаңырағым")])
         + col("Жаттығу", [("practice.html", "Жаттығулар"), ("playground.html", "Сынақ алаңы"), ("viz.html", "Визуализациялар"), ("flashcards.html", "Флэш-карточкалар"), ("games.html", "Ойындар"), ("debug.html", "Қатені тап"), ("detective.html", "SQL детектив"), ("flask.html", "Flask зертханасы"), ("projects.html", "Жобалар шеберханасы")])
-        + col("Жоба", [("about.html", "Курс туралы"), ("team.html", "Команда"), ("alash.html", "Алаш тұлғалары"), ("posters.html", "Афиша: постер мен фильм"), ("certificate.html", "Сертификат"), ("login.html", "Кіру: оқушы мен мұғалім"), ("teacher.html", "Мұғалім беті"), ("profile.html", "Менің кабинетім"), ("partners.html", "Серіктестерге"), ("metrics.html", "Ашық метрикалар")])
+        + col("Жоба", [("about.html", "Курс туралы"), ("team.html", "Команда"), ("alash.html", "Алаш тұлғалары"), ("posters.html", "Афиша: постер мен фильм"), ("certificate.html", "Сертификат"), ("login.html", "Кіру: оқушы мен мұғалім"), ("teacher.html", "Мұғалім беті"), ("profile.html", "Менің кабинетім"), ("schools.html", "Мектептерге"), ("partners.html", "Серіктестерге"), ("metrics.html", "Ашық метрикалар")])
         + '\n      <div class="ft-legal">'
         '<p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p>'
         f'<p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: {TEAM_NAMES}. <a href="{p}team.html">Команда</a></p>'
@@ -559,7 +560,8 @@ def footer_block(p):
         '<a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · '
         '<a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p>'
         f'<p class="ft-own">Авторлық курстар (AO17 командасы): <a href="{p}cpp/">C++</a> · <a href="{p}java/">Java</a> · <a href="{p}en/">Ағылшын тілі</a> · <a href="{p}math/">Математика</a></p>'
-        f'<p class="ft-links"><a href="{p}copyright.html">Авторлық құқық және лицензиялар</a> · '
+        f'<p class="ft-links"><a href="{p}copyright.html">Авторлық құқық және лицензиялар</a> · <a href="{p}privacy.html">Құпиялылық</a> · '
+        f'<a href="{p}terms.html">Пайдалану шарттары</a> · '
         '<a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · '
         '<a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>\n'
         '    </div>\n  </footer>')
@@ -578,6 +580,7 @@ HEAD_STYLE = {
     "flashcards.html": ("#f08a24", ""), "debug.html": ("#e04545", ""), "glossary.html": ("#2b7bd6", ""),
     "cheatsheet.html": ("#2fa36b", ""), "map.html": ("#8b5cf6", ""), "teacher.html": ("#f08a24", ""), "login.html": ("#0a4c7a", ""), "admin.html": ("#0a4c7a", ""), "student.html": ("#0a4c7a", ""), "profile.html": ("#0f9fb5", ""), "yurt.html": ("#c99500", ""), "games.html": ("#7c3aed", ""), "copyright.html": ("#475569", ""), "alash.html": ("#c99500", ""),
     "partners.html": ("#0a4c7a", ""), "metrics.html": ("#0086b3", ""), "posters.html": ("#8a6634", ""), "team.html": ("#7a2f2f", ""),
+    "schools.html": ("#2e6b4f", ""), "privacy.html": ("#475569", ""), "terms.html": ("#475569", ""),
 }
 
 
@@ -905,6 +908,9 @@ def flat_stats(st):
         for k in ("lect", "quiz", "tasks"):
             f[f"{k}_a{a}"] = str(sum(st["by_course"][i][k] for i in ids))
     f["site"] = f'{st["courses"]} курс · {st["lect"]} лекция · {st["quiz"]} тест сұрағы · {st["terms"]} термин'
+    import academy_build   # AO17 CS курсының 2-бөлімі (INSIDE TECH 3D зертханалары): schools.html
+    labs = academy_build.L3.lab_summary()
+    f["lab3d_labs"], f["lab3d_lessons"] = str(len(labs)), str(sum(len(x["lessons"]) for x in labs))
     return f
 
 
@@ -1104,7 +1110,8 @@ def main():
                          ("flashcards.html", "practice"), ("viz.html", "practice"),
                          ("teacher.html", ""), ("login.html", "profile"), ("admin.html", "profile"), ("student.html", "profile"), ("404.html", ""), ("cheatsheet.html", "practice"),
                          ("debug.html", "practice"), ("map.html", "practice"),
-                         ("detective.html", "practice"), ("flask.html", "practice"), ("projects.html", "practice"), ("exam.html", "practice"), ("profile.html", "profile"), ("yurt.html", "profile"), ("games.html", "games"), ("copyright.html", "about"), ("team.html", "about"), ("alash.html", "about"), ("courses.html", "courses"), ("programming.html", "courses"), ("partners.html", "about"), ("metrics.html", "about"), ("posters.html", "courses")]:
+                         ("detective.html", "practice"), ("flask.html", "practice"), ("projects.html", "practice"), ("exam.html", "practice"), ("profile.html", "profile"), ("yurt.html", "profile"), ("games.html", "games"), ("copyright.html", "about"), ("team.html", "about"), ("alash.html", "about"), ("courses.html", "courses"), ("programming.html", "courses"), ("partners.html", "about"), ("metrics.html", "about"), ("posters.html", "courses"),
+                         ("schools.html", "about"), ("privacy.html", "about"), ("terms.html", "about")]:
         if (ROOT / page).exists():
             process_page(ROOT / page, "", active)
     for tp in TEAM_PAGES:
@@ -1127,7 +1134,7 @@ def main():
     (ROOT / "assets/data/quiz.js").write_text(
         "window.CS50KZ_QUIZ = " + json.dumps(quiz, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
     pages = ["", "practice.html", "playground.html", "viz.html", "flashcards.html", "glossary.html",
-             "certificate.html", "teacher.html", "about.html", "cheatsheet.html", "debug.html", "map.html", "detective.html", "flask.html", "projects.html", "exam.html", "profile.html", "yurt.html", "games.html", "copyright.html", "alash.html", "courses.html", "programming.html", "partners.html", "metrics.html", "posters.html", "team.html"] + TEAM_PAGES + [l["url"] for l in lectures] + course_pages + academy_pages
+             "certificate.html", "teacher.html", "about.html", "cheatsheet.html", "debug.html", "map.html", "detective.html", "flask.html", "projects.html", "exam.html", "profile.html", "yurt.html", "games.html", "copyright.html", "alash.html", "courses.html", "programming.html", "partners.html", "metrics.html", "posters.html", "team.html", "schools.html", "privacy.html", "terms.html"] + TEAM_PAGES + [l["url"] for l in lectures] + course_pages + academy_pages
     (ROOT / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
         "".join(f"  <url><loc>{SITE_URL}{u}</loc></url>\n" for u in pages) + "</urlset>\n", encoding="utf-8")

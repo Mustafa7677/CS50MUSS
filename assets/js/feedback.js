@@ -85,7 +85,7 @@
     open({});
   });
   // ---------- Серіктестер беті: пилот өтінімі (сол cs50kz_feedback кестесіне, түрі "pilot") ----------
-  const ROLES = { school: "Мектеп не колледж", partner: "Серіктес ұйым", investor: "Инвестор не қор" };
+  const ROLES = { school: "Мектеп не колледж", partner: "Серіктес ұйым", investor: "Инвестор не қор", privacy: "Деректер туралы сұрау" };
   document.querySelectorAll(".inv-form").forEach((f) => {
     f.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -99,7 +99,7 @@
         f.elements[miss[0]].focus();
         return;
       }
-      const d = { kind: "pilot", page: "partners.html", section: ROLES[v("role")] || "", quote: v("org"),
+      const d = { kind: "pilot", page: location.pathname.split("/").pop() || "index.html", section: ROLES[v("role")] || "", quote: v("org"),
         message: `Байланыс: ${v("contact")}\n${v("note")}`.trim() };
       btn.disabled = true; btn.textContent = "Жіберілуде…";
       try {
