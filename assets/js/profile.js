@@ -19,7 +19,8 @@
   // Құрылғыға тән баптаулар мен КІРУ ДЕРЕКТЕРІ ешқашан синхрондалмайды/экспортталмайды
   // (cloud - оқушының кіру коды, tclasses - мұғалімнің сынып құпиясөздері)
   const SKIP = new Set(["cs50kz:prefs", "cs50kz:exam-run", "cs50kz:class", "cs50kz:profile", "flask:url", "cs50kz:theme", "cs50kz:cloud", "cs50kz:tclasses"]);
-  const isProgress = (k) => !SKIP.has(k) && (k.startsWith("cs50kz:") || k.startsWith("check:"));
+  // ao17cs:exam - AO17 CS сынақтарының нәтижесі (мұғалім панелі: «Нәтижелер», пилот есебі)
+  const isProgress = (k) => !SKIP.has(k) && (k.startsWith("cs50kz:") || k.startsWith("check:") || k === "ao17cs:exam");
   const isDraft = (k) => !SKIP.has(k) && /^(ag|pg|hp|flask):/.test(k);
 
   function snapshot(full) {
@@ -75,6 +76,22 @@
     }
     if (/^cs50kz:exam:[a-z]+$/.test(k) && isObj(mine) && isObj(theirs)) k = "cs50kz:exam"; // курстың өз емтиханы: ең жақсысы сақталады
     switch (k) {
+      case "ao17cs:exam": { // AO17 CS сынақтары: әр режимде ең жақсысы, ең соңғысы (уақыты бойынша) және ең алғашқысы (пилоттың бастапқы деңгейі)
+        const t = (v) => (typeof v === "number" ? v : Date.parse(v) || 0);
+        const hasFirst = (x) => x.first != null && x.firstAt != null;
+        const out = Object.assign({}, theirs);
+        Object.entries(mine).forEach(([m, a]) => {
+          const b = out[m];
+          if (!isObj(a)) return;
+          if (!isObj(b)) { out[m] = a; return; }
+          const late = t(a.at) >= t(b.at) ? a : b;
+          const f = hasFirst(a) && hasFirst(b) ? (t(a.firstAt) <= t(b.firstAt) ? a : b) : hasFirst(a) ? a : hasFirst(b) ? b : null;
+          const top = (+a.best || 0) >= (+b.best || 0) ? a : b;
+          out[m] = { best: maxNum(a.best, b.best), bestAt: top.bestAt || top.at || null, last: late.last, at: late.at, runs: maxNum(a.runs, b.runs),
+            first: f ? f.first : null, firstAt: f ? f.firstAt : null };
+        });
+        return out;
+      }
       case "cs50kz:progress": {
         const quiz = Object.assign({}, theirs.quiz || {});
         Object.entries(mine.quiz || {}).forEach(([id, q]) => { if (!quiz[id] || (q.best || 0) >= (quiz[id].best || 0)) quiz[id] = q; });

@@ -10,7 +10,7 @@
   const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const ROOT = AO.CFG && document.querySelector('script[src$="assets/js/ao-ui.js"]') ? document.querySelector('script[src$="assets/js/ao-ui.js"]').src.replace(/assets\/js\/ao-ui\.js.*$/, "") : new URL(".", location.href).href;
   const qs = new URLSearchParams(location.search);
-  const COURSES = { x: "CS50x · Информатикаға кіріспе", python: "CS50P · Python", sql: "CS50 SQL", ai: "CS50 AI", web: "CS50 Web", cpp: "C++", java: "Java", en: "English A0-C1", math: "Математика", tools: "Жаттығу, ойын, емтихан", projects: "Жобалар", academy: "AO17 CS Universe" };
+  const COURSES = { x: "CS50x · Информатикаға кіріспе", python: "CS50P · Python", sql: "CS50 SQL", ai: "CS50 AI", web: "CS50 Web", cpp: "C++", java: "Java", en: "English A0-C1", math: "Математика", tools: "Жаттығу, ойын, емтихан", projects: "Жобалар", academy: "AO17 CS Universe", teach: "Мұғалімге: сабақ жоспарлары" };
   const cname = (c) => COURSES[c] || c;
   const fmt = (t) => (t ? new Date(t).toLocaleString("kk-KZ", { dateStyle: "medium", timeStyle: "short" }) : "-");
   const ago = (t) => {
@@ -71,7 +71,7 @@
     if (qs.get("invite") || qs.get("join")) show("up");
 
     const done = async (prof) => {
-      if (prof && prof.role === "admin") return (location.href = ROOT + "admin.html");
+      if (prof && (prof.role === "admin" || prof.role === "teacher")) return (location.href = ROOT + "admin.html");
       const keep = qs.get("invite") ? "?invite=" + encodeURIComponent(qs.get("invite")) : "";
       location.href = nextUrl() || ROOT + "student.html" + keep;
     };
@@ -126,7 +126,7 @@
     return p;
   }
   function header(p, title) {
-    return `<div class="ao-top"><div><h1>${esc(title)}</h1><p class="ao-who">${esc(p.display_name || p.email)}${p.role === "admin" ? ' · <b>Super Admin</b>' : ""}</p></div>
+    return `<div class="ao-top"><div><h1>${esc(title)}</h1><p class="ao-who">${esc(p.display_name || p.email)}${p.role === "admin" ? ' · <b>Super Admin</b>' : p.role === "teacher" ? ' · <b>Мұғалім</b>' : ""}</p></div>
       <button class="btn ghost" type="button" data-act="logout">Шығу</button></div>`;
   }
   function bindLogout() {
@@ -162,7 +162,7 @@
   const A = { classes: [], pages: [], cur: null, tab: "content" };
   async function renderAdmin() {
     const p = await requireUser(); if (!p) return;
-    if (p.role !== "admin") { page.innerHTML = header(p, "Рұқсат жоқ") + '<div class="ao-card"><p>Бұл бет тек Super Admin үшін. <a href="student.html">Кабинетіңізге өтіңіз</a>.</p></div>'; bindLogout(); return; }
+    if (p.role !== "admin" && p.role !== "teacher") { page.innerHTML = header(p, "Рұқсат жоқ") + '<div class="ao-card"><p>Бұл бет мұғалім мен Super Admin үшін. Мұғалім аккаунтын Super Admin береді. <a href="student.html">Кабинетіңізге өтіңіз</a>.</p></div>'; bindLogout(); return; }
     if (p.must_change_password) return renderPasswordChange(p, renderAdmin);
     page.innerHTML = header(p, "Мұғалім панелі") + `
       <div class="ao-admin">
@@ -170,10 +170,17 @@
           <h2>Кластар</h2>
           <form class="ao-inline" data-form="new"><input name="title" placeholder="Мысалы, Python 2026" maxlength="80" required aria-label="Жаңа класс атауы"><button class="btn gold" type="submit">Ашу</button></form>
           <ul class="ao-list" data-list="classes"></ul>
+          ${p.role === "admin" ? `<div class="ao-teachers">
+            <h2>Мұғалімдер</h2>
+            <p class="ao-hint">Мұғалім алдымен өзі тіркеледі, сосын осында оның email-ін енгізесіз. Мұғалім тек өзі ашқан кластарды көреді.</p>
+            <form class="ao-inline" data-form="teacher"><input name="email" type="email" placeholder="мұғалімнің email-і" required aria-label="Мұғалімнің email-і"><button class="btn" type="submit">Мұғалім ету</button></form>
+            <ul class="ao-list" data-list="teachers"></ul>
+          </div>` : ""}
         </aside>
         <section class="ao-card ao-detail" data-detail><p class="ao-empty">Сол жақтан класс таңдаңыз не жаңасын ашыңыз.</p></section>
       </div><p class="ao-msg" role="status" aria-live="polite" data-gmsg></p>`;
     bindLogout();
+    if (p.role === "admin") bindTeachers();
     $('[data-form="new"]', page).addEventListener("submit", async (e) => {
       e.preventDefault();
       try { const r = await AO.rpc("ao_admin_class_create", { p_title: e.target.title.value }); e.target.reset(); A.cur = r.id; await loadClasses(); }
@@ -184,6 +191,37 @@
     A.pages = pages || [];
     await loadClasses();
   }
+  // ---------- мұғалімдер (тек Super Admin): тағайындау және мұғалімдікті алу ----------
+  async function loadTeachers() {
+    const ul = $('[data-list="teachers"]', page);
+    if (!ul) return;
+    let rows = [];
+    try { rows = (await AO.rpc("ao_admin_teachers")) || []; } catch (err) { return msg($("[data-gmsg]", page), AO.human(err), true); }
+    ul.innerHTML = rows.length ? rows.map((t) => `<li class="ao-teacher"><span><b>${esc(t.display_name || t.email)}</b><small>${esc(t.email)} · ${t.classes} класс</small></span>
+        <button class="btn ghost danger" type="button" data-unteach="${esc(t.email)}">Мұғалімдікті алу</button></li>`).join("")
+      : '<li class="ao-empty">Әзірге мұғалім жоқ.</li>';
+    ul.querySelectorAll("[data-unteach]").forEach((b) => b.addEventListener("click", async () => {
+      if (!confirm(b.dataset.unteach + " мұғалімдігін аласыз ба? Оның кластары сақталады, бірақ оларды тек Super Admin басқарады.")) return;
+      try { await AO.rpc("ao_admin_set_role", { p_email: b.dataset.unteach, p_role: "student" }); } catch (err) { return msg($("[data-gmsg]", page), AO.human(err), true); }
+      msg($("[data-gmsg]", page), "Мұғалімдігі алынды ✓");
+      loadTeachers();
+    }));
+  }
+  function bindTeachers() {
+    const f = $('[data-form="teacher"]', page);
+    f.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = f.email.value.trim();
+      try { await AO.rpc("ao_admin_set_role", { p_email: email, p_role: "teacher" }); } catch (err) {
+        return msg($("[data-gmsg]", page), /пайдаланушы жоқ/.test(String(err && err.message)) ? "Бұл email-мен тіркелген адам жоқ: алдымен ол өзі тіркелуі керек" : AO.human(err), true);
+      }
+      f.reset();
+      msg($("[data-gmsg]", page), email + " енді мұғалім ✓");
+      loadTeachers();
+    });
+    loadTeachers();
+  }
+
   async function loadClasses() {
     A.classes = (await AO.rpc("ao_admin_overview")) || [];
     const ul = $('[data-list="classes"]', page);
@@ -208,12 +246,13 @@
       <div class="ao-tabs" role="tablist">
         <button type="button" role="tab" data-t="content" aria-selected="${A.tab === "content"}">Ашылатын мазмұн</button>
         <button type="button" role="tab" data-t="students" aria-selected="${A.tab === "students"}">Оқушылар (${k.members})</button>
+        <button type="button" role="tab" data-t="results" aria-selected="${A.tab === "results"}">Нәтижелер</button>
         <button type="button" role="tab" data-t="settings" aria-selected="${A.tab === "settings"}">Баптау</button>
       </div>
       <div data-pane></div><p class="ao-msg" role="status" aria-live="polite" data-cmsg></p>`;
     box.querySelectorAll("[data-copy]").forEach((b) => b.addEventListener("click", () => copy(b.dataset.copy, b)));
     box.querySelectorAll("[data-t]").forEach((b) => b.addEventListener("click", () => { A.tab = b.dataset.t; renderClass(k); }));
-    ({ content: paneContent, students: paneStudents, settings: paneSettings })[A.tab](k, $("[data-pane]", box), $("[data-cmsg]", box));
+    ({ content: paneContent, students: paneStudents, results: paneResults, settings: paneSettings })[A.tab](k, $("[data-pane]", box), $("[data-cmsg]", box));
   }
 
   // ---------- мазмұн: курс және бет деңгейі ----------
@@ -224,7 +263,7 @@
     if (error) return msg(out, AO.human(error), true);
     const g = {}; (grants || []).forEach((x) => (g[x.scope + ":" + x.target] = x));
     const byCourse = {};
-    A.pages.forEach((p) => (byCourse[p.course] = byCourse[p.course] || []).push(p));
+    A.pages.forEach((p) => { if (p.course !== "teach") (byCourse[p.course] = byCourse[p.course] || []).push(p); });   // мұғалім жоспарлары оқушыға ашылмайды
     if (!A.pages.length) { el.innerHTML = '<p class="ao-empty">Мазмұн каталогы бос. Алдымен tools/gate.py --upload іске қосылуы керек (docs/PLATFORM.md).</p>'; return; }
     el.innerHTML = `<p class="ao-hint">Курсты ашсаңыз, оның барлық лекциясы мен тапсырмасы ашылады. Жеке бетті бөлек жабуға не ашуға болады (курстан басым). Мерзімді берсеңіз, сол уақыт аралығында ғана ашық.</p>` +
       Object.keys(byCourse).map((cid) => {
@@ -304,6 +343,71 @@
     el.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
+  // ---------- AO17 CS нәтижелері және пилот есебі (assets/js/ao17-results.js, docs/AO17-CS-PILOT.md) ----------
+  async function paneResults(k, el, out) {
+    const R = window.AO17Results;
+    el.innerHTML = '<p class="ao-empty">Жүктелуде…</p>';
+    let rows;
+    try { rows = (await AO.rpc("ao_admin_members", { p_class: k.id })) || []; } catch (err) { return msg(out, AO.human(err), true); }
+    if (!R) { el.innerHTML = ""; return msg(out, "Нәтиже модулі жүктелмеді: бетті жаңартыңыз", true); }
+    if (!rows.length) { el.innerHTML = '<p class="ao-empty">Әзірге оқушы жоқ. Қосылу кодын не шақыру сілтемесін беріңіз.</p>'; return; }
+    const S = rows.map(R.ofRow), ms = R.used(rows);
+    const avgM = Math.round((S.reduce((n, s) => n + s.mastered, 0) / S.length) * 10) / 10;
+    const act = R.active(rows, Date.now(), 7);
+    const sum = `Оқушы: <b>${rows.length}</b> · соңғы 7 күнде белсенді: <b>${act}</b> · меңгерілген сабақ, орташа: <b>${avgM}</b>`;
+    const grid = ms.length ? `<div class="ao-table-wrap"><table class="ao-table ao-results"><thead><tr><th scope="col">Оқушы</th><th scope="col">Сабақ</th>${ms.map((m) => `<th scope="col" title="${esc(R.label(m))}">${esc(R.short(m))}</th>`).join("")}</tr></thead><tbody>
+      ${S.map((s) => `<tr><th scope="row">${esc(s.name)}</th><td>${s.mastered}</td>${ms.map((m) => { const x = s.ex[m]; return `<td>${x ? `${x.best == null ? "-" : x.best + "%"}${x.runs > 1 && x.first != null ? `<small>алғашқы ${x.first}%</small>` : ""}` : "-"}</td>`; }).join("")}</tr>`).join("")}
+      </tbody></table></div>` : '<p class="ao-empty">Әзірге AO17 CS сынағын тапсырған оқушы жоқ.</p>';
+    const sel = ms.includes(A.pilot) ? A.pilot : ms.includes("p1") ? "p1" : ms[0];
+    el.innerHTML = `<p class="ao-hint">AO17 CS сынақтарының нәтижесі оқушының құрылғысынан синхрондалады. Ұяшықта - ең жақсы нәтиже, астында - алғашқы әрекет.</p>
+      <p class="ao-results-sum">${sum}</p>
+      ${grid}
+      <h3>Пилот есебі</h3>
+      <p class="ao-hint">Бастапқы деңгей - сынақтың алғашқы әрекеті (пилоттың басында), қорытынды - ең соңғы әрекеті. Есепке екі әрекеті де бар оқушылар кіреді.</p>
+      ${ms.length ? `<label class="ao-inline">Сынақ <select data-pilot>${ms.map((m) => `<option value="${m}"${m === sel ? " selected" : ""}>${esc(R.label(m))}</option>`).join("")}</select></label>
+      <div data-report></div>
+      <p class="ao-inline"><button class="btn ghost" type="button" data-csv>Нәтижелерді CSV-ге жүктеу</button> <button class="btn" type="button" data-print>Пилот есебін басып шығару</button></p>` : ""}`;
+    if (!ms.length) return;
+    const box = $("[data-report]", el), pick = $("[data-pilot]", el);
+    const show = () => { A.pilot = pick.value; box.innerHTML = pilotHtml(R.pilot(rows, pick.value)); };
+    pick.addEventListener("change", show);
+    show();
+    $("[data-csv]", el).addEventListener("click", () => {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([R.csv(rows)], { type: "text/csv;charset=utf-8" }));
+      a.download = "ao17cs-natizheler.csv";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 0);
+    });
+    $("[data-print]", el).addEventListener("click", () => {
+      const P = R.pilot(rows, pick.value);
+      const w = window.open("", "_blank");
+      if (!w) return msg(out, "Терезе ашылмады: браузерде қалқымалы терезеге рұқсат беріңіз", true);
+      w.document.write(`<!DOCTYPE html><html lang="kk"><head><meta charset="utf-8"><title>Пилот есебі - ${esc(k.title)}</title>
+        <style>body{font:14px/1.5 system-ui,sans-serif;color:#000;margin:24px}h1{font-size:20px;margin:0 0 6px}table{border-collapse:collapse;width:100%;margin:10px 0}th,td{border:1px solid #888;padding:4px 8px;text-align:left}small{display:block;color:#555}.n{color:#444;font-size:12px}</style></head><body>
+        <h1>AO17 CS пилот есебі</h1>
+        <p>Класс: <b>${esc(k.title)}</b> · ${esc(R.label(P.mode))} · ${esc(new Date().toISOString().slice(0, 10))}</p>
+        <p>${sum}</p>
+        ${pilotHtml(P)}
+        <p class="n">Бастапқы деңгей - сынақтың алғашқы әрекеті, қорытынды - ең соңғы әрекеті. Нормаланған өсім g = (қорытынды − бастапқы) / (100 − бастапқы), сынып орташасы бойынша. Дерек оқушылардың құрылғысынан синхрондалған.</p>
+        </body></html>`);
+      w.document.close();
+      w.focus();
+      w.print();
+    });
+  }
+  function pilotHtml(P) {
+    const v = (x) => (x == null ? "-" : x + "%");
+    const d = (x) => (x == null ? "-" : (x > 0 ? "+" : "") + x);
+    const took = P.per.filter((p) => p.runs > 0);
+    const head = P.both
+      ? `<p data-pilot-sum>Екі әрекеті де бар оқушы: <b>${P.both}</b> / ${P.n}. Орташа: <b>${P.pre}%</b> → <b>${P.post}%</b> (айырма ${d(P.delta)}). Нормаланған өсім: <b>${P.g == null ? "-" : P.g}</b>.</p>`
+      : '<p data-pilot-sum>Әзірге екі әрекеті де бар оқушы жоқ: пилоттың басында және соңында осы сынақты тапсыруды сұраңыз.</p>';
+    return head + (took.length ? `<div class="ao-table-wrap"><table class="ao-table ao-pilot"><thead><tr><th scope="col">Оқушы</th><th scope="col">Бастапқы</th><th scope="col">Қорытынды</th><th scope="col">Айырма</th><th scope="col">Әрекет</th></tr></thead><tbody>
+      ${took.map((p) => `<tr><th scope="row">${esc(p.name)}</th><td>${v(p.pre)}</td><td>${v(p.post)}</td><td>${d(p.delta)}</td><td>${p.runs}</td></tr>`).join("")}</tbody></table></div>` : "");
+  }
+
   // ---------- баптау ----------
   function paneSettings(k, el, out) {
     el.innerHTML = `<form class="ao-form" data-form="title"><label>Класс атауы<input name="title" value="${esc(k.title)}" maxlength="80" required></label><button class="btn" type="submit">Атауын сақтау</button></form>
@@ -339,7 +443,7 @@
     const p = await requireUser(); if (!p) return;
     if (p.must_change_password) return renderPasswordChange(p, renderStudent);
     page.innerHTML = header(p, "Менің кабинетім") + `
-      ${p.role === "admin" ? '<p><a class="btn" href="admin.html">Мұғалім панеліне өту</a></p>' : ""}
+      ${p.role === "admin" || p.role === "teacher" ? '<p><a class="btn" href="admin.html">Мұғалім панеліне өту</a></p>' : ""}
       <div class="ao-card"><h2>Класқа қосылу</h2>
         <form class="ao-inline" data-form="join"><input name="code" placeholder="8 таңбалы код" maxlength="32" autocomplete="off" required aria-label="Қосылу коды"><button class="btn gold" type="submit">Қосылу</button></form>
         <p class="ao-msg" role="status" aria-live="polite" data-jmsg></p></div>

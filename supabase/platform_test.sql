@@ -187,4 +187,133 @@ do $$ begin
 end $$;
 reset role;
 
+-- ---------- мұғалім рөлі: тек Super Admin тағайындайды; мұғалім тек өз класын басқарады ----------
+insert into auth.users (id, email) values
+  ('00000000-0000-0000-0000-0000000000b1', 't1@example.com'),
+  ('00000000-0000-0000-0000-0000000000b2', 't2@example.com');
+
+-- оқушы мұғалім тағайындай алмайды, мұғалім функцияларын шақыра алмайды
+select pg_temp.as_user('00000000-0000-0000-0000-000000000003');
+set role authenticated;
+do $$ begin
+  begin perform public.ao_admin_set_role('t1@example.com', 'teacher'); raise exception 'FAIL: оқушы мұғалім тағайындады';
+  exception when sqlstate '42501' then null; end;
+  begin perform public.ao_admin_teachers(); raise exception 'FAIL: оқушы мұғалімдер тізімін көрді';
+  exception when sqlstate '42501' then null; end;
+  begin perform public.ao_admin_overview(); raise exception 'FAIL: оқушы кластар тізімін көрді';
+  exception when sqlstate '42501' then null; end;
+  if public.ao_is_teacher() then raise exception 'FAIL: оқушы мұғалім болып шықты'; end if;
+end $$;
+reset role;
+
+-- Super Admin тағайындайды; admin рөлін бере де, ала да алмайды
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
+set role authenticated;
+do $$ declare r jsonb; begin
+  r := public.ao_admin_set_role(' T1@Example.com ', 'teacher');
+  if r->>'role' <> 'teacher' then raise exception 'FAIL: мұғалім рөлі берілмеді'; end if;
+  perform public.ao_admin_set_role('t2@example.com', 'teacher');
+  begin perform public.ao_admin_set_role('t1@example.com', 'admin'); raise exception 'FAIL: admin рөлі берілді';
+  exception when sqlstate '22023' then null; end;
+  begin perform public.ao_admin_set_role('mustafa_admin@admin.ao17.local', 'student'); raise exception 'FAIL: admin рөлі алынды';
+  exception when sqlstate 'P0002' then null; end;
+  begin perform public.ao_admin_set_role('nobody@example.com', 'teacher'); raise exception 'FAIL: жоқ пайдаланушы';
+  exception when sqlstate 'P0002' then null; end;
+  if (select count(*) from public.ao_admin_teachers()) <> 2 then raise exception 'FAIL: мұғалімдер тізімі'; end if;
+end $$;
+reset role;
+
+-- мұғалім класс ашады; тек өз класын көреді және басқарады; рөлін өзгерте алмайды; жабық мазмұнның бәрін көреді
+select pg_temp.as_user('00000000-0000-0000-0000-0000000000b1');
+set role authenticated;
+create temp table t1_class as select * from public.ao_admin_class_create('7А информатика');
+do $$ begin
+  if (select owner from t1_class) is distinct from auth.uid() then raise exception 'FAIL: класс иесі мұғалім емес'; end if;
+  begin perform public.ao_admin_set_role('t1@example.com', 'student'); raise exception 'FAIL: мұғалім рөл өзгертті';
+  exception when sqlstate '42501' then null; end;
+  begin update public.ao_profiles set role = 'admin' where id = auth.uid(); raise exception 'FAIL: мұғалім өзін admin етті';
+  exception when insufficient_privilege then null; end;
+  if (select count(*) from public.ao_admin_overview()) <> 1 then raise exception 'FAIL: мұғалім бөтен класты көрді (overview)'; end if;
+  if (select count(*) from public.ao_classes) <> 1 then raise exception 'FAIL: мұғалім бөтен класты көрді (RLS)'; end if;
+  if not public.ao_can_view('sql/lectures/week-0.html') then raise exception 'FAIL: мұғалім жабық мазмұнды көрмеді'; end if;
+  insert into public.ao_grants (class_id, scope, target) select id, 'course', 'sql' from t1_class;
+  begin insert into public.ao_grants (class_id, scope, target) select id, 'course', 'sql' from t_class;
+        raise exception 'FAIL: мұғалім бөтен класқа мазмұн ашты';
+  exception when insufficient_privilege then null; end;
+  begin perform public.ao_admin_members((select id from t_class)); raise exception 'FAIL: мұғалім бөтен класс мүшелерін көрді';
+  exception when sqlstate '42501' then null; end;
+  begin perform public.ao_admin_regen_codes((select id from t_class)); raise exception 'FAIL: мұғалім бөтен класс кодын өзгертті';
+  exception when sqlstate '42501' then null; end;
+  update public.ao_classes set title = '7А информатика 2026' where id = (select id from t1_class);
+  if (select title from public.ao_classes where id = (select id from t1_class)) <> '7А информатика 2026' then raise exception 'FAIL: мұғалім өз класын өзгерте алмады'; end if;
+  begin update public.ao_classes set owner = '00000000-0000-0000-0000-0000000000b2' where id = (select id from t1_class);
+        raise exception 'FAIL: мұғалім класты басқаға берді';
+  exception when insufficient_privilege then null; end;
+end $$;
+reset role;
+
+-- оқушылар: біреуі мұғалімнің класына қосылады, екіншісі - жоқ; екеуінің де прогресі бар
+select pg_temp.as_user('00000000-0000-0000-0000-000000000002');
+set role authenticated;
+do $$ begin perform public.ao_join((select join_code from t1_class)); end $$;
+insert into public.ao_progress (user_id, snapshot, summary)
+values (auth.uid(), '{"v":1,"d":{"ao17cs:exam":{"p1":{"best":80,"last":80,"first":40,"runs":2}}}}', '{}')
+on conflict (user_id) do update set snapshot = excluded.snapshot;
+reset role;
+select pg_temp.as_user('00000000-0000-0000-0000-000000000001');
+set role authenticated;
+insert into public.ao_progress (user_id, snapshot, summary) values (auth.uid(), '{"v":1,"d":{}}', '{}')
+on conflict (user_id) do update set snapshot = excluded.snapshot;
+reset role;
+
+select pg_temp.as_user('00000000-0000-0000-0000-0000000000b1');
+set role authenticated;
+do $$ begin
+  if (select count(*) from public.ao_admin_members((select id from t1_class))) <> 1 then raise exception 'FAIL: мұғалім өз оқушысын көрмеді'; end if;
+  if (select snapshot->'d'->'ao17cs:exam'->'p1'->>'first' from public.ao_admin_members((select id from t1_class))) is distinct from '40' then
+    raise exception 'FAIL: мұғалім оқушының сынақ нәтижесін көрмеді'; end if;
+  if not exists (select 1 from public.ao_progress where user_id = '00000000-0000-0000-0000-000000000002') then raise exception 'FAIL: мұғалім өз оқушысының прогресін көрмеді (RLS)'; end if;
+  if exists (select 1 from public.ao_progress where user_id = '00000000-0000-0000-0000-000000000001') then raise exception 'FAIL: мұғалім бөтен оқушының прогресін көрді'; end if;
+  if (select count(*) from public.ao_members) <> 1 then raise exception 'FAIL: мұғалім бөтен класс мүшелерін көрді (RLS)'; end if;
+end $$;
+reset role;
+
+-- екінші мұғалім бірінші мұғалімнің класына, оқушысына, мазмұнына қол жеткізе алмайды
+select pg_temp.as_user('00000000-0000-0000-0000-0000000000b2');
+set role authenticated;
+do $$ begin
+  if (select count(*) from public.ao_admin_overview()) <> 0 then raise exception 'FAIL: 2-мұғалім бөтен класты көрді'; end if;
+  begin perform public.ao_admin_members((select id from t1_class)); raise exception 'FAIL: 2-мұғалім бөтен класс мүшелерін көрді';
+  exception when sqlstate '42501' then null; end;
+  if exists (select 1 from public.ao_progress where user_id = '00000000-0000-0000-0000-000000000002') then raise exception 'FAIL: 2-мұғалім бөтен оқушының прогресін көрді'; end if;
+  if (select count(*) from public.ao_grants) <> 0 then raise exception 'FAIL: 2-мұғалім бөтен класс мазмұнын көрді'; end if;
+  delete from public.ao_members where class_id = (select id from t1_class);     -- RLS: ештеңе өшірілмейді
+  update public.ao_classes set title = 'Хак' where id = (select id from t1_class);   -- RLS: ештеңе өзгермейді
+end $$;
+reset role;
+
+-- Super Admin мұғалімнің класын көреді; бөтен мұғалім ештеңе өзгерте алмағанын тексереміз; мұғалімдікті алады
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
+set role authenticated;
+do $$ begin
+  if not exists (select 1 from public.ao_admin_overview() o where o.id = (select id from t1_class)) then raise exception 'FAIL: admin мұғалім класын көрмеді'; end if;
+  if (select count(*) from public.ao_admin_members((select id from t1_class))) <> 1 then raise exception 'FAIL: 2-мұғалім мүшені өшірді'; end if;
+  if (select title from public.ao_classes where id = (select id from t1_class)) <> '7А информатика 2026' then raise exception 'FAIL: 2-мұғалім класты өзгертті'; end if;
+  perform public.ao_admin_set_role('t1@example.com', 'student');
+end $$;
+reset role;
+
+-- мұғалімдігі алынған адам класын басқара алмайды және жабық мазмұнды көрмейді
+select pg_temp.as_user('00000000-0000-0000-0000-0000000000b1');
+set role authenticated;
+do $$ begin
+  begin perform public.ao_admin_members((select id from t1_class)); raise exception 'FAIL: мұғалімдігі алынған адам класты басқарды';
+  exception when sqlstate '42501' then null; end;
+  begin perform public.ao_admin_class_create('Тағы бір'); raise exception 'FAIL: мұғалімдігі алынған адам класс ашты';
+  exception when sqlstate '42501' then null; end;
+  if public.ao_can_view('python/lectures/week-0.html') then raise exception 'FAIL: мұғалімдігі алынған адам жабық мазмұнды көрді'; end if;
+  if (select count(*) from public.ao_classes) <> 0 then raise exception 'FAIL: мұғалімдігі алынған адам класты көрді'; end if;
+end $$;
+reset role;
+
 select 'platform_test: БАРЛЫҒЫ ӨТТІ' as result;
