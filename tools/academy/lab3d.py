@@ -66,11 +66,17 @@ def lab_summary():
              "lessons": [{"id": L["id"], "kk": kk(L), "quiz": quiz_total(L)} for L in by_lab[lab["id"]]]} for lab in labs]
 
 
+# INSIDE TECH-тің AO17-нің өз беттеріне көшкен бөлімдері: маршрут -> academy/ ішіндегі бет
+NATIVE_PAGE = {"comics": "comics.html#part2", "learn": "learn.html", "journey": "journey.html", "career": "careers.html"}
+
+
 def href(lesson_or_route, base="academy/"):
     """AO17 ішіндегі сілтеме (base - сілтеме тұрған беттің academy/-ге қатысты префиксі)."""
     _, _, lab_of = data()
     if lesson_or_route in lab_of:
         return f"{base}3d/{lab_of[lesson_or_route]}/{lesson_or_route}.html"
+    if lesson_or_route in NATIVE_PAGE:
+        return f"{base}{NATIVE_PAGE[lesson_or_route]}"
     return f"{base}3d/app/index.html#{lesson_or_route}"
 
 
@@ -295,7 +301,24 @@ def shot(name):
 
 
 NATIVE = {"comics": ("../comics.html#part2", "Барлық 44 комикс AO17 бетінде: зертханалардың алғашқы сабақтары, он жанрдағы кино-комикс, математика сабақтары."),
-          "learn": ("../learn.html", "Нұрай, Мустафа және Бота оқу туралы жеті танымал сенімді тексереді. Алдымен өзің болжа: миф пе, шындық па?")}
+          "learn": ("../learn.html", "Нұрай, Мустафа және Бота оқу туралы жеті танымал сенімді тексереді. Алдымен өзің болжа: миф пе, шындық па?"),
+          "journey": ("../journey.html", "Мекенжай жолында Enter басылғаннан бет шыққанға дейінгі 185 мс: он аялдама, әрқайсысында бір сұрақ."),
+          "career": ("../careers.html", "Жеті сұраққа жауап бер де, қай IT мамандығы саған жақын екенін, оның бір күнін және 2-бөлімнен оған апаратын жолды көр.")}
+
+
+def native_art(route):
+    """3D хабындағы AO17-нің өз беттерінің мұқабасы: комикстің бірінші кадры не «Тірі заттар» кейіпкерлері."""
+    _, _, lab_of = data()
+    if route == "learn":
+        return IX.episode_cover(IX.episodes()[0])
+    scene = {"journey": ("screen", [("packet", "wow", 130, 1), ("server", "happy", 275, -1)]),
+             "career": ("class", [("robot", "happy", 125, 1), ("phone", "happy", 275, -1)])}.get(route)
+    if not scene:
+        e = IX.entries()[0]
+        return IX.cover(e, lab_of[e["lesson"]])
+    bgk, cast = scene
+    art = IX.CX.bg(bgk, 400, "na" + route) + "".join(IX.CX.actor(w, m, x, .9, f) for w, m, x, f in cast)
+    return f'<svg viewBox="0 0 400 230" aria-hidden="true">{art}</svg>'
 
 
 def feature_card(route, title, desc):
@@ -303,10 +326,7 @@ def feature_card(route, title, desc):
     pic = f'<img src="{img}" alt="" width="560" height="350" loading="lazy">' if img else ""
     if route in NATIVE:   # INSIDE TECH-тің бұл бөлімі AO17-нің өз бетінде
         href, desc = NATIVE[route]
-        _, _, lab_of = data()
-        e = IX.entries()[0]
-        art = IX.episode_cover(IX.episodes()[0]) if route == "learn" else IX.cover(e, lab_of[e["lesson"]])
-        return (f'<li><a class="l3-card l3-cnat" href="{href}">{art}'
+        return (f'<li><a class="l3-card l3-cnat" href="{href}">{native_art(route)}'
                 f'<span class="l3-ct"><b>{E(title)}</b><span>{E(desc)}</span></span></a></li>')
     return (f'<li><a class="l3-card" href="app/index.html#{E(route)}">{pic}'
             f'<span class="l3-ct"><b>{E(title)}</b><span>{E(desc)}</span></span></a></li>')
