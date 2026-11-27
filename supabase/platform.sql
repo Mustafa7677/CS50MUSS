@@ -20,6 +20,8 @@
 --   * ao_asset_refs   - жабық дерек файлдары (assets/data/*.js) қай беттерге керек ('*' - кез келген ашық бетке).
 --   * ao_can_view()   - бір ғана шешуші функция: Edge Function (ao-content) мазмұнды тек осы true болғанда береді.
 --   * ao_progress     - оқушының прогресі мен тест нәтижелері (өзі жазады, admin оқиды).
+--   * ao_assignments  - класқа берілген тапсырма (AO17 CS сабағы не сынағы, мерзімі): мұғалім береді, мүше көреді;
+--                       орындалғаны оқушы прогресінен есептеледі (assets/js/ao17-assign.js).
 
 create schema if not exists extensions;
 create extension if not exists pgcrypto with schema extensions;
@@ -93,6 +95,22 @@ alter table public.ao_profiles add constraint ao_profiles_role_check check (role
 alter table public.ao_classes add column if not exists owner uuid references public.ao_profiles(id) on delete set null;   -- класты ашқан мұғалім
 create index if not exists ao_classes_owner_idx on public.ao_classes(owner);
 
+-- ---------- тапсырмалар (2026-11): AO17 CS сабағы (сабақ id) не сынағы (режимі), мерзімімен
+create table if not exists public.ao_assignments (
+  id          bigserial primary key,
+  class_id    uuid not null references public.ao_classes(id) on delete cascade,
+  kind        text not null check (kind in ('lesson', 'test')),
+  target      text not null,
+  title       text not null check (length(btrim(title)) between 1 and 160),
+  due_at      timestamptz,
+  created_by  uuid references public.ao_profiles(id) on delete set null default auth.uid(),
+  created_at  timestamptz not null default now(),
+  unique (class_id, kind, target),
+  check ((kind = 'lesson' and target ~ '^ao17-foundation\.m(0[1-9]|1[0-2])\.l(0[1-9]|10)$')
+      or (kind = 'test' and target ~ '^(w([1-9]|1[0-2])|p1|p2|final)$'))
+);
+create index if not exists ao_assignments_class_idx on public.ao_assignments(class_id);
+
 -- ======================================================================== жаңа пайдаланушы → профиль
 create or replace function public.ao_on_auth_user()
 returns trigger language plpgsql security definer set search_path = public as $$
@@ -128,6 +146,13 @@ create or replace function public.ao_can_manage(p_class uuid)
 returns boolean language sql stable security definer set search_path = public as $$
   select public.ao_is_admin()
       or (public.ao_is_teacher() and exists (select 1 from public.ao_classes where id = p_class and owner = auth.uid()));
+$$;
+
+-- Ағымдағы пайдаланушы осы кластың мүшесі ме (мұрағатталмаған класс). SECURITY DEFINER: оқушы ao_classes-ті RLS бойынша оқи алмайды
+create or replace function public.ao_is_member(p_class uuid)
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.ao_members m join public.ao_classes c on c.id = m.class_id
+                 where m.class_id = p_class and m.user_id = auth.uid() and not c.archived);
 $$;
 
 -- 8 таңбалы код: адам шатастыратын 0/O, 1/I/L жоқ
@@ -192,9 +217,10 @@ alter table public.ao_pages      enable row level security;
 alter table public.ao_grants     enable row level security;
 alter table public.ao_asset_refs enable row level security;
 alter table public.ao_progress   enable row level security;
+alter table public.ao_assignments enable row level security;
 
 revoke all on public.ao_profiles, public.ao_classes, public.ao_members, public.ao_pages,
-              public.ao_grants, public.ao_asset_refs, public.ao_progress from anon, authenticated;
+              public.ao_grants, public.ao_asset_refs, public.ao_progress, public.ao_assignments from anon, authenticated;
 
 grant select on public.ao_pages to anon, authenticated;                      -- каталог жария (атаулар)
 grant select on public.ao_profiles to authenticated;
@@ -203,6 +229,8 @@ grant select, insert, update, delete on public.ao_classes, public.ao_grants to a
 grant select, delete on public.ao_members to authenticated;                                     -- RLS: admin не өзі
 grant select, insert, update on public.ao_progress to authenticated;
 grant usage, select on sequence public.ao_grants_id_seq to authenticated;
+grant select, insert, update, delete on public.ao_assignments to authenticated;   -- RLS: басқарушы жазады, мүше оқиды
+grant usage, select on sequence public.ao_assignments_id_seq to authenticated;
 
 drop policy if exists ao_pages_read on public.ao_pages;
 create policy ao_pages_read on public.ao_pages for select using (true);
@@ -232,6 +260,12 @@ drop policy if exists ao_progress_ins on public.ao_progress;
 create policy ao_progress_ins on public.ao_progress for insert with check (user_id = auth.uid());
 drop policy if exists ao_progress_upd on public.ao_progress;
 create policy ao_progress_upd on public.ao_progress for update using (user_id = auth.uid()) with check (user_id = auth.uid());
+
+-- Тапсырма: класты басқаратын адам (Super Admin не класс иесі - мұғалім) береді, өзгертеді, өшіреді; класс мүшесі оқиды
+drop policy if exists ao_assignments_manage on public.ao_assignments;
+create policy ao_assignments_manage on public.ao_assignments for all using (public.ao_can_manage(class_id)) with check (public.ao_can_manage(class_id));
+drop policy if exists ao_assignments_member on public.ao_assignments;
+create policy ao_assignments_member on public.ao_assignments for select using (public.ao_is_member(class_id));
 
 -- ======================================================================== оқушы функциялары
 -- Класқа қосылу: 8 таңбалы код не шақыру токені.
@@ -265,6 +299,18 @@ returns table (path text, course text, kind text, title text, sort integer)
 language sql stable security definer set search_path = public as $$
   select p.path, p.course, p.kind, p.title, p.sort from public.ao_pages p
   where public.ao_can_view(p.path) order by p.course, p.sort, p.path;
+$$;
+
+-- Оқушының тапсырмалары: мүшесі болып тұрған, мұрағатталмаған кластардан (класс атауымен)
+create or replace function public.ao_my_assignments()
+returns table (id bigint, class_id uuid, class_title text, kind text, target text, title text, due_at timestamptz, created_at timestamptz)
+language sql stable security definer set search_path = public as $$
+  select a.id, a.class_id, c.title, a.kind, a.target, a.title, a.due_at, a.created_at
+  from public.ao_assignments a
+  join public.ao_classes c on c.id = a.class_id
+  join public.ao_members m on m.class_id = a.class_id and m.user_id = auth.uid()
+  where not c.archived
+  order by a.due_at nulls last, a.created_at;
 $$;
 
 create or replace function public.ao_password_changed()
@@ -395,8 +441,8 @@ begin
   end loop;
 end $$;
 
-grant execute on function public.ao_is_admin(), public.ao_is_teacher(), public.ao_can_manage(uuid), public.ao_can_view(text), public.ao_join(text),
-  public.ao_my_classes(), public.ao_my_access(), public.ao_password_changed(),
+grant execute on function public.ao_is_admin(), public.ao_is_teacher(), public.ao_can_manage(uuid), public.ao_is_member(uuid), public.ao_can_view(text), public.ao_join(text),
+  public.ao_my_classes(), public.ao_my_access(), public.ao_my_assignments(), public.ao_password_changed(),
   public.ao_admin_class_create(text), public.ao_admin_regen_codes(uuid), public.ao_admin_overview(),
   public.ao_admin_members(uuid), public.ao_admin_set_role(text, text), public.ao_admin_teachers() to authenticated;
 -- ao_grant_active, ao_class_allows, ao_rand_*, ao_require_*: тек ішкі (SECURITY DEFINER функциялар иесінің құқығымен шақырады)
