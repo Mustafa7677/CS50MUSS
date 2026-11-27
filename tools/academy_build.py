@@ -35,6 +35,7 @@ import inside_pages as IP  # noqa: E402
 import ao17exam as AX  # noqa: E402
 import ao17plan as AP  # noqa: E402
 import ao17methods as AM  # noqa: E402
+import teach as TC  # noqa: E402  мұғалімге сабақ жоспарлары (academy/teach/)
 import oyu as OY  # noqa: E402
 import bota as BT  # noqa: E402
 import xray as XR  # noqa: E402
@@ -817,7 +818,7 @@ def course_html(lessons, st):
         <p class="crs-lede">Екі бөлім, бір жол. Бірінші бөлімде он екі аптада логикадан жүйеге дейін жүресің: ұғымды түсіндірме мен комикстен аласың, кодты өзің жазасың. Екінші бөлімде технологияның ішіне кіресің: процессордың, желінің, дерекқордың, нейрон желінің ішін 3D симуляцияда көріп, өлшейсің. Қазақ тілінде, тегін, браузерде.</p>
         <ul class="crs-stats"><li><b data-ao-count>2</b><span>бөлім</span></li><li><b data-ao-count>{tot_l + n3_l}</b><span>сабақ</span></li><li><b data-ao-count>{tot_t + n3_q}</b><span>тапсырма мен тест</span></li>
           <li><b data-ao-count>{len(CXE.EPISODES)}</b><span>комикс эпизоды</span></li><li><b data-ao-count>{len(LS)}</b><span>3D зертхана</span></li><li><b data-ao-count>≈{hours}</b><span>сағат</span></li></ul>
-        <p class="crs-cta"><a class="btn gold" id="crs-go" href="m01/l01.html">1-аптадан бастау</a> <a class="btn secondary" href="#part2">2-бөлім: 3D зертхана</a> <a class="btn secondary" href="comics.html">Комикстер</a> <a class="btn secondary" href="../posters.html#ao17cs">Курс мұқабалары</a> <a class="btn secondary" href="plan.html">Оқу кестесі</a>{film_m}</p>
+        <p class="crs-cta"><a class="btn gold" id="crs-go" href="m01/l01.html">1-аптадан бастау</a> <a class="btn secondary" href="#part2">2-бөлім: 3D зертхана</a> <a class="btn secondary" href="comics.html">Комикстер</a> <a class="btn secondary" href="../posters.html#ao17cs">Курс мұқабалары</a> <a class="btn secondary" href="plan.html">Оқу кестесі</a> <a class="btn secondary" href="teach/index.html">Мұғалімге</a>{film_m}</p>
         <p class="crs-plan" data-plan-chip hidden></p>
         <p class="crs-me" id="crs-me" hidden></p>
       </header>
@@ -1122,7 +1123,7 @@ def map_html(lessons):
 def build(write=True):
     lessons = load_lessons()
     titles = {m[0]: m[2] for m in C.ALL_MODULES}   # оқу кестесі: аптаның толық атауы
-    errs = validate(lessons) + validate_comics(lessons) + L3.validate() + AX.validate(lessons) + AP.validate(lessons, titles) + AM.validate(lessons) + OY.validate() + BT.validate() + XR.validate() + MO.validate() + IP.validate()
+    errs = validate(lessons) + validate_comics(lessons) + L3.validate() + AX.validate(lessons) + AP.validate(lessons, titles) + AM.validate(lessons) + TC.validate(lessons, answer_key) + OY.validate() + BT.validate() + XR.validate() + MO.validate() + IP.validate()
     if errs:
         print("academy: ТЕКСЕРУДЕН ӨТПЕДІ:", *errs, sep="\n  ")
         sys.exit(1)
@@ -1139,7 +1140,7 @@ def build(write=True):
         return
     plan_by_id = {p["id"]: p for p in C.plan()}
     pages = [index_html(lessons, st), lab_html(), map_html(lessons), models_html(), study_html(lessons), comics_html(lessons), course_html(lessons, st),
-             AX.exam_html(lessons, page), AX.cert_html(lessons, page), AP.plan_html(lessons, titles, page), AM.methods_html(lessons, page), OY.oyu_html(page), BT.bota_html(page), XR.xray_html(page), MO.morph_html(page), L3.IX.learn_html(page)] + IP.pages(page) + L3.pages(page) + [track_html(t) for t in TR.TRACKS]
+             AX.exam_html(lessons, page), AX.cert_html(lessons, page), AP.plan_html(lessons, titles, page), AM.methods_html(lessons, page), OY.oyu_html(page), BT.bota_html(page), XR.xray_html(page), MO.morph_html(page), L3.IX.learn_html(page)] + IP.pages(page) + TC.pages(lessons, page, answer_key) + L3.pages(page) + [track_html(t) for t in TR.TRACKS]
     by_mod = {}
     for L in lessons:
         by_mod.setdefault(L["moduleId"], []).append(L)
@@ -1191,46 +1192,52 @@ def _core(s):
     return s
 
 
+def answer_key(ex):
+    """Тапсырманың Python (plogic, ...) есептеген кілті; mc, number, order үшін None (жауабы тапсырманың өзінде).
+    tests/academy/keys.test.js бұл кілттерді JS қозғалтқышымен салыстырады; мұғалімнің жауап кілті де осыдан (tools/academy/teach.py)."""
+    t, k = ex["type"], None
+    if t == "value":
+        k = P.ev(P.parse(ex["formula"]), ex["env"])
+    elif t == "truthtable":
+        k = P.table(ex["formula"])
+    elif t == "classify":
+        k = P.classify(ex["formula"])
+    elif t == "argument":
+        k = P.valid(ex["premises"], ex["conclusion"])
+    elif t == "formula":
+        k = ex["solution"]
+    elif t == "counterexample":
+        k = AR.counterexamples(ex)
+    elif t in ("closedform", "recurrence"):
+        k = ex["solution"]
+    elif t == "trace":
+        k = trace_key(ex)
+    elif t in ("convert", "encode", "bitop"):
+        k = bits_key(ex)
+    elif t in ("pycode", "pytests"):
+        k = ex["solution"]
+    elif t == "coutput":
+        k = ex["answer"]
+    elif t == "count":
+        k = PS.run(ex["code"], ex.get("inputs", {}))["counts"].get(ex["line"], 0)
+    elif t == "setexpr":
+        k = sorted(DS.evaluate(ex["expr"], ex["sets"], ex["U"]), key=str)
+    elif t == "setid":
+        k = ex["solution"]
+    elif t == "props":
+        k = DS.rel_props(ex["S"], pairs(ex["R"]))
+    elif t == "func":
+        k = DS.func_kind(ex["X"], ex["Y"], pairs(ex["pairs"]))
+    return k
+
+
 def dump_keys():
     """Python (plogic) есептеген кілттер: tests/academy/keys.test.js оларды JS қозғалтқышымен салыстырады."""
     out = []
     for L in load_lessons():
         for set_ in ("exercises", "assessment"):
             for i, ex in enumerate(L[set_]):
-                t, k = ex["type"], None
-                if t == "value":
-                    k = P.ev(P.parse(ex["formula"]), ex["env"])
-                elif t == "truthtable":
-                    k = P.table(ex["formula"])
-                elif t == "classify":
-                    k = P.classify(ex["formula"])
-                elif t == "argument":
-                    k = P.valid(ex["premises"], ex["conclusion"])
-                elif t == "formula":
-                    k = ex["solution"]
-                elif t == "counterexample":
-                    k = AR.counterexamples(ex)
-                elif t in ("closedform", "recurrence"):
-                    k = ex["solution"]
-                elif t == "trace":
-                    k = trace_key(ex)
-                elif t in ("convert", "encode", "bitop"):
-                    k = bits_key(ex)
-                elif t in ("pycode", "pytests"):
-                    k = ex["solution"]
-                elif t == "coutput":
-                    k = ex["answer"]
-                elif t == "count":
-                    k = PS.run(ex["code"], ex.get("inputs", {}))["counts"].get(ex["line"], 0)
-                elif t == "setexpr":
-                    k = sorted(DS.evaluate(ex["expr"], ex["sets"], ex["U"]), key=str)
-                elif t == "setid":
-                    k = ex["solution"]
-                elif t == "props":
-                    k = DS.rel_props(ex["S"], pairs(ex["R"]))
-                elif t == "func":
-                    k = DS.func_kind(ex["X"], ex["Y"], pairs(ex["pairs"]))
-                out.append({"lesson": L["id"], "set": set_, "i": i, "ex": ex, "key": k})
+                out.append({"lesson": L["id"], "set": set_, "i": i, "ex": ex, "key": answer_key(ex)})
     print(json.dumps(out, ensure_ascii=False))
 
 

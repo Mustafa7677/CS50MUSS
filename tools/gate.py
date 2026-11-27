@@ -41,6 +41,8 @@ ACADEMY_PUBLIC = {"academy/index.html", "academy/map.html", "academy/models.html
                   "academy/course.html", "academy/comics.html",   # AO17 CS курсының беті және комикс хабы - каталог
                   "academy/certificate.html",   # сертификат: жабық мазмұны жоқ, нәтижені браузерден оқиды
                   "academy/plan.html",   # оқу кестесі: тек сабақ атаулары мен сілтемелері (курс бетінде де ашық)
+                  "academy/teach/index.html",   # мұғалімге: сабақ үлгісі мен КТЖ (атаулар мен мақсаттар academy/index.html-де де ашық);
+                                                # апта беттері (толық жоспар, шығу билеті мен жауап кілті) сабақтар сияқты жабық
                   "academy/methods.html",   # оқу тактикалары: түпнұсқа мәтін мен құралдар, сабақтардың тек атаулары
                   "academy/oyu.html",   # ою студиясы: түпнұсқа тапсырмалар мен галерея
                   "academy/bota.html",   # Бота әлемі: түпнұсқа деңгейлер (Python-мен Ботаны жүргізу)
