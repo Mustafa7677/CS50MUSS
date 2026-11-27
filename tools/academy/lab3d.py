@@ -3,6 +3,7 @@
 # Дерек: tools/academy/data/inside_lessons.json (tools/sync_inside.py жаңартады). Әр сабақ: дәріс (Markdown), 3D симуляциядағы тапсырма,
 # болжам, тест (түсіндірмесімен), кеңес, шешілген мысал, «қатені тап», өз сөзіңмен түсіндіру. INSIDE TECH-тің 44 комиксі
 # (inside_comics.py) AO17 комикс қозғалтқышымен салынады және INSIDE TECH-тегідей сабақтың өз қадамында, дәрістің алдында тұрады.
+# Математиканың 10 сабағында қадамның соңында «шешім фильмі» бар (inside_films.py, assets/js/board-film.js).
 # Сабақтың басты атауы - қазақша (lab3d_kk.TITLE_KK), ағылшынша атауы астында (lang="en").
 # 3D симуляцияның өзі academy/3d/app/ ішінде (бір origin: прогресс «inside-tech:*» кілттерінде ортақ).
 # Бұл - AO17 CS курсының 2-бөлімі «Технологияның ішінен»: зертханалардың реті мен сабақтардың қазақша атаулары lab3d_kk.py-да.
@@ -15,6 +16,7 @@ import cine as CN
 import cine3d as C3
 import inside_catalog as IC
 import inside_comics as IX
+import inside_films as IF
 import lab3d_kk as KK
 
 E = lambda s: html.escape(str(s), quote=True)  # noqa: E731
@@ -188,7 +190,7 @@ def quiz_block(q, qid, kind="quiz"):
             f'<details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> {inline(right)}</p><p>{inline(q.get("explain", ""))}</p></details></div>')
 
 
-def step_html(L, i, s, comic=""):
+def step_html(L, i, s, comic="", film=""):
     lid = L["id"]
     parts = [f'<section class="l3-step" id="s{i}" aria-labelledby="s{i}-h"><h2 id="s{i}-h"><span class="l3-n">{i}</span>{inline(s["title"])}</h2>',
              comic, f'<div class="l3-body">{body_html(s.get("body", ""))}</div>']
@@ -223,6 +225,7 @@ def step_html(L, i, s, comic=""):
                      + "".join(f'<li>{inline(x["label"])}</li>' for x in se.get("concepts", [])) + "</ul></details></div>")
     if s.get("quiz"):
         parts.append('<div class="l3-box l3-quiz"><h3>Өзіңді тексер</h3>' + "".join(quiz_block(q, f"{lid}:{s['id']}:{q['id']}") for q in s["quiz"]) + "</div>")
+    parts.append(film)   # шешім фильмі: практикадан кейін, қадамның соңында (INSIDE TECH-тегідей)
     parts.append("</section>")
     return "".join(parts)
 
@@ -232,7 +235,10 @@ def lesson_page(lab, L, idx, prev_l, next_l, page):
     nq = sum(len(s.get("quiz", [])) for s in steps)
     cx = IX.for_lesson(L["id"])
     cx_step = cx["step"] if cx else None
-    toc = "".join(f'<li><a href="#s{i}">{inline(s["title"])}' + (' <span class="l3-tcx">комикс</span>' if s["id"] == cx_step else "") + "</a></li>"
+    bf = IF.for_lesson(L["id"])
+    bf_step = bf["step"] if bf else None
+    toc = "".join(f'<li><a href="#s{i}">{inline(s["title"])}' + (' <span class="l3-tcx">комикс</span>' if s["id"] == cx_step else "")
+                  + (' <span class="l3-tcx">фильм</span>' if s["id"] == bf_step else "") + "</a></li>"
                   for i, s in enumerate(steps, 1))
     nav = ('<nav class="ac-pager" aria-label="Зертхананың сабақтары">' + (f'<a href="{E(prev_l["id"])}.html">← {E(kk(prev_l))}</a>' if prev_l else "<span></span>")
            + f'<a href="../index.html#{lab["id"]}">{E(LAB_KK.get(lab["id"], lab["title"]))}</a>'
@@ -261,14 +267,15 @@ def lesson_page(lab, L, idx, prev_l, next_l, page):
       </header>
       {film_html}
       <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol>{toc}</ol></nav>
-      {"".join(step_html(L, i, s, IX.section(cx, lab["id"]) if s["id"] == cx_step else "") for i, s in enumerate(steps, 1))}
+      {"".join(step_html(L, i, s, IX.section(cx, lab["id"]) if s["id"] == cx_step else "", IF.section(bf) if s["id"] == bf_step else "")
+               for i, s in enumerate(steps, 1))}
       <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
       {nav}
     </article>
   </div>"""
     rel = f"academy/3d/{lab['id']}/{L['id']}.html"
     return rel, page(rel, f"{kk(L)} · {LAB_KK.get(lab['id'], lab['title'])}", f"AO17 CS, 2-бөлім (3D зертхана): {L.get('summary', '')}"[:300], body,
-                     scripts=("assets/js/lab3d.js",), styles=("assets/css/lab3d.css",))
+                     scripts=("assets/js/lab3d.js",) + (("assets/js/board-film.js",) if bf else ()), styles=("assets/css/lab3d.css",))
 
 
 POSTERS = pathlib.Path(__file__).resolve().parents[2] / "assets" / "img" / "posters"   # tools/make_lab_posters.py
@@ -415,6 +422,7 @@ def validate():
                     if not (0 <= q.get("answer", -1) < len(q.get("options", []))):
                         errs.append(f"3D {L['id']}/{s.get('id')}: тест жауабы нұсқалардың сыртында")
     _, _, lab_of = data()
+    errs += IF.validate({L["id"]: [s["id"] for s in L.get("steps", [])] for ls in by_lab.values() for L in ls})
     errs += IX.validate(lab_of,
                         {L["id"]: [s["id"] for s in L.get("steps", [])] for ls in by_lab.values() for L in ls})
     return errs
