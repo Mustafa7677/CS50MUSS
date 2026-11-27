@@ -9,8 +9,9 @@ const path = require("path");
 const ROOT = path.resolve(__dirname, "../..");
 const { blockFonts, collectErrors } = require("../support/helpers");
 const AXE = fs.readFileSync(require.resolve("axe-core/axe.min.js"), "utf8");
-// 3D зертхана AO17-нің ішінде: сабақ - 3d/<зертхана>/<id>.html, ойын беттері - 3d/app/index.html#<маршрут>
-const INTERNAL = /^3d\/([a-z]+\/[a-z0-9-]+\.html|app\/index\.html#(blackbox|parsons|journey))$/;
+// 3D зертхана AO17-нің ішінде: сабақ - 3d/<зертхана>/<id>.html, ойын беттері - 3d/app/index.html#<маршрут>,
+// «Бір басудың саяхаты» - AO17-нің өз беті (journey.html, tools/academy/inside_pages.py)
+const INTERNAL = /^(3d\/([a-z]+\/[a-z0-9-]+\.html|app\/index\.html#(blackbox|parsons))|journey\.html)$/;
 
 test("12 апта: әрқайсысында сабақ, комикс, 3D зертхана сабағы; сілтемелер нақты беттерге апарады", async ({ page }) => {
   const errors = collectErrors(page);

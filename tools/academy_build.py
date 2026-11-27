@@ -31,6 +31,7 @@ import comic as CX  # noqa: E402
 import comic_eps as CXE  # noqa: E402
 import course as CRS  # noqa: E402
 import lab3d as L3  # noqa: E402
+import inside_pages as IP  # noqa: E402
 import ao17exam as AX  # noqa: E402
 import ao17plan as AP  # noqa: E402
 import ao17methods as AM  # noqa: E402
@@ -1121,7 +1122,7 @@ def map_html(lessons):
 def build(write=True):
     lessons = load_lessons()
     titles = {m[0]: m[2] for m in C.ALL_MODULES}   # оқу кестесі: аптаның толық атауы
-    errs = validate(lessons) + validate_comics(lessons) + L3.validate() + AX.validate(lessons) + AP.validate(lessons, titles) + AM.validate(lessons) + OY.validate() + BT.validate() + XR.validate() + MO.validate()
+    errs = validate(lessons) + validate_comics(lessons) + L3.validate() + AX.validate(lessons) + AP.validate(lessons, titles) + AM.validate(lessons) + OY.validate() + BT.validate() + XR.validate() + MO.validate() + IP.validate()
     if errs:
         print("academy: ТЕКСЕРУДЕН ӨТПЕДІ:", *errs, sep="\n  ")
         sys.exit(1)
@@ -1138,7 +1139,7 @@ def build(write=True):
         return
     plan_by_id = {p["id"]: p for p in C.plan()}
     pages = [index_html(lessons, st), lab_html(), map_html(lessons), models_html(), study_html(lessons), comics_html(lessons), course_html(lessons, st),
-             AX.exam_html(lessons, page), AX.cert_html(lessons, page), AP.plan_html(lessons, titles, page), AM.methods_html(lessons, page), OY.oyu_html(page), BT.bota_html(page), XR.xray_html(page), MO.morph_html(page), L3.IX.learn_html(page)] + L3.pages(page) + [track_html(t) for t in TR.TRACKS]
+             AX.exam_html(lessons, page), AX.cert_html(lessons, page), AP.plan_html(lessons, titles, page), AM.methods_html(lessons, page), OY.oyu_html(page), BT.bota_html(page), XR.xray_html(page), MO.morph_html(page), L3.IX.learn_html(page)] + IP.pages(page) + L3.pages(page) + [track_html(t) for t in TR.TRACKS]
     by_mod = {}
     for L in lessons:
         by_mod.setdefault(L["moduleId"], []).append(L)
