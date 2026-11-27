@@ -668,6 +668,8 @@ def _sfx_for(pn, cx, prop):
 
 def _talk(pn, cast):
     talk = []
+    if pn.get("slate"):   # кино-комикстің сахна тақтасы: «САХНА 1 · ЕСКІ КІТАПХАНА · ТҮН» (INSIDE TECH кино-комикстері)
+        talk.append(f'<p class="cx-slate">{E(pn["slate"])}</p>')
     if pn.get("cap"):
         talk.append(f'<p class="cx-cap">{E(pn["cap"])}</p>')
     for who, text in pn.get("say", []):

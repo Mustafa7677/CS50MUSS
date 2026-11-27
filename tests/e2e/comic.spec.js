@@ -10,7 +10,7 @@ const AXE = fs.readFileSync(require.resolve("axe-core/axe.min.js"), "utf8");
 test("хаб: 12 эпизод, әрқайсысы сабақтың комикс бөліміне апарады", async ({ page }) => {
   const errors = collectErrors(page);
   await page.goto("academy/comics.html");
-  const cards = page.locator(".cxh-card");
+  const cards = page.locator(".cxh-grid").first().locator(".cxh-card");   // Level I; 2-бөлімнің сөресі - lab3d-comics.spec.js
   await expect(cards).toHaveCount(12);
   const hrefs = await cards.evaluateAll((as) => as.map((a) => a.getAttribute("href")));
   expect(hrefs[0]).toBe("m01/l01.html#s-comic");

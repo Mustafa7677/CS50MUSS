@@ -1,7 +1,8 @@
 # © 2026 AO17 командасы. All Rights Reserved.
 # AO17 · 3D зертхана: INSIDE TECH (AO17 командасының 3D платформасы) сабақтарының AO17 ішіндегі лекция беттері.
 # Дерек: tools/academy/data/inside_lessons.json (tools/sync_inside.py жаңартады). Әр сабақ: дәріс (Markdown), 3D симуляциядағы тапсырма,
-# болжам, тест (түсіндірмесімен), кеңес, шешілген мысал, «қатені тап», өз сөзіңмен түсіндіру. Комикстер алынбайды.
+# болжам, тест (түсіндірмесімен), кеңес, шешілген мысал, «қатені тап», өз сөзіңмен түсіндіру. INSIDE TECH-тің 44 комиксі
+# (inside_comics.py) AO17 комикс қозғалтқышымен салынады және INSIDE TECH-тегідей сабақтың өз қадамында, дәрістің алдында тұрады.
 # Сабақтың басты атауы - қазақша (lab3d_kk.TITLE_KK), ағылшынша атауы астында (lang="en").
 # 3D симуляцияның өзі academy/3d/app/ ішінде (бір origin: прогресс «inside-tech:*» кілттерінде ортақ).
 # Бұл - AO17 CS курсының 2-бөлімі «Технологияның ішінен»: зертханалардың реті мен сабақтардың қазақша атаулары lab3d_kk.py-да.
@@ -13,6 +14,7 @@ import re
 import cine as CN
 import cine3d as C3
 import inside_catalog as IC
+import inside_comics as IX
 import lab3d_kk as KK
 
 E = lambda s: html.escape(str(s), quote=True)  # noqa: E731
@@ -186,10 +188,10 @@ def quiz_block(q, qid, kind="quiz"):
             f'<details class="l3-ans"><summary>Жауабы мен түсіндірмесі</summary><p><b>Дұрыс жауап:</b> {inline(right)}</p><p>{inline(q.get("explain", ""))}</p></details></div>')
 
 
-def step_html(L, i, s):
+def step_html(L, i, s, comic=""):
     lid = L["id"]
     parts = [f'<section class="l3-step" id="s{i}" aria-labelledby="s{i}-h"><h2 id="s{i}-h"><span class="l3-n">{i}</span>{inline(s["title"])}</h2>',
-             f'<div class="l3-body">{body_html(s.get("body", ""))}</div>']
+             comic, f'<div class="l3-body">{body_html(s.get("body", ""))}</div>']
     objs = [o["text"] for o in s.get("objectives", []) if o.get("text")]
     if objs:
         parts.append(f'<div class="l3-task"><h3>3D симуляцияда орында</h3><ul>{"".join(f"<li>{inline(t)}</li>" for t in objs)}</ul>'
@@ -228,7 +230,10 @@ def step_html(L, i, s):
 def lesson_page(lab, L, idx, prev_l, next_l, page):
     steps = L.get("steps", [])
     nq = sum(len(s.get("quiz", [])) for s in steps)
-    toc = "".join(f'<li><a href="#s{i}">{inline(s["title"])}</a></li>' for i, s in enumerate(steps, 1))
+    cx = IX.for_lesson(L["id"])
+    cx_step = cx["step"] if cx else None
+    toc = "".join(f'<li><a href="#s{i}">{inline(s["title"])}' + (' <span class="l3-tcx">комикс</span>' if s["id"] == cx_step else "") + "</a></li>"
+                  for i, s in enumerate(steps, 1))
     nav = ('<nav class="ac-pager" aria-label="Зертхананың сабақтары">' + (f'<a href="{E(prev_l["id"])}.html">← {E(kk(prev_l))}</a>' if prev_l else "<span></span>")
            + f'<a href="../index.html#{lab["id"]}">{E(LAB_KK.get(lab["id"], lab["title"]))}</a>'
            + (f'<a href="{E(next_l["id"])}.html">{E(kk(next_l))} →</a>' if next_l else "<span></span>") + "</nav>")
@@ -256,7 +261,7 @@ def lesson_page(lab, L, idx, prev_l, next_l, page):
       </header>
       {film_html}
       <nav class="l3-toc" aria-label="Сабақтың қадамдары"><ol>{toc}</ol></nav>
-      {"".join(step_html(L, i, s) for i, s in enumerate(steps, 1))}
+      {"".join(step_html(L, i, s, IX.section(cx, lab["id"]) if s["id"] == cx_step else "") for i, s in enumerate(steps, 1))}
       <p class="l3-src">Сабақ AO17 командасының INSIDE TECH 3D платформасынан алынған: дәріс, тест және 3D симуляция - бір сабақтың бөліктері. Симуляция осы сайттың ішінде ашылады, прогресі «Менің шаңырағым» бетіне қосылады.</p>
       {nav}
     </article>
@@ -279,9 +284,18 @@ def shot(name):
     return f"shots/{name}.jpg" if (SHOTS / f"{name}.jpg").exists() else ""
 
 
+NATIVE = {"comics": ("../comics.html#part2", "Барлық 44 комикс AO17 бетінде: зертханалардың алғашқы сабақтары, он жанрдағы кино-комикс, математика сабақтары.")}
+
+
 def feature_card(route, title, desc):
     img = shot(route)
     pic = f'<img src="{img}" alt="" width="560" height="350" loading="lazy">' if img else ""
+    if route in NATIVE:   # INSIDE TECH-тің бұл бөлімі AO17-нің өз бетінде
+        href, desc = NATIVE[route]
+        e = IX.entries()[0]
+        _, _, lab_of = data()
+        return (f'<li><a class="l3-card l3-cnat" href="{href}">{IX.cover(e, lab_of[e["lesson"]])}'
+                f'<span class="l3-ct"><b>{E(title)}</b><span>{E(desc)}</span></span></a></li>')
     return (f'<li><a class="l3-card" href="app/index.html#{E(route)}">{pic}'
             f'<span class="l3-ct"><b>{E(title)}</b><span>{E(desc)}</span></span></a></li>')
 
@@ -347,6 +361,28 @@ def hub_page(page):
                                          body, scripts=("assets/js/lab3d.js",), styles=("assets/css/lab3d.css",))
 
 
+def comics_shelf(base=""):
+    """Комикс хабы үшін: 2-бөлімнің 44 комиксі зертханалар бойынша (мұқаба - бірінші кадр); сілтеме - сабақтың комиксі (#s-comic)."""
+    labs, by_lab, _ = data()
+    out = []
+    for lab in labs:
+        ls = by_lab[lab["id"]]
+        cards = []
+        for k, L in enumerate(ls, 1):
+            e = IX.for_lesson(L["id"])
+            if not e:
+                continue
+            kind = {"film": "кино-комикс", "lab": "комикс", "lesson": "комикс"}[e["kind"]]
+            genre = f' · {E(e["comic"]["genre"])}' if e["kind"] == "film" and e["comic"].get("genre") else ""
+            cards.append(f'<li><a class="cxh-card" href="{base}3d/{lab["id"]}/{E(L["id"])}.html#s-comic">{IX.cover(e, lab["id"])}<div class="cxh-tx">'
+                         f'<p class="cxh-ep">{k}-сабақ, {kind}{genre}</p><h4>{E(e["comic"]["title"])}</h4><p>{E(IX.teaser(e))}</p></div></a></li>')
+        if cards:
+            name = LAB_KK.get(lab["id"], lab["title"])
+            out.append(f'<section class="cxh-lab" style="--lc:{LAB_COLOR.get(lab["id"], "#0a4c7a")}" aria-labelledby="cxh-{lab["id"]}">'
+                       f'<h3 id="cxh-{lab["id"]}">{E(name)} <small>{len(cards)} комикс</small></h3><ul class="cxh-grid">{"".join(cards)}</ul></section>')
+    return "".join(out)
+
+
 def pages(page):
     labs, by_lab, _ = data()
     out = [hub_page(page)]
@@ -378,4 +414,7 @@ def validate():
                 for q in s.get("quiz", []) + ([s["predict"]] if s.get("predict") else []):
                     if not (0 <= q.get("answer", -1) < len(q.get("options", []))):
                         errs.append(f"3D {L['id']}/{s.get('id')}: тест жауабы нұсқалардың сыртында")
+    _, _, lab_of = data()
+    errs += IX.validate(lab_of,
+                        {L["id"]: [s["id"] for s in L.get("steps", [])] for ls in by_lab.values() for L in ls})
     return errs

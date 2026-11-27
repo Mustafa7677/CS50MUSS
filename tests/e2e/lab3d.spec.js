@@ -143,7 +143,7 @@ test("3D қолданба AO17 ішінде: қатесіз ашылады, сы
 
 test("AO17 нұсқасында Ұстаз кейіпкері жоқ: бумада, деректе және 3D комикс кітапханасында", async ({ page }) => {
   const dec = (s) => s.replace(/\\u([0-9a-fA-F]{4})/g, (_, h) => String.fromCharCode(parseInt(h, 16))).toLowerCase();
-  for (const f of ["academy/3d/app/app.js", "academy/3d/app/ai-lab-worker.js", "academy/3d/app/index.html", "tools/academy/data/inside_lessons.json"])
+  for (const f of ["academy/3d/app/app.js", "academy/3d/app/ai-lab-worker.js", "academy/3d/app/index.html", "tools/academy/data/inside_lessons.json", "tools/academy/data/inside_media.json"])
     expect(dec(fs.readFileSync(path.join(ROOT, f), "utf8")).includes("ұстаз"), f).toBe(false);
   await page.goto("academy/3d/app/index.html#comics");
   await expect(page.locator("button", { hasText: "Кино-комикстер" })).toBeVisible({ timeout: 20000 });
