@@ -6,12 +6,18 @@
 #   academy/careers.html - «Кім боламын?»: жеті сұрақтық тест, сегіз IT мамандығы (бір күні, құралдары, алғашқы жоба)
 #     және әрқайсысына 2-бөлімнің сабақтарынан жол; тест пен дайындық - assets/js/careers.js.
 #     Тест жауаптары INSIDE TECH-пен ортақ кілтте («inside-tech:career»), мамандықтың суреті - «Тірі заттар» кейіпкері (gadgets.py).
+#   academy/problems.html - «Есептер залы»: 7 қиын есеп, әрқайсысы үш қадам - маманның шешімі (шешім фильмі, inside_films.player),
+#     стратегия таңдау және егіз есеп қадам-қадаммен (кеңес - бір жұлдыз); күннің есебі мен күндер қатары (assets/js/problems.js).
+#   academy/cards.html - «Есте сақтау карточкалары»: 22 карточка, Лейтнердің бес жәшігі (assets/js/cards.js).
+#     Жұлдыздар, күндер мен жәшіктер INSIDE TECH-пен ортақ кілттерде («inside-tech:problems», «inside-tech:cards»).
+import hashlib
 import html
 import json
 
 import comic as CX
 import gadgets as GD
 import inside_comics as IX
+import inside_films as IF
 import lab3d as L3
 
 E = lambda s: html.escape(str(s), quote=True)  # noqa: E731
@@ -125,7 +131,7 @@ def careers_html(page):
 
 
 def pages(page):
-    return [journey_html(page), careers_html(page)]
+    return [journey_html(page), careers_html(page), problems_html(page), cards_html(page)]
 
 
 def validate():
@@ -150,6 +156,28 @@ def validate():
         for lid in c["road"]:
             if lid not in lab_of:
                 errs.append(f"мамандық {c['id']}: жолдағы {lid} сабағы жоқ")
+    if len(d["problems"]) != 7:
+        errs.append(f"«Есептер залы»: 7 есеп емес, {len(d['problems'])}")
+    for p in d["problems"]:
+        if p["labId"] not in L3.LAB_KK:
+            errs.append(f"есеп {p['id']}: белгісіз зертхана {p['labId']}")
+        if len(p["strategy"]["options"]) < 2 or not p["twin"]["steps"]:
+            errs.append(f"есеп {p['id']}: стратегия не егіз есеп толық емес")
+        for s in p["twin"]["steps"]:
+            if not isinstance(s["answer"], (int, float)) or not s.get("hint"):
+                errs.append(f"есеп {p['id']}: қадамның жауабы не кеңесі жоқ")
+        prev = []
+        for f in p["film"]["frames"]:
+            if f["board"][:len(prev)] != prev or f.get("stage") not in (0, 1, 2, 3):
+                errs.append(f"есеп {p['id']}: фильмнің тақтасы не кезеңі дұрыс емес")
+            prev = f["board"]
+    if len(d["cards"]) != 22 or len({c["id"] for c in d["cards"]}) != 22:
+        errs.append(f"карточкалар: 22 бірегей карточка емес, {len(d['cards'])}")
+    if d["cardIntervals"] != [0, 0, 1, 3, 7, 14]:
+        errs.append(f"карточкалар: Лейтнер аралықтары өзгерді {d['cardIntervals']} (беттің мәтінін тексер)")
+    for c in d["cards"]:
+        if c["lab"] not in L3.LAB_KK:
+            errs.append(f"карточка {c['id']}: белгісіз зертхана {c['lab']}")
     if len(d["careerQuiz"]) != 7:
         errs.append(f"«Кім боламын?»: 7 сұрақ емес, {len(d['careerQuiz'])}")
     for k, q in enumerate(d["careerQuiz"], 1):
@@ -160,3 +188,98 @@ def validate():
             if bad:
                 errs.append(f"мамандық тесті {k}-сұрақ: белгісіз мамандық {sorted(bad)}")
     return errs
+
+
+# ------------------------------------------------------------------ «Есептер залы» (academy/problems.html)
+def _num(x, tol=None):
+    """Жауаптың қазақша жазылуы: бүтін сан - бүтін, бөлшек - рұқсат етілген дәлдікке дейін, үтірмен."""
+    if float(x).is_integer():
+        return str(int(x))
+    digits = 2 if not tol else max(0, -int(f"{tol:e}".split("e")[1]))
+    return f"{x:.{digits}f}".replace(".", ",")
+
+
+def _order(pid, n):
+    """Стратегия нұсқаларының тұрақты аралас реті (деректе бірінші нұсқа - дұрыс): әр есепте әртүрлі, әр жүктеуде бірдей."""
+    return sorted(range(n), key=lambda i: hashlib.md5(f"{pid}:{i}".encode()).hexdigest())
+
+
+def problems_html(page):
+    probs = media()["problems"]
+    nav = "".join(f'<li><a href="#pr-{E(p["id"])}" data-pr="{E(p["id"])}"><span>{k}</span>{E(p["title"])}</a></li>' for k, p in enumerate(probs, 1))
+    arts = []
+    for k, p in enumerate(probs, 1):
+        pid, lab = p["id"], L3.LAB_KK.get(p["labId"], p["labId"])
+        film = IF.player(p["film"], uid=f"pf-{pid}", kicker="1-қадам · Талдау: маманның шешімі", heading="h3",
+                         note="Алдымен маманның шешімін көр: тақтаға жол-жолымен жазылады, әр қадамның себебі астында айтылады.")
+        st = p["strategy"]
+        opts = "".join(f'<button type="button" data-ok="{1 if i == 0 else 0}">{E(st["options"][i])}</button>' for i in _order(pid, len(st["options"])))
+        steps = []
+        for j, s in enumerate(p["twin"]["steps"], 1):
+            sid = f"pr-{pid}-{j}"
+            unit = f'<span class="pr-unit">{E(s["unit"])}</span>' if s.get("unit") else ""
+            steps.append(
+                f'<li class="pr-step" data-answer="{s["answer"]!r}" data-tol="{s.get("tol", 0)!r}"><label for="{sid}">{E(s["prompt"])}</label>'
+                f'<span class="pr-in"><input id="{sid}" type="text" inputmode="decimal" autocomplete="off" spellcheck="false">{unit}</span>'
+                f'<span class="pr-acts"><button type="button" class="btn secondary pr-check">Тексеру</button>'
+                f'<button type="button" class="pr-hint-b">Кеңес (−1 жұлдыз)</button></span>'
+                f'<p class="pr-hint" hidden>{E(s["hint"])}</p><p class="pr-sfb" role="status" aria-live="polite"></p>'
+                f'<details class="pr-ans"><summary>Жауабы</summary><p>{E(_num(s["answer"], s.get("tol")))} {E(s.get("unit", ""))}</p><p>{E(s["hint"])}</p></details></li>')
+        arts.append(
+            f'<article class="pr-p" id="pr-{E(pid)}" data-pr="{E(pid)}" style="--c:{L3.LAB_COLOR.get(p["labId"], "#0a4c7a")}" aria-labelledby="pr-{E(pid)}-h">'
+            f'<p class="pr-k">{k}-есеп · <a href="3d/index.html#{E(p["labId"])}">{E(lab)}</a> · {E(", ".join(p["tags"]))}</p>'
+            f'<h2 id="pr-{E(pid)}-h">{E(p["title"])}</h2><p class="pr-stars" aria-live="polite"></p><p class="pr-stmt">{E(p["statement"])}</p>'
+            f'{film}<details class="pr-idea"><summary>Негізгі идея</summary><p>{E(p["idea"])}</p></details>'
+            f'<section class="pr-strat" aria-labelledby="pr-{E(pid)}-s"><h3 id="pr-{E(pid)}-s">2-қадам · Стратегия</h3><p class="pr-q">{E(st["question"])}</p>'
+            f'<div class="pr-opts" role="group" aria-label="Идеяның нұсқалары">{opts}</div><p class="pr-fb" role="status" aria-live="polite"></p>'
+            f'<details class="pr-why"><summary>Дұрыс идея</summary><p><b>{E(st["options"][0])}.</b> {E(st["why"])}</p></details></section>'
+            f'<section class="pr-twin" aria-labelledby="pr-{E(pid)}-t"><h3 id="pr-{E(pid)}-t">3-қадам · Өзің шығар: егіз есеп</h3>'
+            f'<p class="pr-lock" hidden>Алдымен 2-қадамда идеяны таңда: егіз есеп сол идеямен шығады.</p>'
+            f'<p class="pr-stmt">{E(p["twin"]["statement"])}</p><ol class="pr-steps">{"".join(steps)}</ol>'
+            f'<p class="pr-close">{E(p["twin"]["closing"])}</p></section></article>')
+    body = f"""  <div class="layout single">
+    <article class="content pr" id="main">
+      <p class="ac-crumb"><a href="course.html">AO17 CS курсы</a> / <a href="3d/index.html">2-бөлім: 3D зертхана</a> / Есептер залы</p>
+      <header class="lecture-head pr-head" style="--lc:#a37a00"><div class="num">INSIDE TECH · {len(probs)} қиын есеп</div><h1>Есептер залы</h1>
+        <p>Әр қиын есеп үш қадам: маманның шешімін фильм сияқты талда, егіз есепке қай идея керек екенін таңда, сосын өзің қадам-қадаммен шығар. Кеңес алсаң, бір жұлдыз кетеді. Күн сайын бір «бүгінгі есеп» бар: шешкен күндерің қатарға тізіледі.</p>
+        <div class="pr-hud" hidden><p class="pr-daily"></p><ol class="pr-week" aria-label="Соңғы жеті күн"></ol><p class="pr-score" aria-live="polite"></p></div></header>
+      <nav class="pr-nav" aria-label="Есептер"><ol>{nav}</ol></nav>
+      {"".join(arts)}
+      <p class="l3-src">Есептер, фильмдер мен егіз есептер AO17 командасының INSIDE TECH платформасынан алынған. Жұлдыздар мен күндер INSIDE TECH-тің «Есептер залымен» ортақ сақталады.</p>
+    </article>
+  </div>"""
+    return "academy/problems.html", page("academy/problems.html", "Есептер залы: қиын есепті үш қадаммен",
+                                         f"{len(probs)} қиын есеп: маманның шешімін фильммен талда, стратегия таңда, егіз есепті өзің шығар. Күннің есебі мен күндер қатары.",
+                                         body, scripts=("assets/js/board-film.js", "assets/js/problems.js"), styles=("assets/css/lab3d.css",))
+
+
+# ------------------------------------------------------------------ «Есте сақтау карточкалары» (academy/cards.html)
+def cards_html(page):
+    d = media()
+    cards, gaps = d["cards"], d["cardIntervals"]
+    labs = {c["lab"] for c in cards}
+    when = ["бүгін"] + [f"{gaps[b]} күннен соң" for b in range(2, len(gaps))]
+    boxes = "".join(f'<li data-box="{b}"><b>0</b><span>{b}-жәшік</span><small>{E(when[b - 1])}</small></li>' for b in range(1, len(gaps)))
+    allc = "".join(f'<li><b>{E(c["front"])}</b> <span>{E(c["back"])}</span> <a href="3d/index.html#{E(c["lab"])}">{E(L3.LAB_KK.get(c["lab"], c["lab"]))}</a></li>'
+                   for c in cards)
+    data = json.dumps({"cards": [{"id": c["id"], "front": c["front"], "back": c["back"], "lab": L3.LAB_KK.get(c["lab"], c["lab"])} for c in cards],
+                       "gaps": gaps}, ensure_ascii=False).replace("</", "<\\/")
+    body = f"""  <div class="layout single">
+    <article class="content cd" id="main">
+      <p class="ac-crumb"><a href="course.html">AO17 CS курсы</a> / <a href="3d/index.html">2-бөлім: 3D зертхана</a> / Есте сақтау карточкалары</p>
+      <header class="lecture-head cd-head" style="--lc:#1f8a70"><div class="num">INSIDE TECH · {len(cards)} карточка · {len(labs)} зертхана</div><h1>Есте сақтау карточкалары</h1>
+        <p>Аралықпен қайталау: білгенің {gaps[2]}, {gaps[3]}, {gaps[4]}, {gaps[5]} күннен кейін қайтады, білмегенің бүгін қайта шығады. Карточка бес жәшік бойымен жылжиды (Лейтнер жүйесі): білсең - келесі жәшікке, білмесең - біріншіге.</p></header>
+      <section class="cd-review" hidden aria-labelledby="cd-r-h"><h2 id="cd-r-h">Бүгінгі қайталау</h2><p class="cd-due" aria-live="polite"></p>
+        <div class="cd-card" tabindex="-1"><p class="cd-lab"></p><p class="cd-front"></p><p class="cd-back" hidden></p></div>
+        <p class="cd-acts"><button type="button" class="btn gold cd-flip">Жауабын көру</button><button type="button" class="btn secondary cd-no" hidden>Білмедім</button><button type="button" class="btn gold cd-yes" hidden>Білдім</button></p>
+        <p class="cd-done" hidden></p></section>
+      <section class="cd-boxes" aria-labelledby="cd-b-h"><h2 id="cd-b-h">Бес жәшік</h2><ol class="cd-box-list">{boxes}</ol></section>
+      <section class="cd-all" aria-labelledby="cd-a-h"><h2 id="cd-a-h">Барлық {len(cards)} карточка</h2><ul>{allc}</ul></section>
+      <p>Курстың терминдері де карточкамен жатталады: <a href="../flashcards.html">AO17 терминдер карточкалары</a>.</p>
+      <script type="application/json" class="cd-data">{data}</script>
+      <p class="l3-src">Карточкалар AO17 командасының INSIDE TECH платформасынан алынған. Жәшіктер INSIDE TECH-тің карточкаларымен ортақ сақталады.</p>
+    </article>
+  </div>"""
+    return "academy/cards.html", page("academy/cards.html", "Есте сақтау карточкалары: аралықпен қайталау",
+                                      f"{len(cards)} карточка {len(labs)} зертханадан: білгенің {gaps[2]}, {gaps[3]}, {gaps[4]}, {gaps[5]} күннен кейін қайтады, білмегенің бүгін қайта шығады.",
+                                      body, scripts=("assets/js/cards.js",), styles=("assets/css/lab3d.css",))

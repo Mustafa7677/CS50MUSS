@@ -335,12 +335,21 @@ def episodes():
     return media()["episodes"]
 
 
+# INSIDE TECH-тің AO17-нің өз беттеріне көшкен бөлімдері: маршрут -> academy/ ішіндегі бет
+NATIVE_PAGE = {"comics": "comics.html#part2", "learn": "learn.html", "journey": "journey.html", "career": "careers.html",
+               "problems": "problems.html", "cards": "cards.html"}
+
+
 def tool_href(href, base=""):
-    """INSIDE TECH маршруты -> AO17 ішіндегі сілтеме: /labs/<зертхана>/<сабақ> - лекция беті, қалғаны - 3D қолданбаның бөлімі."""
+    """INSIDE TECH маршруты -> AO17 ішіндегі сілтеме: /labs/<зертхана>/<сабақ> - лекция беті, AO17-ге көшкен бөлім - өз беті,
+    қалғаны - 3D қолданбаның бөлімі."""
     m = re.match(r"^/labs/([a-z]+)/([a-z0-9-]+)$", href)
     if m:
         return f"{base}3d/{m.group(1)}/{m.group(2)}.html"
-    return f"{base}3d/app/index.html#{href.strip('/')}"
+    route = href.strip("/").split("?")[0]
+    if route in NATIVE_PAGE:
+        return f"{base}{NATIVE_PAGE[route]}"
+    return f"{base}3d/app/index.html#{route}"
 
 
 def episode_cover(ep):
